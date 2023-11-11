@@ -1,14 +1,18 @@
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '~/lib/firebase';
 
 export const SignInWithGoogle = () => {
-  const handleClick = () => {
+  const navigate = useNavigate();
+
+  const handleClick = async () => {
     const provider = new GoogleAuthProvider();
     const auth = useAuth();
     // @see https://firebase.google.com/docs/auth/web/google-signin
     auth.languageCode = 'ja';
 
-    signInWithPopup(auth, provider);
+    await signInWithPopup(auth, provider);
+    navigate('/home')
   };
 
   return (
