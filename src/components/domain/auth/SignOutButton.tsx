@@ -1,16 +1,15 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '~/lib/firebase';
 
-type Props = {};
-
-export const SignOutButton = (props: Props) => {
-  const handleClick = () => {
-    const auth = useAuth();
-    auth.signOut();
-  };
+export const SignOutButton = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const signOut = () => auth.signOut().then(() => { 
+    navigate('/');
+  });
 
   return (
-    <button onClick={handleClick} type="button" className="btn normal-case">
-      Sign Out
-    </button>
-  );
+    <a onClick={signOut} className="btn btn-outline btn-error btn-sm">Sign out</a>
+  )
 };
