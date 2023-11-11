@@ -12,14 +12,19 @@ function Main() {
 
     const auth = getAuth();
 
-    onAuthStateChanged(auth, user => {
+    const state = onAuthStateChanged(auth, user => {
       if (user) {
         signIn(user);
       } else {
         signOut();
       }
     });
+
+    return () => {
+      state();
+    };
   }, []);
+
   return (
     <main>
       <Router />
