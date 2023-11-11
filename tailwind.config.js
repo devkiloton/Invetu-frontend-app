@@ -21,6 +21,6 @@ module.exports = {
   variants: {},
   plugins: [require('daisyui')],
   daisyui: {
-    themes: ['light', 'dark', 'cupcake'],
+    themes: ['cmyk', 'dracula'],
   },
 };
