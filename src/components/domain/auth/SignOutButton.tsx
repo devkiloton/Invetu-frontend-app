@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuthState } from '~/components/contexts/UserContext';
 import { useAuth } from '~/lib/firebase';
 
 export const SignOutButton = () => {
   const navigate = useNavigate();
   const auth = useAuth;
+  const {state} = useAuthState();
 
   async function handleClick() {
     await auth().signOut();
@@ -11,8 +13,14 @@ export const SignOutButton = () => {
   }
 
   return (
-    <a onClick={handleClick} className="btn btn-outline btn-error btn-sm">
-      Sign out
-    </a>
+    <>
+      {
+state.state === 'SIGNED_IN' ?<a onClick={handleClick} className="btn btn-outline btn-error btn-sm">
+Sign out
+</a>: <></>
+    
+        
+    }
+    </>
   );
 };

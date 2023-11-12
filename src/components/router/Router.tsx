@@ -17,7 +17,7 @@ function Layout() {
       <div className="p-4 sticky top-0">
         <div className="navbar bg-base-300 rounded-box">
           <div className="flex-1 px-2 lg:flex-none">
-            <a className="text-lg font-bold">FoxBat</a>
+            <a className="font-bold btn btn-ghost normal-case text-xl">FoxBat</a>
           </div>
           <div className="flex justify-end flex-1 px-2">
             <div className="flex items-stretch">
