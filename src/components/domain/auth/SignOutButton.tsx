@@ -5,7 +5,7 @@ import { useAuth } from '~/lib/firebase';
 export const SignOutButton = () => {
   const navigate = useNavigate();
   const auth = useAuth;
-  const {state} = useAuthState();
+  const { state } = useAuthState();
 
   async function handleClick() {
     await auth().signOut();
@@ -14,13 +14,13 @@ export const SignOutButton = () => {
 
   return (
     <>
-      {
-state.state === 'SIGNED_IN' ?<a onClick={handleClick} className="btn btn-outline btn-error btn-sm">
-Sign out
-</a>: <></>
-    
-        
-    }
+      {state.state === 'SIGNED_IN' ? (
+        <a onClick={handleClick} className="btn btn-outline btn-error btn-sm">
+          Sign out
+        </a>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
