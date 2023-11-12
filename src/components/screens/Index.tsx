@@ -11,10 +11,9 @@ function Index() {
         <div className="text-center hero-content">
           <div>
             <div className="mt-4 grid gap-2">
-              
-                <SignInWithGoogle />
-                <SignInWithMicrosoft />
-                <SignInWithGitHub />
+              <SignInWithGoogle />
+              <SignInWithMicrosoft />
+              <SignInWithGitHub />
             </div>
           </div>
         </div>

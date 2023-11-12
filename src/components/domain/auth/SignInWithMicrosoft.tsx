@@ -4,7 +4,7 @@ import { useAuth } from '~/lib/firebase';
 
 export const SignInWithMicrosoft = () => {
   const navigate = useNavigate();
-  
+
   const handleClick = async () => {
     const provider = new OAuthProvider('microsoft.com');
     const auth = useAuth();

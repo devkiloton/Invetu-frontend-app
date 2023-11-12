@@ -12,7 +12,7 @@ export const SignInWithGoogle = () => {
     auth.languageCode = 'ja';
 
     await signInWithPopup(auth, provider);
-    navigate('/home')
+    navigate('/home');
   };
 
   return (
