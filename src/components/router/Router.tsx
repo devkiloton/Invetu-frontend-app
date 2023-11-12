@@ -4,6 +4,7 @@ import Home from '../screens/Home';
 import AuthHandler from './handlers/AuthHandler';
 import { changeTheme } from '~/helpers/change-theme';
 import { SignOutButton } from '../domain/auth/SignOutButton';
+import { useAuthState } from '../contexts/UserContext';
 
 const Loading = () => <p className="p-4 w-full h-full text-center">Loading...</p>;
 
@@ -52,6 +53,9 @@ export const Router = () => {
 };
 
 const InnerRouter = () => {
+
+  const { state} = useAuthState();
+
   const routes: RouteObject[] = [
     {
       path: '/',
@@ -75,8 +79,11 @@ const InnerRouter = () => {
   ];
   const element = useRoutes(routes);
   return (
-    <div>
-      <Suspense fallback={<Loading />}>{element}</Suspense>
-    </div>
+    <>
+      {
+        state.state === 'UNKNOWN' ? <Loading /> : <Suspense fallback={<Loading />}>{element}</Suspense>
+      }
+      
+    </>
   );
 };
