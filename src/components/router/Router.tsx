@@ -13,8 +13,8 @@ const Page404Screen = lazy(() => import('~/components/screens/404'));
 
 function Layout() {
   return (
-    <div>
-      <div className="p-4">
+    <div className="relative">
+      <div className="p-4 sticky top-0">
         <div className="navbar bg-base-300 rounded-box">
           <div className="flex-1 px-2 lg:flex-none">
             <a className="text-lg font-bold">FoxBat</a>
