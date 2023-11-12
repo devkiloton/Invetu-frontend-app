@@ -1,32 +1,33 @@
 import { FormEvent, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
+import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
   const [price, setPrice] = useState(0);
   const [amount, setAmount] = useState(0);
-  const [date, setDate] = useState(Date.now());
+  const [startDate, setStartDate] = useState(Date.now());
   const auth = useAuth();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (auth.currentUser?.uid !== undefined) {
-      const data = {
+      const data: Stock = {
         ticker,
         price,
         amount,
-        date,
+        startDate,
         currency: 'BRL',
         userID: auth.currentUser.uid,
+        type: 'stock',
       };
-
-      firebaseClient().firestore.stocks.add(data);
+      firebaseClient().firestore.investments.stocks.add(data);
     }
     event.preventDefault();
   }
   return (
-    <div className="hero-content  max-w-120">
-      <div className="card flex-shrink-0 w-full bg-base-100">
+    <div className="max-w-120 w-full relative">
+      <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl bordered sticky top-24">
         <form className="card-body" onSubmit={event => handleSubmit(event)}>
           <div className="form-control">
             <label className="label">
@@ -73,7 +74,7 @@ export default function AddStocksForm() {
             </label>
             <label className="input-group">
               <input
-                onChange={event => setDate(new Date(event.target.value).getTime())}
+                onChange={event => setStartDate(new Date(event.target.value).getTime())}
                 type="date"
                 placeholder="ex. 134"
                 className="input input-bordered w-full"
