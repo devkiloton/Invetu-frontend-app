@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { CheckIcon } from '@heroicons/react/20/solid';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 
 type TickerAutocomplete = {
