@@ -11,25 +11,25 @@ export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
   const [investedAmount, setInvestedAmount] = useState(0);
   const auth = useAuth();
-  useEffect(() => { 
+  useEffect(() => {
     if (auth.currentUser?.uid !== undefined) {
-      firebaseClient().firestore.investments.stocks.get(auth.currentUser.uid).then((investiments) => { 
-        setInvestments(investiments.stocks)
-        setInvestedAmount(investiments.investedAmount)
-      })
+      firebaseClient()
+        .firestore.investments.stocks.get(auth.currentUser.uid)
+        .then(investiments => {
+          setInvestments(investiments.stocks);
+          setInvestedAmount(investiments.investedAmount);
+        });
     }
-  }, [])
+  }, []);
   return (
     <PageContainer>
       <AccountStats />
-      <div className='flex gap-x-4'>
+      <div className="flex gap-x-4">
         <AddStocksForm />
-        <div className='w-full flex flex-col gap-4'>
-        {
-          investments.map((investment) => { 
-            return <InvestmentCard key={crypto.randomUUID()} {...investment} investedAmount={investedAmount} />
-          })
-        }
+        <div className="w-full flex flex-col gap-4">
+          {investments.map(investment => {
+            return <InvestmentCard key={crypto.randomUUID()} {...investment} investedAmount={investedAmount} />;
+          })}
         </div>
       </div>
     </PageContainer>

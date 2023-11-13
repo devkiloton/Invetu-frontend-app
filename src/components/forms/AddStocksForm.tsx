@@ -22,12 +22,14 @@ export default function AddStocksForm() {
         userID: auth.currentUser.uid,
         type: 'stock',
       };
-      firebaseClient().firestore.investments.stocks.add(data).then(() => { 
-        setTicker('');
-        setPrice(0);
-        setAmount(0);
-        setStartDate(Date.now());
-      });
+      firebaseClient()
+        .firestore.investments.stocks.add(data)
+        .then(() => {
+          setTicker('');
+          setPrice(0);
+          setAmount(0);
+          setStartDate(Date.now());
+        });
     }
     event.preventDefault();
   }
@@ -39,7 +41,7 @@ export default function AddStocksForm() {
             <label className="label">
               <span className="label-text">Ticker</span>
             </label>
-            <DropdownInput setTicker={setTicker } />
+            <DropdownInput setTicker={setTicker} />
           </div>
           <div className="form-control">
             <label className="label">
