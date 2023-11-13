@@ -1,12 +1,11 @@
 import { FuzzyAPI } from './models/FuzzyAPI';
-import { StockAPI } from './models/StockAPI';
 import { RawStocksAPI, StocksAPI } from './models/StocksAPI';
 
 export const foxbatClient = () => {
   const client = {
     stocks: {
       fuzzy: async (ticker: string): Promise<Array<string>> => {
-        const stocks = await fetch(`${API}/stocks/fuzzy/${ticker}`);
+        const stocks = await fetch(`${process.env.API_URL}/stocks/fuzzy/${ticker}`);
         const stocksJson = (await stocks.json()) as FuzzyAPI;
         return stocksJson.stocks;
       },

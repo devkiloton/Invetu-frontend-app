@@ -1,11 +1,3 @@
-export type RawStocksAPI = StocksAPI[];
-
-export interface StocksAPI {
-  results: Result[];
-  requestedAt: string;
-  took: string;
-}
-
 export interface Result {
   symbol: string;
   currency: string;
@@ -39,3 +31,11 @@ export interface Result {
   logourl: string;
   updatedAt: string;
 }
+
+export interface StocksAPI {
+  results: Result[];
+  requestedAt: string;
+  took: string;
+}
+
+export type RawStocksAPI = StocksAPI[];

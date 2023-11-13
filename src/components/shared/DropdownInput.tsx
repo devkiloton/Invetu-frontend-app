@@ -3,11 +3,6 @@ import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 
-type TickerAutocomplete = {
-  ticker: string;
-  country: 'BRL' | 'USD';
-};
-
 export default function DropdownInput({ setTicker }: { setTicker: (ticker: string) => void }) {
   const [selected, setSelected] = useState('');
   const [query, setQuery] = useState('');

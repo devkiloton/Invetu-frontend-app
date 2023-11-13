@@ -1,9 +1,3 @@
-export type StockAPI = {
-  results: Result[];
-  requestedAt: string;
-  took: string;
-};
-
 export type Result = {
   symbol: string;
   currency: string;
@@ -36,4 +30,9 @@ export type Result = {
   earningsPerShare: number;
   logourl: string;
   updatedAt: string;
+};
+export type StockAPI = {
+  results: Result[];
+  requestedAt: string;
+  took: string;
 };
