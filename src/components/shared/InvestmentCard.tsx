@@ -1,6 +1,6 @@
 import { Stock } from '~/clients/firebase-client/models/Investments'
 
-export default function InvestmentCard(props: Stock) {
+export default function InvestmentCard(props: Stock &{ investedAmount: number}) {
   return (
       <>
           
@@ -11,12 +11,13 @@ export default function InvestmentCard(props: Stock) {
                       
 
                   <span className='text-sm  font-semibold'><span className='text-xs font-normal'>Amount:</span> {props.amount}</span>
-                  <span className='text-sm  font-semibold'><span className='text-xs font-normal'>Price:</span> R$ {props.price}</span>
+            <span className='text-sm  font-semibold'><span className='text-xs font-normal'>Price:</span> R$ {props.price.toFixed(2)}</span>
+            
                   </div>
-                  <span>Profit:</span>
-                    <span>Wallet %:</span>
+                  <span>Profit: TBI</span>
+                    <span>Wallet %: TBI</span>
     <div className="card-actions">
-      <button className="btn btn-primary w-full">Edit</button>
+      <button disabled className="btn btn-primary w-full">Edit</button>
     </div>
   </div>
 </div>
