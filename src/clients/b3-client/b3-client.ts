@@ -1,7 +1,7 @@
 export const b3Client = () => {
   const API = 'https://arquivos.b3.com.br/apinegocios';
   const client = {
-    autocomplete: async (ticker: string) => {
+    autocomplete: async (ticker: string): Promise<Array<string>> => {
       return fetch(`${API}/tickersymbol?q=${ticker}`).then(res => res.json());
     },
     tickerInfo: async (data: { ticker: string; date: number }) => {
