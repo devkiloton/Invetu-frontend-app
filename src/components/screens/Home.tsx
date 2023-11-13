@@ -9,11 +9,13 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 
 export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
+  const [investedAmount, setInvestedAmount] = useState(0);
   const auth = useAuth();
   useEffect(() => { 
     if (auth.currentUser?.uid !== undefined) {
       firebaseClient().firestore.investments.stocks.get(auth.currentUser.uid).then((investiments) => { 
         setInvestments(investiments.stocks)
+        setInvestedAmount(investiments.investedAmount)
       })
     }
   }, [])
@@ -25,7 +27,7 @@ export default function Home() {
         <div className='w-full flex flex-col gap-4'>
         {
           investments.map((investment) => { 
-            return <InvestmentCard {...investment} />
+            return <InvestmentCard key={crypto.randomUUID()} {...investment} investedAmount={investedAmount} />
           })
         }
         </div>
