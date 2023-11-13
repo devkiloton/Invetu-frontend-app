@@ -5,6 +5,10 @@
   "author": {
     "name": "TeXmeijin"
   },
+  "engines": {
+    "node": ">=16.17.0",
+    "npm": ">=9.5.0"
+   },
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
