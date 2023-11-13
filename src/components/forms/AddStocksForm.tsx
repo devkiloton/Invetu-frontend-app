@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
+import DropdownInput from '../shared/DropdownInput';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
@@ -21,7 +22,12 @@ export default function AddStocksForm() {
         userID: auth.currentUser.uid,
         type: 'stock',
       };
-      firebaseClient().firestore.investments.stocks.add(data);
+      firebaseClient().firestore.investments.stocks.add(data).then(() => { 
+        setTicker('');
+        setPrice(0);
+        setAmount(0);
+        setStartDate(Date.now());
+      });
     }
     event.preventDefault();
   }
@@ -33,12 +39,7 @@ export default function AddStocksForm() {
             <label className="label">
               <span className="label-text">Ticker</span>
             </label>
-            <input
-              onChange={event => setTicker(event.target.value)}
-              type="text"
-              placeholder="PETR4, SANB3..."
-              className="input input-bordered w-full"
-            />
+            <DropdownInput setTicker={setTicker } />
           </div>
           <div className="form-control">
             <label className="label">
@@ -48,7 +49,7 @@ export default function AddStocksForm() {
               <input
                 onChange={event => setPrice(Number(event.target.value))}
                 type="text"
-                placeholder="10"
+                placeholder="10.98"
                 className="input input-bordered w-full"
               />
               <span>BRL</span>
