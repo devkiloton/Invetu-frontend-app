@@ -9,7 +9,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "eslint --fix --ext .ts,.tsx,.js,.jsx .",
+    "lint": "eslint --fix --ext .ts,.tsx .",
     "prettier": "npx prettier --write .",
     "format": "npm run prettier && npm run lint"
   },
