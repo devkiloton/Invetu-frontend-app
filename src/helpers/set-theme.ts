@@ -7,7 +7,7 @@ export const setTheme = (theme: 'LIGHT' | 'DARK') => {
       localStateManager.theme.set('LIGHT');
       break;
     default:
-      document.querySelector('html')?.setAttribute('data-theme', 'dracula');
+      document.querySelector('html')?.setAttribute('data-theme', 'night');
       localStateManager.theme.set('DARK');
       break;
   }

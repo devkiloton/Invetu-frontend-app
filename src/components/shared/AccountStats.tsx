@@ -32,23 +32,23 @@ export default function AccountStats() {
   return (
     <div className="w-full">
       <div className="stats bg-primary text-primary-content w-full bordered">
-        <div className="stat">
-          <div className="stat-title">Total invested</div>
+        <div className="stat border-base-100 border-opacity-20">
+          <div className="stat-title text-neutral">Total invested</div>
           <div className="stat-value">R$ {investedAmount.toFixed(2)}</div>
         </div>
 
-        <div className="stat">
-          <div className="stat-title">Current balance</div>
+        <div className="stat border-base-100 border-opacity-20">
+          <div className="stat-title text-neutral">Current balance</div>
           <div className="stat-value">R$ {currentBalance.toFixed(2)}</div>
         </div>
-        <div className="stat">
-          <div className="stat-title">Profit</div>
+        <div className="stat border-base-100 border-opacity-20">
+          <div className="stat-title text-neutral">Profit</div>
           <div className="stat-value">
             % {((currentBalance / (investedAmount === 0 ? 1 : investedAmount)) * 100).toFixed(2)}
           </div>
         </div>
-        <div className="stat">
-          <div className="stat-title">Profit this month</div>
+        <div className="stat border-base-100 border-opacity-20">
+          <div className="stat-title text-neutral">Profit this month</div>
           <div className="stat-value">% TBI</div>
         </div>
       </div>
