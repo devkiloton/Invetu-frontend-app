@@ -43,7 +43,7 @@ export default function AccountStats() {
         </div>
         <div className="stat">
           <div className="stat-title">Profit</div>
-          <div className="stat-value">% {((currentBalance / investedAmount) * 100).toFixed(2)}</div>
+          <div className="stat-value">% {((currentBalance / (investedAmount === 0 ? 1 : investedAmount)) * 100).toFixed(2)}</div>
         </div>
         <div className="stat">
           <div className="stat-title">Profit this month</div>
