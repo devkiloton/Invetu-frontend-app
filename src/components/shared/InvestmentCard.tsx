@@ -3,7 +3,7 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 export default function InvestmentCard(props: Stock & { investedAmount: number }) {
   return (
     <>
-      <div className="card w-full bg-base-100 shadow-xl bordered border-2 z-0">
+      <div className="card w-full bg-base-100 shadow-xl glassy-border z-0">
         <div className="card-body">
           <h2 className="card-title">{props.ticker}</h2>
           <div className="flex gap-x-2">

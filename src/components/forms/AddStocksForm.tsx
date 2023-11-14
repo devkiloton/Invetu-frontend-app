@@ -50,7 +50,7 @@ export default function AddStocksForm() {
   }, []);
   return (
     <div className="w-full relative">
-      <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl bordered">
+      <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl glassy-border">
         <form className="card-body" onSubmit={event => handleSubmit(event)}>
           <div className="tabs tabs-boxed w-fit">
             <a className="tab" ref={defaultTab} onClick={event => handleTabChange(event)}>
