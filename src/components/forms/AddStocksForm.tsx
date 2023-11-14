@@ -22,7 +22,7 @@ export default function AddStocksForm() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if(ticker === '') return alert('Ticker is required')
+    if (ticker === '') return alert('Ticker is required');
     if (auth.currentUser?.uid !== undefined) {
       const data: Stock = {
         ticker,
