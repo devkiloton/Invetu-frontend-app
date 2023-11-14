@@ -13,8 +13,8 @@ export default function AddStocksForm() {
   const defaultTab = useRef<HTMLAnchorElement>(null);
   const auth = useAuth();
 
-  function handleTabChange(event: MouseEvent<HTMLAnchorElement>) { 
-    if(event.currentTarget.classList.contains('disabled')) return;
+  function handleTabChange(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.currentTarget.classList.contains('disabled')) return;
     activeTab?.classList.remove('tab-active');
     setActiveTab(event.currentTarget);
     event.currentTarget.classList.add('tab-active');
@@ -43,21 +43,25 @@ export default function AddStocksForm() {
     event.preventDefault();
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     defaultTab.current?.classList.add('tab-active');
     setActiveTab(defaultTab.current as HTMLAnchorElement);
-  }, [])
+  }, []);
   return (
     <div className="w-full relative">
-      
       <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl bordered">
         <form className="card-body" onSubmit={event => handleSubmit(event)}>
-      <div className="tabs tabs-boxed w-fit">
-              <a className="tab" ref={defaultTab}  onClick={(event) => handleTabChange(event)}>Renda variável</a>
-            <a className="tab disabled" onClick={(event) => handleTabChange(event)}>Renda fixa</a>
-            <a className="tab disabled" onClick={(event) => handleTabChange(event)}>Cripto</a>
-            
-</div>
+          <div className="tabs tabs-boxed w-fit">
+            <a className="tab" ref={defaultTab} onClick={event => handleTabChange(event)}>
+              Renda variável
+            </a>
+            <a className="tab disabled" onClick={event => handleTabChange(event)}>
+              Renda fixa
+            </a>
+            <a className="tab disabled" onClick={event => handleTabChange(event)}>
+              Cripto
+            </a>
+          </div>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Ticker</span>

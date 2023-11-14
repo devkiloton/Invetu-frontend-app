@@ -7,7 +7,7 @@ function Index() {
   return (
     <>
       <Head title="TOP PAGE" />
-      <div className="hero" style={{height: "calc(100vh - 80px)"}}>
+      <div className="hero" style={{ height: 'calc(100vh - 80px)' }}>
         <div className="text-center hero-content">
           <div>
             <div className="mt-4 grid gap-2">
