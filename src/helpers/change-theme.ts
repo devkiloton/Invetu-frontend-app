@@ -11,7 +11,7 @@ export const changeTheme = () => {
       localStateManager.theme.set('DARK');
       break;
     default:
-      document.querySelector('html')?.setAttribute('data-theme', 'cmyk');
+      document.querySelector('html')?.setAttribute('data-theme', 'winter');
       localStateManager.theme.set('LIGHT');
       break;
   }
