@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
@@ -9,7 +9,16 @@ export default function AddStocksForm() {
   const [price, setPrice] = useState(0);
   const [amount, setAmount] = useState(0);
   const [startDate, setStartDate] = useState(Date.now());
+  const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
+  const defaultTab = useRef<HTMLAnchorElement>(null);
   const auth = useAuth();
+
+  function handleTabChange(event: MouseEvent<HTMLAnchorElement>) { 
+    if(event.currentTarget.classList.contains('disabled')) return;
+    activeTab?.classList.remove('tab-active');
+    setActiveTab(event.currentTarget);
+    event.currentTarget.classList.add('tab-active');
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (auth.currentUser?.uid !== undefined) {
@@ -33,10 +42,22 @@ export default function AddStocksForm() {
     }
     event.preventDefault();
   }
+
+  useEffect(() => { 
+    defaultTab.current?.classList.add('tab-active');
+    setActiveTab(defaultTab.current as HTMLAnchorElement);
+  }, [])
   return (
-    <div className="max-w-120 w-full relative">
-      <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl bordered sticky top-24">
+    <div className="w-full relative">
+      
+      <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl bordered">
         <form className="card-body" onSubmit={event => handleSubmit(event)}>
+      <div className="tabs tabs-boxed w-fit">
+              <a className="tab" ref={defaultTab}  onClick={(event) => handleTabChange(event)}>Renda variável</a>
+            <a className="tab disabled" onClick={(event) => handleTabChange(event)}>Renda fixa</a>
+            <a className="tab disabled" onClick={(event) => handleTabChange(event)}>Cripto</a>
+            
+</div>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Ticker</span>
