@@ -11,7 +11,7 @@ export default function InvestmentCard(props: Stock & { investedAmount: number }
               <span className="text-xs font-normal">Amount:</span> {props.amount}
             </span>
             <span className="text-sm  font-semibold">
-              <span className="text-xs font-normal">Price:</span> R$ {props.price.toFixed(2)}
+              <span className="text-xs font-normal">Avg price:</span> R$ {props.price.toFixed(2)}
             </span>
           </div>
           <span>Profit: TBI</span>
