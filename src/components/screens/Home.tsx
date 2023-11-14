@@ -37,7 +37,7 @@ export default function Home() {
           })}
         </div>
       </div>
-      <button onClick={() => setIsOpen(!isOpen)} className="btn btn-primary btn-circle fixed bottom-10 right-10 ">
+      <button onClick={() => setIsOpen(!isOpen)} className="btn btn-primary btn-circle fixed bottom-5 right-5 ">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 rotate-45"
