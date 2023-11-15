@@ -11,7 +11,8 @@ export const foxbatClient = () => {
         return stocksJson.stocks;
       },
       tickerInfo: async (ticker: string) => {
-        return fetch(`${API_URL}/${ticker}`).then(res => res.json());
+        const stock = await fetch(`${API_URL}/stocks/${ticker}`).then(res => res.json());
+        return stock[0];
       },
       findMany: async (tickers: string[]): Promise<StocksAPI> => {
         const tickersString = tickers.join(',');
