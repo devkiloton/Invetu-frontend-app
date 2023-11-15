@@ -14,7 +14,9 @@ export const firebaseClient = () => {
         },
         stocks: {
           add: async (data: Stock): Promise<void> => {
-            const investments = await client.firestore.investments.get(data.userID);
+            const investments = await client.firestore.investments.get(
+              data.userID,
+            );
             const stock: Stock = {
               ticker: data.ticker,
               price: data.price,
@@ -25,7 +27,8 @@ export const firebaseClient = () => {
               type: data.type,
             };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
-              investedAmount: investments.investedAmount + data.price * data.amount,
+              investedAmount:
+                investments.investedAmount + data.price * data.amount,
               stocks: arrayUnion(stock),
             });
           },
@@ -33,6 +36,21 @@ export const firebaseClient = () => {
             const docRef = doc(firestore, 'investments', `${userID}`);
             const docSnap = await getDoc(docRef);
             return docSnap.data() as Investments;
+          },
+          delete: async (userID: string, ticker: string): Promise<void> => {
+            const investments = await client.firestore.investments.get(userID);
+            const stock = investments.stocks.find(
+              stock => stock.ticker === ticker,
+            );
+            const stocksUpdated = investments.stocks.filter(
+              stock => stock.ticker !== ticker,
+            );
+            if (!stock) return;
+            await updateDoc(doc(firestore, 'investments', `${userID}`), {
+              investedAmount:
+                investments.investedAmount - stock.price * stock.amount,
+              stocks: stocksUpdated,
+            });
           },
         },
       },
