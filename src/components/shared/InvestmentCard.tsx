@@ -1,11 +1,14 @@
 import { isNull } from 'lodash-es';
 import { useEffect, useState } from 'react';
+import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
+import { useAuth } from '~/lib/firebase';
 
 export default function InvestmentCard(props: Stock & { investedAmount: number; currentBalance: number }) {
   const [stockInfo, setStockInfo] = useState<StockAPI | null>(null);
+  const auth = useAuth();
   useEffect(() => {
     foxbatClient()
       .stocks.tickerInfo(props.ticker)
@@ -13,6 +16,11 @@ export default function InvestmentCard(props: Stock & { investedAmount: number; 
         setStockInfo(response);
       });
   }, []);
+
+  function deleteStock(){
+    if (auth.currentUser?.uid !== undefined)
+    firebaseClient().firestore.investments.stocks.delete(auth.currentUser?.uid ,props.ticker);
+  }
 
   function getProfit(basePrice: number, currentPrice: number) {
     const percentProfit = (currentPrice / basePrice - 1) * 100;
@@ -46,13 +54,13 @@ export default function InvestmentCard(props: Stock & { investedAmount: number; 
               </summary>
               <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 glassy-border">
                 <li>
-                  <a>Deletar</a>
+                  <button onClick={()=>deleteStock()}>Deletar</button>
                 </li>
                 <li className="disabled">
-                  <a>Atualizar</a>
+                  <button>Atualizar</button>
                 </li>
                 <li className="disabled">
-                  <a>Informar erro</a>
+                  <button>Informar erro</button>
                 </li>
               </ul>
             </details>
