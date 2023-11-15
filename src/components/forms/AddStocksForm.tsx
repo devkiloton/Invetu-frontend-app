@@ -6,8 +6,8 @@ import DropdownInput from '../shared/DropdownInput';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
-  const [price, setPrice] = useState(0);
-  const [amount, setAmount] = useState(0);
+  const priceInput = useRef<HTMLInputElement>();
+  const amountInput = useRef<HTMLInputElement>();
   const [startDate, setStartDate] = useState(Date.now());
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
   const defaultTab = useRef<HTMLAnchorElement>(null);
@@ -23,6 +23,8 @@ export default function AddStocksForm() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (ticker === '') return alert('Ticker is required');
+    const price = priceInput.current?.valueAsNumber as number;
+    const amount = amountInput.current?.valueAsNumber as number;
     if (auth.currentUser?.uid !== undefined) {
       const data: Stock = {
         ticker,
@@ -37,8 +39,8 @@ export default function AddStocksForm() {
         .firestore.investments.stocks.add(data)
         .then(() => {
           setTicker('');
-          setPrice(0);
-          setAmount(0);
+          priceInput.current!.value = '';
+          amountInput.current!.value = '';
           setStartDate(Date.now());
         });
     }
@@ -75,8 +77,9 @@ export default function AddStocksForm() {
             </label>
             <label className="input-group">
               <input
-                onChange={event => setPrice(Number(event.target.value))}
-                type="text"
+                ref={priceInput}
+                type="number"
+                min={0.01}
                 placeholder="10.98"
                 className="input input-bordered w-full"
               />
@@ -89,7 +92,8 @@ export default function AddStocksForm() {
             </label>
             <label className="input-group">
               <input
-                onChange={event => setAmount(Number(event.target.value))}
+                ref={amountInput}
+                min={1}
                 type="number"
                 placeholder="ex. 134"
                 className="input input-bordered w-full"
@@ -104,6 +108,7 @@ export default function AddStocksForm() {
             <label className="input-group">
               <input
                 onChange={event => setStartDate(new Date(event.target.value).getTime())}
+                value={new Date(startDate).toISOString().split('T')[0]}
                 type="date"
                 placeholder="ex. 134"
                 className="input input-bordered w-full"
