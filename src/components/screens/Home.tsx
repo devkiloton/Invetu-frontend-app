@@ -38,7 +38,6 @@ export default function Home() {
       });
   }, []);
 
-
   useEffect(() => {
     if (auth.currentUser?.uid !== undefined) {
       firebaseClient()
@@ -58,7 +57,14 @@ export default function Home() {
         </div>
         <div className="w-full flex flex-col gap-4">
           {investments.map(investment => {
-            return <InvestmentCard key={crypto.randomUUID()} {...investment} currentBalance={ currentBalance} investedAmount={investedAmount} />;
+            return (
+              <InvestmentCard
+                key={crypto.randomUUID()}
+                {...investment}
+                currentBalance={currentBalance}
+                investedAmount={investedAmount}
+              />
+            );
           })}
         </div>
       </div>

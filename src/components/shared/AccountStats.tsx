@@ -1,5 +1,4 @@
 export default function AccountStats(props: { investedAmount: number; currentBalance: number }) {
-  
   return (
     <div className="w-full">
       <div className="stats bg-primary text-primary-content w-full bordered">
