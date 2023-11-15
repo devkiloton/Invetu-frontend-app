@@ -8,12 +8,37 @@ import { useAuth } from '~/lib/firebase';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
+import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 
 export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
   const [investedAmount, setInvestedAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
+  const [currentBalance, setCurrentBalance] = useState(0);
+
+  useEffect(() => {
+    firebaseClient()
+      .firestore.investments.get(auth.currentUser?.uid as string)
+      .then(response => {
+        setInvestedAmount(response.investedAmount);
+        const stocks = response.stocks;
+        const tickers = stocks.map(stock => stock.ticker);
+        foxbatClient()
+          .stocks.findMany(tickers)
+          .then(response => {
+            // take the current price of each stock and multiply by the amount
+            const currentBalance = stocks.reduce((acc, stock) => {
+              const currentPrice = response.results.find(stockResponse => stockResponse.symbol === stock.ticker)
+                ?.regularMarketPrice;
+              return acc + (currentPrice as number) * stock.amount;
+            }, 0);
+            setCurrentBalance(currentBalance);
+          });
+      });
+  }, []);
+
+
   useEffect(() => {
     if (auth.currentUser?.uid !== undefined) {
       firebaseClient()
@@ -26,14 +51,14 @@ export default function Home() {
   }, []);
   return (
     <PageContainer>
-      <AccountStats />
+      <AccountStats investedAmount={investedAmount} currentBalance={currentBalance} />
       <div className="flex gap-x-4">
         <div className="w-full h-full sticky top-24 max-w-120 hidden min-[768px]:block ">
           <AddStocksForm />
         </div>
         <div className="w-full flex flex-col gap-4">
           {investments.map(investment => {
-            return <InvestmentCard key={crypto.randomUUID()} {...investment} investedAmount={investedAmount} />;
+            return <InvestmentCard key={crypto.randomUUID()} {...investment} currentBalance={ currentBalance} investedAmount={investedAmount} />;
           })}
         </div>
       </div>
