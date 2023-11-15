@@ -1,7 +1,9 @@
 import { createContext, ReactNode, useContext, useReducer } from 'react';
 import { User } from 'firebase/auth';
 
-type AuthActions = { type: 'SIGN_IN'; payload: { user: User } } | { type: 'SIGN_OUT' };
+type AuthActions =
+  | { type: 'SIGN_IN'; payload: { user: User } }
+  | { type: 'SIGN_OUT' };
 
 type AuthState =
   | {
@@ -34,12 +36,19 @@ type AuthContextProps = {
   dispatch: (value: AuthActions) => void;
 };
 
-export const AuthContext = createContext<AuthContextProps>({ state: { state: 'UNKNOWN' }, dispatch: val => {} });
+export const AuthContext = createContext<AuthContextProps>({
+  state: { state: 'UNKNOWN' },
+  dispatch: val => {},
+});
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(AuthReducer, { state: 'UNKNOWN' });
 
-  return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ state, dispatch }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 const useAuthState = () => {

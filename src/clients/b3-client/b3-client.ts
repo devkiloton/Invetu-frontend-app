@@ -6,7 +6,9 @@ export const b3Client = () => {
     },
     tickerInfo: async (data: { ticker: string; date: number }) => {
       const dateToIso = new Date(data.date).toISOString().split('T')[0];
-      return fetch(`${API}/ticker/${data.ticker}/${dateToIso}`).then(res => res.json());
+      return fetch(`${API}/ticker/${data.ticker}/${dateToIso}`).then(res =>
+        res.json(),
+      );
     },
   };
   return client;

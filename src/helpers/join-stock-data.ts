@@ -18,7 +18,10 @@ export const joinStockData = (stocks: Array<Stock>) => {
       };
     } else {
       stockMap[stockKey].amount += amount;
-      stockMap[stockKey].startDate = Math.min(stockMap[stockKey].startDate, startDate);
+      stockMap[stockKey].startDate = Math.min(
+        stockMap[stockKey].startDate,
+        startDate,
+      );
     }
   });
 

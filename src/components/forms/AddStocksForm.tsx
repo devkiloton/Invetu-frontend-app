@@ -55,13 +55,20 @@ export default function AddStocksForm() {
       <div className="card flex-shrink-0 w-full bg-base-100 shadow-xl glassy-border">
         <form className="card-body" onSubmit={event => handleSubmit(event)}>
           <div className="tabs tabs-boxed w-fit">
-            <a className="tab" ref={defaultTab} onClick={event => handleTabChange(event)}>
+            <a
+              className="tab"
+              ref={defaultTab}
+              onClick={event => handleTabChange(event)}>
               Renda variável
             </a>
-            <a className="tab disabled" onClick={event => handleTabChange(event)}>
+            <a
+              className="tab disabled"
+              onClick={event => handleTabChange(event)}>
               Renda fixa
             </a>
-            <a className="tab disabled" onClick={event => handleTabChange(event)}>
+            <a
+              className="tab disabled"
+              onClick={event => handleTabChange(event)}>
               Cripto
             </a>
           </div>
@@ -107,7 +114,9 @@ export default function AddStocksForm() {
             </label>
             <label className="input-group">
               <input
-                onChange={event => setStartDate(new Date(event.target.value).getTime())}
+                onChange={event =>
+                  setStartDate(new Date(event.target.value).getTime())
+                }
                 value={new Date(startDate).toISOString().split('T')[0]}
                 type="date"
                 placeholder="ex. 134"
