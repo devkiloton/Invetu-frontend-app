@@ -1,4 +1,4 @@
-import { FormEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, MouseEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
@@ -6,8 +6,8 @@ import DropdownInput from '../shared/DropdownInput';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
-  const priceInput = useRef<HTMLInputElement>();
-  const amountInput = useRef<HTMLInputElement>();
+  const priceInput = useRef<any>();
+  const amountInput = useRef<any>();
   const [startDate, setStartDate] = useState(Date.now());
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
   const defaultTab = useRef<HTMLAnchorElement>(null);
