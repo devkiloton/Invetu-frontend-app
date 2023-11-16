@@ -8,7 +8,7 @@ export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
   const priceInput = useRef<any>();
   const amountInput = useRef<any>();
-  const [startDate, setStartDate] = useState(Date.now());
+  const [startDate, setStartDate] = useState(new Date().toISOString());
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
   const defaultTab = useRef<HTMLAnchorElement>(null);
   const auth = useAuth();
@@ -23,6 +23,10 @@ export default function AddStocksForm() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (ticker === '') return alert('Ticker is required');
+    if (priceInput.current?.value === 0) return alert('Price is required');
+    if (amountInput.current?.value === 0) return alert('Amount is required');
+    
+
     const price = priceInput.current?.valueAsNumber as number;
     const amount = amountInput.current?.valueAsNumber as number;
     if (auth.currentUser?.uid !== undefined) {
@@ -41,7 +45,7 @@ export default function AddStocksForm() {
           setTicker('');
           priceInput.current!.value = '';
           amountInput.current!.value = '';
-          setStartDate(Date.now());
+          setStartDate(new Date().toISOString());
         });
     }
   }
@@ -87,6 +91,8 @@ export default function AddStocksForm() {
                 ref={priceInput}
                 type="number"
                 min={0.01}
+                step={0.01}
+                required
                 placeholder="10.98"
                 className="input input-bordered w-full"
               />
@@ -102,6 +108,7 @@ export default function AddStocksForm() {
                 ref={amountInput}
                 min={1}
                 type="number"
+                required
                 placeholder="ex. 134"
                 className="input input-bordered w-full"
               />
@@ -115,11 +122,12 @@ export default function AddStocksForm() {
             <label className="input-group">
               <input
                 onChange={event =>
-                  setStartDate(new Date(event.target.value).getTime())
+                  setStartDate(new Date(event.target.value).toISOString())
                 }
                 value={new Date(startDate).toISOString().split('T')[0]}
                 type="date"
                 placeholder="ex. 134"
+                required
                 className="input input-bordered w-full"
               />
               <span>Date</span>
