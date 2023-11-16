@@ -6,6 +6,11 @@ import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
 import { useAuth } from '~/lib/firebase';
 import InvestementCardChart from './InvestementCardChart';
+import getBestInterval from '~/helpers/get-best-interval';
+import getNearestDateRange from '~/helpers/get-nearest-date-range';
+import getProfit from '~/helpers/get-profit';
+import getStockAllocation from '~/helpers/get-stock-allocation';
+import getBalance from '~/helpers/get-balance';
 
 export default function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -54,25 +59,6 @@ export default function InvestmentCard(
         auth.currentUser?.uid,
         props.ticker,
       );
-  }
-
-  function getProfit(basePrice: number, currentPrice: number) {
-    const percentProfit = (currentPrice / basePrice - 1) * 100;
-    return percentProfit.toFixed(2);
-  }
-
-  function getStockAllocation(
-    amount: number,
-    price: number,
-    investedAmount: number,
-  ) {
-    const percent = ((amount * price) / investedAmount) * 100;
-    return percent.toFixed(2);
-  }
-
-  function getBalance(price: number, amount: number) {
-    const balance = price * amount;
-    return balance.toFixed(2);
   }
 
   return (
@@ -166,83 +152,5 @@ export default function InvestmentCard(
   );
 }
 
-function getNearestDateRange(
-  startDate: string,
-):
-  | '1d'
-  | '5d'
-  | '1mo'
-  | '3mo'
-  | '6mo'
-  | '1y'
-  | '2y'
-  | '5y'
-  | '10y'
-  | 'ytd'
-  | 'max' {
-  const today = new Date();
-  const start = new Date(startDate);
-  const diffTime = Math.abs(today.getTime() - start.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays <= 1) return '1d';
-  else if (diffDays <= 5) return '5d';
-  else if (diffDays <= 30) return '1mo';
-  else if (diffDays <= 90) return '3mo';
-  else if (diffDays <= 180) return '6mo';
-  else if (diffDays <= 365) return '1y';
-  else if (diffDays <= 730) return '2y';
-  else if (diffDays <= 1825) return '5y';
-  else if (diffDays <= 3650) return '10y';
-  else return 'max';
-}
 
-function getBestInterval(
-  range:
-    | '1d'
-    | '5d'
-    | '1mo'
-    | '3mo'
-    | '6mo'
-    | '1y'
-    | '2y'
-    | '5y'
-    | '10y'
-    | 'ytd'
-    | 'max',
-):
-  | '1m'
-  | '2m'
-  | '5m'
-  | '15m'
-  | '30m'
-  | '60m'
-  | '90m'
-  | '1h'
-  | '1d'
-  | '5d'
-  | '1wk'
-  | '1mo'
-  | '3mo' {
-  switch (range) {
-    case '1d':
-      return '5m';
-    case '5d':
-      return '1h';
-    case '1mo':
-      return '1d';
-    case '3mo':
-      return '1d';
-    case '6mo':
-      return '1d';
-    case '1y':
-      return '5d';
-    case '2y':
-      return '1wk';
-    case '5y':
-      return '1mo';
-    case '10y':
-      return '3mo';
-    case 'ytd':
-      return '1d';
-  }
-}
+
