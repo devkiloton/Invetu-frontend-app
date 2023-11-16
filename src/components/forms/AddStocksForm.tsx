@@ -1,4 +1,10 @@
-import { FormEvent, MouseEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
+import {
+  FormEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
@@ -25,7 +31,6 @@ export default function AddStocksForm() {
     if (ticker === '') return alert('Ticker is required');
     if (priceInput.current?.value === 0) return alert('Price is required');
     if (amountInput.current?.value === 0) return alert('Amount is required');
-    
 
     const price = priceInput.current?.valueAsNumber as number;
     const amount = amountInput.current?.valueAsNumber as number;
