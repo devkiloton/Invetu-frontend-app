@@ -37,7 +37,7 @@ export default function InvestmentCard(
         const dates = response.results[0].historicalDataPrice
           // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
           .map(price => price.date * 1000 - 10800000)
-          .filter(value => value > Date.parse(props.startDate))
+          .filter(value => value > Date.parse(props.startDate) || range === '1d')
           .map(value => new Date(value).toISOString());
         setChartData({
           dates,
@@ -80,7 +80,11 @@ export default function InvestmentCard(
       <div className="card w-full bg-base-100 shadow-xl glassy-border z-0">
         <div className="card-body">
           <div className="flex justify-between">
+            <div className="flex items-center gap-x-2">
+              {(stockInfo?.results[0].logourl !== "https://s3-symbol-logo.tradingview.com/fii--big.svg" && stockInfo?.results[0].logourl !== "https://brapi.dev/favicon.svg") && <img className="h-8 w-8 rounded" src={ stockInfo?.results[0].logourl} />}
+            
             <h2 className="card-title">{props.ticker}</h2>
+            </div>
 
             <details className="dropdown dropdown-end">
               <summary className="m-1 btn btn-ghost btn-circle">
@@ -142,10 +146,13 @@ export default function InvestmentCard(
             </div>
           )}
           {!isNull(chartData) && (
+            <>
+            <h1 className="font-semibold">Variação de preço desde a compra</h1>
             <InvestementCardChart
               dates={chartData.dates}
               prices={chartData.prices}
             />
+            </>
           )}
 
           <div className="card-actions">

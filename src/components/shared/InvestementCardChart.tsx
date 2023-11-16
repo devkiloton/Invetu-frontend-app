@@ -20,6 +20,10 @@ export default function InvestementCardChart({
           zoomin: false,
         },
       },
+      
+    },
+    grid: {
+      borderColor: '#4093ff4b',
     },
     dataLabels: {
       enabled: false,
@@ -29,23 +33,39 @@ export default function InvestementCardChart({
     },
     xaxis: {
       type: 'datetime',
+      axisBorder: {
+         color: 'transparent',
+      },
       categories: dates || [],
+      labels: {
+        style: {
+          cssClass: 'fill-base-content',
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          cssClass: 'fill-base-content',
+        }
+      }
     },
     tooltip: {
       x: {
-        format: 'dd/MM/yy HH:mm',
+        format: 'dd/MM/yy',
       },
+      
     },
   });
   const [series] = useState<ApexAxisChartSeries>([
     {
-      name: 'series1',
+      name: 'Preço',
       data: prices || [],
     },
   ]);
 
   return (
-    <div id="chart">
+    <div className="fill-r" id="chart">
       <ReactApexChart
         options={options}
         series={series}
