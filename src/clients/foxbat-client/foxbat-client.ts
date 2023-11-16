@@ -1,7 +1,7 @@
 import { FuzzyAPI } from './models/FuzzyAPI';
 import { HistoryAPI } from './models/HistoryAPI';
 import { RawStocksAPI, StocksAPI } from './models/StocksAPI';
-import { FindHistoryParams } from './types/find-sitory-params';
+import { FindHistoryParams } from './types/find-history-params';
 
 export const foxbatClient = () => {
   const API_URL = import.meta.env.VITE_API_ORIGIN;
