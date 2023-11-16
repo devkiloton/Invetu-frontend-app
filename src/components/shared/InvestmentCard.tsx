@@ -5,6 +5,7 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
 import { useAuth } from '~/lib/firebase';
+import InvestementCardChart from './InvestementCardChart';
 
 export default function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -111,7 +112,9 @@ export default function InvestmentCard(
                 )}
               </span>
             </div>
-          )}
+
+)}
+<InvestementCardChart />
           <div className="card-actions">
             <button disabled className="btn btn-primary w-full">
               Mais detalhes
