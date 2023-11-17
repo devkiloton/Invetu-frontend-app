@@ -8,13 +8,15 @@ import { Range } from '~/types/range';
 export default function InvestementCardChart({
   dates,
   prices,
-  range
+  range,
 }: {
   dates: string[];
-    prices: number[];
-    range: Range;
-  }) {
-  const [options] = useState<ApexOptions>(INVESTMENT_CARD_CHART_OPTIONS(dates, range));
+  prices: number[];
+  range: Range;
+}) {
+  const [options] = useState<ApexOptions>(
+    INVESTMENT_CARD_CHART_OPTIONS(dates, range),
+  );
   const [series] = useState<ApexAxisChartSeries>([
     {
       name: 'Preço',
