@@ -5,12 +5,25 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
 import { useAuth } from '~/lib/firebase';
+import InvestementCardChart from './InvestementCardChart';
+import getBestInterval from '~/helpers/get-best-interval';
+import getNearestDateRange from '~/helpers/get-nearest-date-range';
+import getProfit from '~/helpers/get-profit';
+import getStockAllocation from '~/helpers/get-stock-allocation';
+import getBalance from '~/helpers/get-balance';
+import { Range } from '~/types/range';
 
 export default function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
 ) {
   const [stockInfo, setStockInfo] = useState<StockAPI | null>(null);
+  const [chartData, setChartData] = useState<{
+    dates: string[];
+    prices: number[];
+    range: Range;
+  } | null>(null);
   const auth = useAuth();
+
   useEffect(() => {
     foxbatClient()
       .stocks.tickerInfo(props.ticker)
@@ -18,6 +31,32 @@ export default function InvestmentCard(
         setStockInfo(response);
       });
   }, []);
+
+  useEffect(() => {
+    const range = getNearestDateRange(new Date(props.startDate).toISOString());
+    foxbatClient()
+      .stocks.findHistory({
+        ticker: [props.ticker],
+        range,
+        interval: getBestInterval(range),
+      })
+      .then(response => {
+        const dates = response.results[0].historicalDataPrice
+          // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
+          .map(price => price.date * 1000 - 10800000)
+          .filter(
+            value => value > Date.parse(props.startDate) || range === '1d',
+          )
+          .map(value => new Date(value).toISOString());
+        setChartData({
+          range,
+          dates,
+          prices: response.results[0].historicalDataPrice
+            .slice(dates.length * -1)
+            .map(price => price.close),
+        });
+      });
+  }, [stockInfo]);
 
   function deleteStock() {
     if (auth.currentUser?.uid !== undefined)
@@ -27,31 +66,24 @@ export default function InvestmentCard(
       );
   }
 
-  function getProfit(basePrice: number, currentPrice: number) {
-    const percentProfit = (currentPrice / basePrice - 1) * 100;
-    return percentProfit.toFixed(2);
-  }
-
-  function getStockAllocation(
-    amount: number,
-    price: number,
-    investedAmount: number,
-  ) {
-    const percent = ((amount * price) / investedAmount) * 100;
-    return percent.toFixed(2);
-  }
-
-  function getBalance(price: number, amount: number) {
-    const balance = price * amount;
-    return balance.toFixed(2);
-  }
-
   return (
     <>
       <div className="card w-full bg-base-100 shadow-xl glassy-border z-0">
         <div className="card-body">
           <div className="flex justify-between">
-            <h2 className="card-title">{props.ticker}</h2>
+            <div className="flex items-center gap-x-2">
+              {stockInfo?.results[0].logourl !==
+                'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
+                stockInfo?.results[0].logourl !==
+                  'https://brapi.dev/favicon.svg' && (
+                  <img
+                    className="h-8 w-8 rounded"
+                    src={stockInfo?.results[0].logourl}
+                  />
+                )}
+
+              <h2 className="card-title">{props.ticker}</h2>
+            </div>
 
             <details className="dropdown dropdown-end">
               <summary className="m-1 btn btn-ghost btn-circle">
@@ -79,7 +111,7 @@ export default function InvestmentCard(
             </details>
           </div>
           {!isNull(stockInfo) && (
-            <div className="flex flex-col gap-x-2">
+            <div className="flex flex-col min-[768px]:flex-row gap-x-2">
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Amount:</span>{' '}
                 {props.amount}
@@ -112,6 +144,19 @@ export default function InvestmentCard(
               </span>
             </div>
           )}
+          {!isNull(chartData) && (
+            <>
+              <h1 className="font-semibold">
+                Variação de preço desde a compra
+              </h1>
+              <InvestementCardChart
+                dates={chartData.dates}
+                prices={chartData.prices}
+                range={chartData.range}
+              />
+            </>
+          )}
+
           <div className="card-actions">
             <button disabled className="btn btn-primary w-full">
               Mais detalhes

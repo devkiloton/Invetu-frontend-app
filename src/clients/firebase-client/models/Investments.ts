@@ -3,7 +3,7 @@ export type Stock = {
   ticker: string;
   price: number;
   amount: number;
-  startDate: number;
+  startDate: string;
   currency: 'BRL';
   type: 'real-state' | 'etf' | 'stock' | null;
 };
@@ -13,7 +13,7 @@ export type Crypto = {
   ticker: string;
   price: number;
   amount: number;
-  startDate: number;
+  startDate: string;
   currency: 'BRL';
 };
 
@@ -23,7 +23,7 @@ export type Treasuries = {
   rate: number;
   operation: 'pre' | 'post' | 'inflation';
   currency: 'BRL';
-  startDate: number;
+  startDate: string;
   endDate: number;
 };
 
@@ -33,7 +33,7 @@ export type CompanyLoans = {
   rate: number;
   operation: 'pre' | 'post' | 'inflation';
   currency: 'BRL';
-  startDate: number;
+  startDate: string;
   endDate: number;
 };
 
@@ -41,7 +41,7 @@ export type Cash = {
   userID: string;
   investedAmount: number;
   currency: 'BRL';
-  startDate: number;
+  startDate: string;
 };
 
 export type Investments = {
