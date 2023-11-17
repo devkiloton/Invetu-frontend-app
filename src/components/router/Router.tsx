@@ -44,11 +44,11 @@ const InnerRouter = () => {
       children: [
         {
           index: true,
-          handle: AuthHandler(),
           element: <IndexScreen />,
         },
         {
-          path: 'Home',
+          handle: AuthHandler(),
+          path: 'home',
           element: <Home />,
         },
         {
