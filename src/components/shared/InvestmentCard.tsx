@@ -11,6 +11,7 @@ import getNearestDateRange from '~/helpers/get-nearest-date-range';
 import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import getBalance from '~/helpers/get-balance';
+import { Range } from '~/types/range';
 
 export default function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -19,6 +20,7 @@ export default function InvestmentCard(
   const [chartData, setChartData] = useState<{
     dates: string[];
     prices: number[];
+    range: Range;
   } | null>(null);
   const auth = useAuth();
 
@@ -47,6 +49,7 @@ export default function InvestmentCard(
           )
           .map(value => new Date(value).toISOString());
         setChartData({
+          range,
           dates,
           prices: response.results[0].historicalDataPrice
             .slice(dates.length * -1)
@@ -149,6 +152,7 @@ export default function InvestmentCard(
               <InvestementCardChart
                 dates={chartData.dates}
                 prices={chartData.prices}
+                range={chartData.range}
               />
             </>
           )}
