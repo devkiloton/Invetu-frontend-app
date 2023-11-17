@@ -20,8 +20,8 @@ export default function AccountStats(props: {
             %{' '}
             {(
               (props.currentBalance /
-                (props.investedAmount === 0 ? 1 : props.investedAmount)) *
-              100
+                ((props.investedAmount === 0 ? 1 : props.investedAmount)) *
+              100 )- 100
             ).toFixed(2)}
           </div>
         </div>
