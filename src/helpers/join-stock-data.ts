@@ -35,7 +35,6 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
 
   const stockAnalysis = [];
 
-  console.log(stockMap);
   for (const key in stockMap) {
     stockAnalysis.push(stockMap[key]);
   }
