@@ -1,17 +1,6 @@
-export default function getNearestDateRange(
-  startDate: string,
-):
-  | '1d'
-  | '5d'
-  | '1mo'
-  | '3mo'
-  | '6mo'
-  | '1y'
-  | '2y'
-  | '5y'
-  | '10y'
-  | 'ytd'
-  | 'max' {
+import { Range } from '~/types/range';
+
+export default function getNearestDateRange(startDate: string): Range {
   const today = new Date();
   const start = new Date(startDate);
   const diffTime = Math.abs(today.getTime() - start.getTime());
