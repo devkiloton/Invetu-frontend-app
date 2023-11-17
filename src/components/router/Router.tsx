@@ -10,6 +10,7 @@ import AuthHandler from './handlers/AuthHandler';
 import { changeTheme } from '~/helpers/change-theme';
 import { SignOutButton } from '../domain/auth/SignOutButton';
 import { useAuthState } from '../contexts/UserContext';
+import logoSymbol from '~/assets/images/logoSymbol.svg';
 
 const Loading = () => (
   <p className="p-4 w-full h-full text-center">Loading...</p>
@@ -25,7 +26,7 @@ function Layout() {
         <div className="navbar glass bg-none hover:bg-none rounded-box relative">
           <div className="flex-1 px-2 lg:flex-none">
             <a className="font-bold btn btn-ghost normal-case text-xl gap-x-1">
-              <img src="src/favicon.svg" className="h-4 w-4" />
+              <img src={logoSymbol} className="h-4 w-4" />
               Foxbat
             </a>
           </div>
