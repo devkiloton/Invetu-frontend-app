@@ -20,7 +20,7 @@ export const SignInWithGitHub = () => {
       onClick={handleClick}
       type="button"
       className="btn btn-primary normal-case min-w-60">
-      Sign In With GitHub
+      Entrar com GitHub
     </button>
   );
 };

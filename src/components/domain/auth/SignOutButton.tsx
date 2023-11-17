@@ -16,7 +16,7 @@ export const SignOutButton = () => {
     <>
       {state.state === 'SIGNED_IN' ? (
         <a onClick={handleClick} className="btn btn-outline btn-error btn-sm">
-          Sign out
+          Sair
         </a>
       ) : (
         <></>

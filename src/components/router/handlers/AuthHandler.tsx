@@ -7,8 +7,9 @@ export default function AuthHandler() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (state.state !== 'UNKNOWN') {
-      state.state === 'SIGNED_IN' ? navigate('/home') : navigate('/');
+    if (state.state === 'SIGNED_IN') {
+      return;
     }
+    navigate('/')
   }, [state.state]);
 }

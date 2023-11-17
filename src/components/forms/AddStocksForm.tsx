@@ -83,7 +83,7 @@ export default function AddStocksForm() {
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Enter price</span>
+              <span className="label-text">Preço que você pagou</span>
             </label>
             <label className="input-group">
               <input
@@ -92,15 +92,15 @@ export default function AddStocksForm() {
                 min={0.01}
                 step={0.01}
                 required
-                placeholder="10.98"
+                placeholder="10,98"
                 className="input input-bordered w-full"
               />
-              <span>BRL</span>
+              <span>R$</span>
             </label>
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Enter amount</span>
+              <span className="label-text">Quantidade</span>
             </label>
             <label className="input-group">
               <input
@@ -111,12 +111,12 @@ export default function AddStocksForm() {
                 placeholder="ex. 134"
                 className="input input-bordered w-full"
               />
-              <span>Stocks</span>
+              <span>Unidades</span>
             </label>
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Enter date</span>
+              <span className="label-text">Data de compra</span>
             </label>
             <label className="input-group">
               <input
@@ -129,11 +129,11 @@ export default function AddStocksForm() {
                 required
                 className="input input-bordered w-full"
               />
-              <span>Date</span>
+              <span>Data</span>
             </label>
           </div>
           <div className="form-control mt-6">
-            <button className="btn btn-primary">Add</button>
+            <button className="btn btn-primary">Adicionar</button>
           </div>
         </form>
       </div>
