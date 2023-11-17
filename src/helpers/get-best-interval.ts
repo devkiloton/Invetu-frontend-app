@@ -1,30 +1,7 @@
-export default function getBestInterval(
-  range:
-    | '1d'
-    | '5d'
-    | '1mo'
-    | '3mo'
-    | '6mo'
-    | '1y'
-    | '2y'
-    | '5y'
-    | '10y'
-    | 'ytd'
-    | 'max',
-):
-  | '1m'
-  | '2m'
-  | '5m'
-  | '15m'
-  | '30m'
-  | '60m'
-  | '90m'
-  | '1h'
-  | '1d'
-  | '5d'
-  | '1wk'
-  | '1mo'
-  | '3mo' {
+import { Interval } from '~/types/interval';
+import { Range } from '~/types/range';
+
+export default function getBestInterval(range: Range): Interval {
   switch (range) {
     case '1d':
       return '5m';
@@ -44,7 +21,7 @@ export default function getBestInterval(
       return '1mo';
     case '10y':
       return '3mo';
-    case 'ytd':
+    default:
       return '1d';
   }
 }

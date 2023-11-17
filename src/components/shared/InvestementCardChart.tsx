@@ -20,7 +20,6 @@ export default function InvestementCardChart({
           zoomin: false,
         },
       },
-      
     },
     grid: {
       borderColor: '#4093ff4b',
@@ -34,27 +33,26 @@ export default function InvestementCardChart({
     xaxis: {
       type: 'datetime',
       axisBorder: {
-         color: 'transparent',
+        color: 'transparent',
       },
       categories: dates || [],
       labels: {
         style: {
           cssClass: 'fill-base-content',
-        }
-      }
+        },
+      },
     },
     yaxis: {
       labels: {
         style: {
           cssClass: 'fill-base-content',
-        }
-      }
+        },
+      },
     },
     tooltip: {
       x: {
         format: 'dd/MM/yy',
       },
-      
     },
   });
   const [series] = useState<ApexAxisChartSeries>([
