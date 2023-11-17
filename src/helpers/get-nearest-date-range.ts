@@ -1,5 +1,10 @@
 import { Range } from '~/types/range';
 
+/**
+ *  Get the nearest date range to the given date
+ * @param startDate - The date to compare to today
+ * @returns The nearest date range to the given date
+ */
 export default function getNearestDateRange(startDate: string): Range {
   const today = new Date();
   const start = new Date(startDate);
