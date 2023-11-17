@@ -113,22 +113,22 @@ export default function InvestmentCard(
           {!isNull(stockInfo) && (
             <div className="flex flex-col min-[768px]:flex-row gap-x-2">
               <span className="text-sm  font-semibold">
-                <span className="text-xs font-normal">Amount:</span>{' '}
+                <span className="text-xs font-normal">Quantidade:</span>{' '}
                 {props.amount}
               </span>
               <span className="text-sm  font-semibold">
-                <span className="text-xs font-normal">Avg price:</span> R${' '}
+                <span className="text-xs font-normal">Preço médio:</span> R${' '}
                 {props.price.toFixed(2)}
               </span>
               <span className="text-sm  font-semibold">
-                <span className="text-xs font-normal">Result:</span> %{' '}
+                <span className="text-xs font-normal">Resultado:</span> %{' '}
                 {getProfit(
                   props.price,
                   stockInfo!.results[0].regularMarketPrice,
                 )}
               </span>
               <span className="text-sm  font-semibold">
-                <span className="text-xs font-normal">Wallet:</span> %{' '}
+                <span className="text-xs font-normal">Carteira:</span> %{' '}
                 {getStockAllocation(
                   props.amount,
                   stockInfo!.results[0].regularMarketPrice,
@@ -136,7 +136,7 @@ export default function InvestmentCard(
                 )}
               </span>
               <span className="text-sm  font-semibold">
-                <span className="text-xs font-normal">Current Balance:</span> R${' '}
+                <span className="text-xs font-normal">Balanço:</span> R${' '}
                 {getBalance(
                   stockInfo!.results[0].regularMarketPrice,
                   props.amount,
