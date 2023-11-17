@@ -9,6 +9,7 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
+import { Head } from '../shared/Head';
 
 export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
@@ -50,6 +51,8 @@ export default function Home() {
     }
   }, []);
   return (
+    <>
+    <Head title="Foxbat | Home" />
     <PageContainer>
       <AccountStats
         investedAmount={investedAmount}
@@ -101,5 +104,6 @@ export default function Home() {
         </div>
       </Dialog>
     </PageContainer>
+    </>
   );
 }
