@@ -7,7 +7,7 @@ const NavBar = () => {
     <div className="pt-4 px-4 sticky top-0 z-[100] min-[768px]:px-8">
       <div className="navbar glass bg-none hover:bg-none rounded-box relative">
         <div className="flex-1 px-2 lg:flex-none">
-          <a className="font-bold btn btn-ghost normal-case text-xl gap-x-2">
+          <a className="font-bold btn btn-ghost normal-case text-xl gap-x-1">
             <img src={logoSymbol} className="h-4 w-4" />
             Foxbat <span className="text-[0.6rem] font-normal">1.0.0-alpha</span>
           </a>
