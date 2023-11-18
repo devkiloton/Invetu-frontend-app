@@ -18,11 +18,13 @@ export const foxbatClient = () => {
         );
         return stock[0];
       },
-      findHistory: async (info: FindHistoryParams): Promise<HistoryAPI> => {
+      findHistory: async (
+        info: FindHistoryParams,
+      ): Promise<Array<HistoryAPI>> => {
         const data = await fetch(
           `${API_URL}/stocks/history/${info.ticker}?range=${info.range}&interval=${info.interval}`,
         ).then(res => res.json());
-        return data[0];
+        return data;
       },
       findMany: async (tickers: string[]): Promise<StocksAPI> => {
         const tickersString = tickers.join(',');
