@@ -13,6 +13,7 @@ import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
 import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
 import { HistoryAPI, Result } from '~/clients/foxbat-client/models/HistoryAPI';
+import Dividends from '../shared/Dividends';
 
 export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
@@ -67,12 +68,14 @@ export default function Home() {
           investedAmount={investedAmount}
           currentBalance={currentBalance}
         />
-        <div>
-          <div className="w-full"></div>
+        <div className="flex gap-x-4">
           <div className="glassy-border rounded-2xl w-fit p-8">
-
-          <h1 className="font-semibold">Resultados desse mês</h1>
+            <h1 className="font-semibold">Resultados desse mês</h1>
             <RadialChart investments={investments} stocksHistory={stocksHistory!} />
+          </div>
+          <div className="glassy-border rounded-2xl w-fit p-8">
+            <h1 className="font-semibold">Próximos rendimentos</h1>
+            <Dividends />
           </div>
         </div>
         <div className="flex gap-x-4">
