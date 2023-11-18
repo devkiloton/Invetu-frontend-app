@@ -71,7 +71,10 @@ export default function Home() {
         <div className="flex gap-x-4">
           <div className="glassy-border rounded-2xl w-fit p-8">
             <h1 className="font-semibold">Resultados desse mês</h1>
-            <RadialChart investments={investments} stocksHistory={stocksHistory!} />
+            <RadialChart
+              investments={investments}
+              stocksHistory={stocksHistory!}
+            />
           </div>
           <div className="glassy-border rounded-2xl w-fit p-8">
             <h1 className="font-semibold">Próximos rendimentos</h1>
