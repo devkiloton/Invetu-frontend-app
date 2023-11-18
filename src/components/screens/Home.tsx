@@ -11,6 +11,8 @@ import { Dialog } from '@headlessui/react';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
+import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
+import { HistoryAPI, Result } from '~/clients/foxbat-client/models/HistoryAPI';
 
 export default function Home() {
   const [investments, setInvestments] = useState<Array<Stock>>([]);
@@ -18,6 +20,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
   const [currentBalance, setCurrentBalance] = useState(0);
+  const [stocksHistory, setStocksHistory] = useState<Array<HistoryAPI>>();
 
   useEffect(() => {
     firebaseClient()
@@ -27,11 +30,16 @@ export default function Home() {
         const stocks = response.stocks;
         const tickers = stocks.map(stock => stock.ticker);
         foxbatClient()
-          .stocks.findMany(tickers)
+          .stocks.findHistory({
+            ticker: tickers,
+            range: '1mo',
+            interval: '1d',
+          })
           .then(response => {
+            setStocksHistory(response);
             // take the current price of each stock and multiply by the amount
             const currentBalance = stocks.reduce((acc, stock) => {
-              const currentPrice = response.results.find(
+              const currentPrice = response[0].results.find(
                 stockResponse => stockResponse.symbol === stock.ticker,
               )?.regularMarketPrice;
               return acc + (currentPrice as number) * stock.amount;
@@ -64,7 +72,7 @@ export default function Home() {
           <div className="glassy-border rounded-2xl w-fit p-8">
 
           <h1 className="font-semibold">Resultados desse mês</h1>
-        <RadialChart />
+            <RadialChart investments={investments} stocksHistory={stocksHistory!} />
           </div>
         </div>
         <div className="flex gap-x-4">
