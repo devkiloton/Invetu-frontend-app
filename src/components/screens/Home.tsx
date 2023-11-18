@@ -61,7 +61,7 @@ export default function Home() {
   }, []);
   return (
     <>
-      <Head title="Foxbat | Home" />
+      <Head title="Home" />
       <PageContainer>
         <AccountStats
           investedAmount={investedAmount}
