@@ -41,7 +41,7 @@ export default function InvestmentCard(
         interval: getBestInterval(range),
       })
       .then(response => {
-        const dates = response.results[0].historicalDataPrice
+        const dates = response[0].results[0].historicalDataPrice
           // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
           .map(price => price.date * 1000 - 10800000)
           .filter(
@@ -51,7 +51,7 @@ export default function InvestmentCard(
         setChartData({
           range,
           dates,
-          prices: response.results[0].historicalDataPrice
+          prices: response[0].results[0].historicalDataPrice
             .slice(dates.length * -1)
             .map(price => price.close),
         });
