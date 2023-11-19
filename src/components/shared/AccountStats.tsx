@@ -11,7 +11,7 @@ export default function AccountStats(props: {
         </div>
 
         <div className="stat border-base-100 border-opacity-20">
-          <div className="stat-title text-neutral">Balanço atual</div>
+          <div className="stat-title text-neutral">Saldo bruto</div>
           <div className="stat-value">R$ {props.currentBalance.toFixed(2)}</div>
         </div>
         <div className="stat border-base-100 border-opacity-20">
@@ -25,10 +25,6 @@ export default function AccountStats(props: {
               100
             ).toFixed(2)}
           </div>
-        </div>
-        <div className="stat border-base-100 border-opacity-20">
-          <div className="stat-title text-neutral">Resultado desse mês</div>
-          <div className="stat-value">% TBI</div>
         </div>
       </div>
     </div>
