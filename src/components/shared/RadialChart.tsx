@@ -126,7 +126,7 @@ const RadialChart = ({
       radialBar: {
         offsetY: -2,
         startAngle: 0,
-        endAngle: 270,
+        endAngle: 293,
         track: {
           background: '#8f8f8fc8',
           opacity: 0.2,
