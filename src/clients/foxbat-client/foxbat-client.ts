@@ -1,3 +1,4 @@
+import { DividendsAPI } from './models/DividendsAPI';
 import { FuzzyAPI } from './models/FuzzyAPI';
 import { HistoryAPI } from './models/HistoryAPI';
 import { RawStocksAPI, StocksAPI } from './models/StocksAPI';
@@ -32,6 +33,13 @@ export const foxbatClient = () => {
           `${API_URL}/stocks/${tickersString}`,
         ).then(res => res.json());
         return stocks[0];
+      },
+      findDividends: async (tickers: Array<string>): Promise<DividendsAPI> => {
+        const tickersString = tickers.join(',');
+        const dividends = await fetch(
+          `${API_URL}/stocks/dividends/${tickersString}`,
+        ).then(res => res.json());
+        return dividends[0];
       },
     },
   };
