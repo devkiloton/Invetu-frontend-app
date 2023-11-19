@@ -11,11 +11,11 @@ import { Dialog } from '@headlessui/react';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
-import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
-import { HistoryAPI, Result } from '~/clients/foxbat-client/models/HistoryAPI';
+import { HistoryAPI } from '~/clients/foxbat-client/models/HistoryAPI';
 import Dividends from '../shared/Dividends';
 
 export default function Home() {
+  const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
   const [investments, setInvestments] = useState<Array<Stock>>([]);
   const [investedAmount, setInvestedAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +55,8 @@ export default function Home() {
       firebaseClient()
         .firestore.investments.stocks.get(auth.currentUser.uid)
         .then(investiments => {
-          setInvestments(joinStockData(investiments.stocks));
+          setInvestmentsJoined(joinStockData(investiments.stocks));
+          setInvestments(investiments.stocks);
           setInvestedAmount(investiments.investedAmount);
         });
     }
@@ -72,13 +73,13 @@ export default function Home() {
           <div className="glassy-border rounded-2xl w-fit p-8">
             <h1 className="font-semibold">Resultados desse mês</h1>
             <RadialChart
-              investments={investments}
+              investments={investmentsJoined}
               stocksHistory={stocksHistory!}
             />
           </div>
-          <div className="glassy-border rounded-2xl w-fit p-8">
-            <h1 className="font-semibold">Próximos rendimentos</h1>
-            <Dividends />
+          <div className="glassy-border rounded-2xl w-fit p-8 max-h-[388px] overflow-scroll">
+            <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
+            {investmentsJoined.length > 0 && <Dividends stocks={investments} />}
           </div>
         </div>
         <div className="flex gap-x-4">
@@ -86,7 +87,7 @@ export default function Home() {
             <AddStocksForm />
           </div>
           <div className="w-full flex flex-col gap-4">
-            {investments.map(investment => {
+            {investmentsJoined.map(investment => {
               return (
                 <InvestmentCard
                   key={crypto.randomUUID()}
