@@ -10,13 +10,19 @@ import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { Head } from '../shared/Head';
+import RadialChart from '../shared/RadialChart';
+import { HistoryAPI } from '~/clients/foxbat-client/models/HistoryAPI';
+import Dividends from '../shared/Dividends';
+import EvolutionChart from '../shared/EvolutionChart';
 
 export default function Home() {
+  const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
   const [investments, setInvestments] = useState<Array<Stock>>([]);
   const [investedAmount, setInvestedAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
   const [currentBalance, setCurrentBalance] = useState(0);
+  const [stocksHistory, setStocksHistory] = useState<Array<HistoryAPI>>();
 
   useEffect(() => {
     firebaseClient()
@@ -26,11 +32,16 @@ export default function Home() {
         const stocks = response.stocks;
         const tickers = stocks.map(stock => stock.ticker);
         foxbatClient()
-          .stocks.findMany(tickers)
+          .stocks.findHistory({
+            ticker: tickers,
+            range: '1mo',
+            interval: '1d',
+          })
           .then(response => {
+            setStocksHistory(response);
             // take the current price of each stock and multiply by the amount
             const currentBalance = stocks.reduce((acc, stock) => {
-              const currentPrice = response.results.find(
+              const currentPrice = response[0].results.find(
                 stockResponse => stockResponse.symbol === stock.ticker,
               )?.regularMarketPrice;
               return acc + (currentPrice as number) * stock.amount;
@@ -45,65 +56,85 @@ export default function Home() {
       firebaseClient()
         .firestore.investments.stocks.get(auth.currentUser.uid)
         .then(investiments => {
-          setInvestments(joinStockData(investiments.stocks));
+          setInvestmentsJoined(joinStockData(investiments.stocks));
+          setInvestments(investiments.stocks);
           setInvestedAmount(investiments.investedAmount);
         });
     }
   }, []);
   return (
     <>
-    <Head title="Foxbat | Home" />
-    <PageContainer>
-      <AccountStats
-        investedAmount={investedAmount}
-        currentBalance={currentBalance}
-      />
-      <div className="flex gap-x-4">
-        <div className="w-full h-full sticky top-24 max-w-120 hidden min-[768px]:block ">
-          <AddStocksForm />
+      <Head title="Home" />
+      <PageContainer>
+        <AccountStats
+          investedAmount={investedAmount}
+          currentBalance={currentBalance}
+        />
+        <div className="flex gap-x-4">
+          <div className="glassy-border rounded-2xl w-fit p-8 hidden min-[768px]:block">
+            <h1 className="font-semibold">Resultados desse mês</h1>
+            <RadialChart
+              investments={investmentsJoined}
+              stocksHistory={stocksHistory!}
+            />
+          </div>
+          <div className="glassy-border rounded-2xl w-full p-8">
+            <h1 className="font-semibold mb-3">
+              Evolução patrimonial(Under development)
+            </h1>
+            <EvolutionChart />
+          </div>
+          <div className="glassy-border rounded-2xl w-fit min-w-80 p-8 max-h-[388px] overflow-scroll hidden min-[768px]:block">
+            <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
+            {investmentsJoined.length > 0 && <Dividends stocks={investments} />}
+          </div>
         </div>
-        <div className="w-full flex flex-col gap-4">
-          {investments.map(investment => {
-            return (
-              <InvestmentCard
-                key={crypto.randomUUID()}
-                {...investment}
-                currentBalance={currentBalance}
-                investedAmount={investedAmount}
-              />
-            );
-          })}
-        </div>
-      </div>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="btn btn-primary btn-circle fixed bottom-5 right-5 ">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6 rotate-45"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="relative z-[100]">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <Dialog.Panel className="max-w-120 w-full overflow-scroll max-h-[90vh]">
+        <div className="flex gap-x-4">
+          <div className="w-full h-full sticky top-24 max-w-120 hidden min-[768px]:block ">
             <AddStocksForm />
-          </Dialog.Panel>
+          </div>
+          <div className="w-full flex flex-col gap-4">
+            {investmentsJoined.map(investment => {
+              return (
+                <InvestmentCard
+                  key={crypto.randomUUID()}
+                  {...investment}
+                  currentBalance={currentBalance}
+                  investedAmount={investedAmount}
+                />
+              );
+            })}
+          </div>
         </div>
-      </Dialog>
-    </PageContainer>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="btn btn-primary btn-circle fixed bottom-5 right-5 ">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 rotate-45"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <Dialog
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          className="relative z-[100]">
+          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+          <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+            <Dialog.Panel className="max-w-120 w-full overflow-scroll max-h-[90vh]">
+              <AddStocksForm />
+            </Dialog.Panel>
+          </div>
+        </Dialog>
+      </PageContainer>
     </>
   );
 }

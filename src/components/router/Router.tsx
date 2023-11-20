@@ -6,7 +6,6 @@ import {
   BrowserRouter,
 } from 'react-router-dom';
 import Home from '../screens/Home';
-import AuthHandler from './handlers/AuthHandler';
 import { useAuthState } from '../contexts/UserContext';
 import NavBar from '../shared/NavBar';
 
@@ -47,15 +46,14 @@ const InnerRouter = () => {
           element: <IndexScreen />,
         },
         {
-          handle: AuthHandler(),
           path: 'home',
           element: <Home />,
         },
-        {
-          path: '*',
-          element: <Page404Screen />,
-        },
       ],
+    },
+    {
+      path: '*',
+      element: <Page404Screen />,
     },
   ];
   const element = useRoutes(routes);

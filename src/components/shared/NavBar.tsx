@@ -9,7 +9,8 @@ const NavBar = () => {
         <div className="flex-1 px-2 lg:flex-none">
           <a className="font-bold btn btn-ghost normal-case text-xl gap-x-1">
             <img src={logoSymbol} className="h-4 w-4" />
-            Foxbat
+            Foxbat{' '}
+            <span className="text-[0.6rem] font-normal">1.0.0-alpha</span>
           </a>
         </div>
         <div className="flex justify-end flex-1 px-2">
