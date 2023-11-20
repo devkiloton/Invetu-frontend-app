@@ -4,6 +4,7 @@ export const EVOLUTION_CHART_OPTIONS: ApexOptions = {
   chart: {
     height: 350,
     type: 'area',
+
     toolbar: {
       show: false,
       //   tools: {
@@ -19,11 +20,20 @@ export const EVOLUTION_CHART_OPTIONS: ApexOptions = {
   dataLabels: {
     enabled: false,
   },
+  grid: {
+    borderColor: '#4093ff4b',
+  },
+  legend: {
+    show: false,
+  },
   stroke: {
     curve: 'smooth',
   },
   xaxis: {
     type: 'datetime',
+    axisBorder: {
+      color: 'transparent',
+    },
     categories: [
       '2018-09-19T00:00:00.000Z',
       '2018-09-19T01:30:00.000Z',
@@ -33,10 +43,24 @@ export const EVOLUTION_CHART_OPTIONS: ApexOptions = {
       '2018-09-19T05:30:00.000Z',
       '2018-09-19T06:30:00.000Z',
     ],
+    labels: {
+      style: {
+        cssClass: 'fill-base-content',
+      },
+    },
+  },
+  yaxis: {
+    labels: {
+      style: {
+        cssClass: 'fill-base-content',
+      },
+    },
   },
   tooltip: {
+    cssClass: 'text-gray-500',
+
     x: {
-      format: 'dd/MM/yy HH:mm',
+      format: 'dd/MM/yy',
     },
   },
 };
