@@ -49,11 +49,11 @@ const InnerRouter = () => {
           path: 'home',
           element: <Home />,
         },
-        {
-          path: '*',
-          element: <Page404Screen />,
-        },
       ],
+    },
+    {
+      path: '*',
+      element: <Page404Screen />,
     },
   ];
   const element = useRoutes(routes);
