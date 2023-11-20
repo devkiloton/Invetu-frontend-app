@@ -39,11 +39,9 @@ const RadialChart = ({
           new Date(stock.startDate).getTime()
         ) {
           // if the stock was bought in this month, take variation from the first day of the month
-          const variation = getProfit(
-            stock.price,
-            dataStockThisMonth.lastDay.close,
+          const variation = Number(
+            getProfit(stock.price, dataStockThisMonth.lastDay.close),
           );
-          console.log(variation);
           const allocation = Number(
             getStockAllocation(
               stock.amount,
@@ -51,7 +49,6 @@ const RadialChart = ({
               dataStockThisMonth.firstDay.close * stock.amount,
             ),
           );
-          console.log(allocation);
           return (allocation * variation) / 100;
         }
         // take all the investements before this month
@@ -183,7 +180,6 @@ const RadialChart = ({
       fontWeight: 500,
       fontFamily: 'Poppins, sans-serif',
       markers: {
-        size: 2,
         width: 20,
         height: 10,
       },
