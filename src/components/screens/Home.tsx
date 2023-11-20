@@ -13,6 +13,7 @@ import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
 import { HistoryAPI } from '~/clients/foxbat-client/models/HistoryAPI';
 import Dividends from '../shared/Dividends';
+import EvolutionChart from '../shared/EvolutionChart';
 
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
@@ -77,7 +78,11 @@ export default function Home() {
               stocksHistory={stocksHistory!}
             />
           </div>
-          <div className="glassy-border rounded-2xl w-fit p-8 max-h-[388px] overflow-scroll">
+          <div className="glassy-border rounded-2xl w-full p-8">
+            <h1 className="font-semibold mb-3">Evolução patrimonial</h1>
+            <EvolutionChart />
+          </div>
+          <div className="glassy-border rounded-2xl w-fit min-w-80 p-8 max-h-[388px] overflow-scroll">
             <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
             {investmentsJoined.length > 0 && <Dividends stocks={investments} />}
           </div>
