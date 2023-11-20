@@ -18,11 +18,9 @@ export default function AccountStats(props: {
           <div className="stat-title text-neutral">Resultado</div>
           <div className="stat-value">
             %{' '}
-            {(
-              (props.currentBalance /
-                (props.investedAmount === 0 ? 1 : props.investedAmount)) *
-                100 -
-              100
+            {(props.investedAmount === 0
+              ? 0
+              : (props.currentBalance / props.investedAmount) * 100 - 100
             ).toFixed(2)}
           </div>
         </div>
