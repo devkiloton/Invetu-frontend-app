@@ -26,6 +26,8 @@ export const foxbatClient = () => {
           `${API_URL}/stocks/history/${info.ticker}?range=${info.range}&interval=${info.interval}`,
         ).then(res => res.json());
         const joinResults = data.flatMap((item: HistoryAPI) => item.results);
+        // Case when the API returns 2 arrays(it happens when the stocks requested are more than 10) we'll join them
+        // PS: We should apply this to all the other methods
         data[0].results = joinResults;
         if (data.length > 1) {
           for (let i = 1; i < data.length; i++) {
