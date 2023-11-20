@@ -6,7 +6,6 @@ import {
   BrowserRouter,
 } from 'react-router-dom';
 import Home from '../screens/Home';
-import AuthHandler from './handlers/AuthHandler';
 import { useAuthState } from '../contexts/UserContext';
 import NavBar from '../shared/NavBar';
 

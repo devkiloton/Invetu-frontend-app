@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 export default function EvolutionChart() {
-  const [options, setOptions] = useState<{
+  const [options] = useState<{
     series: ApexAxisChartSeries;
     options: ApexOptions;
   }>({
