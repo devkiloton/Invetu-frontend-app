@@ -22,9 +22,16 @@ export const foxbatClient = () => {
       findHistory: async (
         info: FindHistoryParams,
       ): Promise<Array<HistoryAPI>> => {
-        const data = await fetch(
+        const data: Array<HistoryAPI> = await fetch(
           `${API_URL}/stocks/history/${info.ticker}?range=${info.range}&interval=${info.interval}`,
         ).then(res => res.json());
+        const joinResults = data.flatMap((item: HistoryAPI) => item.results);
+        data[0].results = joinResults;
+        if (data.length > 1) {
+          for (let i = 1; i < data.length; i++) {
+            delete data[i];
+          }
+        }
         return data;
       },
       findMany: async (tickers: string[]): Promise<StocksAPI> => {
