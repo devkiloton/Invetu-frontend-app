@@ -3,21 +3,13 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import {
   CashDividend,
-  CashDividendLabel,
   StockDividend,
-  StockDividendLabel,
   Subscription,
 } from '~/clients/foxbat-client/models/DividendsAPI';
+import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
-
-// type guard function to check if the object is a StockDividend
-function isStockDividend(item: any): item is StockDividend {
-  return 'factor' in item;
-}
-
-function isCashDividend(item: any): item is CashDividend {
-  return 'rate' in item;
-}
+import { isCashDividend } from '~/type-guards/is-cash-dividend';
+import { isStockDividend } from '~/type-guards/is-stock-dividend';
 
 export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
@@ -30,10 +22,12 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   >([]);
 
   async function getValidAdvices() {
+    // fetching all the dividends and subscriptions
     const advices = await foxbatClient().stocks.findDividends(
       joinStockData(stocks).map(stock => stock.ticker),
     );
 
+    // takes the cash dividends that will happen after today
     const cashDividendsAfterToday = advices.results
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
@@ -47,6 +41,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
         advice => new Date(advice.paymentDate).getTime() > new Date().getTime(),
       );
 
+    // takes the stock dividends that will happen after today
     const stockDividendsAfterToday = advices.results
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
@@ -61,6 +56,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
           new Date(advice.lastDatePrior).getTime() > new Date().getTime(),
       );
 
+    // takes the subscriptions that will happen after today
     const subscriptionsAfterToday = advices.results
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
@@ -74,6 +70,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
         advice =>
           new Date(advice.lastDatePrior).getTime() > new Date().getTime(),
       );
+    // Join all the arrays of dividends and subscriptions and other stuff
     return [
       ...cashDividendsAfterToday,
       ...stockDividendsAfterToday,
@@ -83,6 +80,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
 
   useEffect(() => {
     getValidAdvices().then(result => {
+      // Join the stocks with the advices
       const presentation = stocks.flatMap(stock => {
         const findStock = result
           .filter(
@@ -147,111 +145,4 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       })}
     </div>
   );
-}
-
-export const formatDateBr = (date: string) => {
-  return new Date(date).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-};
-
-export function handlePresentation(
-  item: (StockDividend | CashDividend | Subscription) & {
-    amount: number;
-    ticker: string;
-  },
-): {
-  title: string;
-  label: string;
-  description: string;
-  date: string;
-  datePrior: string;
-} {
-  if (isCashDividend(item)) {
-    switch (item.label) {
-      case CashDividendLabel.dividendo:
-        return {
-          title: item.ticker,
-          label: 'Dividendo',
-          description: `${Number(item.rate.toFixed(2))} x ${
-            item.amount
-          } = R$ ${(Number(item.rate.toFixed(2)) * item.amount).toFixed(2)}`,
-          date: `Pagamento: ${formatDateBr(item.paymentDate)}`,
-          datePrior: `Data com: ${formatDateBr(item.lastDatePrior)}`,
-        };
-      case CashDividendLabel.jrsCapProprio:
-        return {
-          title: item.ticker,
-          label: 'JCP',
-          description: `${Number(item.rate.toFixed(2))} x ${
-            item.amount
-          } = R$ ${(Number(item.rate.toFixed(2)) * item.amount).toFixed(2)}`,
-          date: `Pagamento: ${formatDateBr(item.paymentDate)}`,
-          datePrior: `Data com: ${formatDateBr(item.lastDatePrior)}`,
-        };
-      case CashDividendLabel.rendimento:
-        return {
-          title: item.ticker,
-          label: 'Rendimento',
-          description: `${Number(item.rate.toFixed(2))} x ${
-            item.amount
-          } = R$ ${(Number(item.rate.toFixed(2)) * item.amount).toFixed(2)}`,
-          date: `Pagamento: ${formatDateBr(item.paymentDate)}`,
-          datePrior: `Data com: ${formatDateBr(item.lastDatePrior)}`,
-        };
-    }
-  } else if (isStockDividend(item)) {
-    switch (item.label) {
-      case StockDividendLabel.desdobramento:
-        return {
-          title: item.ticker,
-          label: 'Desdobramento',
-          description: `Voce terá ${item.factor} x ${item.amount} = ${(
-            item.factor * item.amount
-          ).toFixed(2)} unidades`,
-          date: formatDateBr(item.lastDatePrior),
-          datePrior: formatDateBr(item.lastDatePrior),
-        };
-      case StockDividendLabel.grupamento:
-        return {
-          title: item.ticker,
-          label: 'Grupamento',
-          description: `Voce terá ${item.amount} ÷ ${item.factor} = ${(
-            item.amount / item.factor
-          ).toFixed(2)} unidades`,
-          date: `Data: ${formatDateBr(item.lastDatePrior)}`,
-          datePrior: formatDateBr(item.lastDatePrior),
-        };
-      case StockDividendLabel.bonificacao:
-        return {
-          title: item.ticker,
-          label: 'Bonificação',
-          description: `Voce terá mais ${item.factor / 100} x ${
-            item.amount
-          } = ${(item.factor * item.amount).toFixed(2)}`,
-          date: formatDateBr(item.lastDatePrior),
-          datePrior: formatDateBr(item.lastDatePrior),
-        };
-      case StockDividendLabel.cisRedCap:
-        return {
-          title: item.ticker,
-          label: 'Cisão com redução de capital',
-          description: `Voce terá ${item.factor} x ${item.amount} = ${(
-            item.factor * item.amount
-          ).toFixed(2)} unidades`,
-          date: formatDateBr(item.lastDatePrior),
-          datePrior: formatDateBr(item.lastDatePrior),
-        };
-    }
-  } else {
-    return {
-      title: item.ticker,
-      label: 'Subscrição',
-      description: `Preço unitário: ${item.priceUnit.toFixed(2)}`,
-      date: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
-      datePrior: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
-    };
-  }
 }
