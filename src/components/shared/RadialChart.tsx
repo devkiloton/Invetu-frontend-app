@@ -34,6 +34,26 @@ const RadialChart = ({
           stockHistory => stockHistory.symbol === stock.ticker,
         );
         const dataStockThisMonth = getDataStocksThisMonth([result as Result]);
+        if (
+          dataStockThisMonth.firstDay.close * 1000 <
+          new Date(stock.startDate).getTime()
+        ) {
+          // if the stock was bought in this month, take variation from the first day of the month
+          const variation = getProfit(
+            stock.price,
+            dataStockThisMonth.lastDay.close,
+          );
+          console.log(variation);
+          const allocation = Number(
+            getStockAllocation(
+              stock.amount,
+              dataStockThisMonth.firstDay.close,
+              dataStockThisMonth.firstDay.close * stock.amount,
+            ),
+          );
+          console.log(allocation);
+          return (allocation * variation) / 100;
+        }
         // take all the investements before this month
         const investimentsBeforeThisMonth = investments.filter(
           value =>
