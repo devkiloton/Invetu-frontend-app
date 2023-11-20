@@ -125,7 +125,6 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
           }
         >,
       );
-      console.log(grouped);
       setAdvices(grouped);
     });
   }, [stocks]);
