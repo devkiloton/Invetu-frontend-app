@@ -6,10 +6,9 @@ import {
   StockDividend,
   Subscription,
 } from '~/clients/foxbat-client/models/DividendsAPI';
+import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
-import { isCashDividend } from '~/type-guards/is-cash-dividend';
-import { isStockDividend } from '~/type-guards/is-stock-dividend';
 
 export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
@@ -95,18 +94,6 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       // Elements with the same rate will be grouped together and the amount will be summed
       const grouped = presentation.reduce(
         (acc, curr) => {
-          function getSpecificProp(
-            item: CashDividend | StockDividend | Subscription,
-          ): number {
-            if (isCashDividend(item)) {
-              return Number(item.rate.toFixed(2));
-            } else if (isStockDividend(item)) {
-              return item.factor;
-            } else {
-              return item.priceUnit;
-            }
-          }
-
           const find = acc.find(
             obj => getSpecificProp(obj) === getSpecificProp(curr),
           );
