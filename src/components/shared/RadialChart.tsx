@@ -5,15 +5,12 @@ import bacenClient from '~/clients/bacen-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
 import { HistoryAPI, Result } from '~/clients/foxbat-client/models/HistoryAPI';
+import { RADIAL_CHART_OPTIONS } from '~/constants/radial-chart-options';
+import { getDataStocksThisMonth } from '~/helpers/get-data-stock-this-month';
 import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import { joinStockData } from '~/helpers/join-stock-data';
-
-function valueToPercent(value: Array<number>): Array<number> {
-  // find the max value in the array
-  const max = Math.max(...value);
-  return value.map(v => (max !== 0 ? (v / max) * 100 : 0));
-}
+import { valueToPercent } from '~/helpers/value-to-percent';
 
 const RadialChart = ({
   investments,
@@ -90,24 +87,6 @@ const RadialChart = ({
     });
   }
 
-  function getDataStocksThisMonth(history: Array<Result>) {
-    // takes the percent variation between the first value of the current month and the last value
-    const date = new Date();
-    const y = date.getFullYear();
-    const m = date.getMonth();
-    const timestampFirstDayMonth = new Date(y, m, 1).getTime();
-    const validData = history[0].historicalDataPrice.filter(
-      h => h.date * 1000 >= timestampFirstDayMonth,
-    );
-    const dataFromFirstDay =
-      history[0].historicalDataPrice[validData.length - 1];
-    const dataFromLastDay = validData[validData.length - 1];
-    return {
-      firstDay: dataFromFirstDay,
-      lastDay: dataFromLastDay,
-    };
-  }
-
   async function getIbov() {
     const ibov = await foxbatClient().stocks.findHistory({
       ticker: ['^BVSP'],
@@ -134,64 +113,7 @@ const RadialChart = ({
       });
     });
   }, [stocksHistory]);
-  const options: ApexOptions = {
-    chart: {
-      height: 400,
-      type: 'radialBar',
-    },
-    plotOptions: {
-      radialBar: {
-        offsetY: -2,
-        startAngle: 0,
-        endAngle: 293,
-        track: {
-          background: '#8f8f8fc8',
-          opacity: 0.2,
-        },
-        hollow: {
-          margin: 0,
-          size: '40%',
-          background: 'transparent',
-          image: undefined,
-        },
-        dataLabels: {
-          name: {
-            show: false,
-          },
-          value: {
-            show: false,
-          },
-        },
-      },
-    },
-    colors: ['#0084ff', '#1ab7ea', '#5361dd'],
-
-    stroke: {
-      lineCap: 'round',
-    },
-    legend: {
-      show: true,
-      floating: true,
-      fontSize: '12px',
-      position: 'left',
-      labels: {
-        useSeriesColors: true,
-      },
-      fontWeight: 500,
-      fontFamily: 'Poppins, sans-serif',
-      markers: {
-        width: 20,
-        height: 10,
-      },
-      itemMargin: {
-        vertical: 0,
-      },
-      containerMargin: {
-        left: 0,
-        top: 0,
-      },
-    },
-  };
+  const options: ApexOptions = RADIAL_CHART_OPTIONS;
 
   return (
     <div className="w-[265px] h-[300px]" id="chart">
