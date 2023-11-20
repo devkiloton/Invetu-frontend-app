@@ -47,7 +47,6 @@ const InnerRouter = () => {
           element: <IndexScreen />,
         },
         {
-          handle: AuthHandler(),
           path: 'home',
           element: <Home />,
         },
