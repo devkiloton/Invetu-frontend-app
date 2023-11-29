@@ -8,6 +8,8 @@ import {
 import Home from '../screens/Home';
 import { useAuthState } from '../contexts/UserContext';
 import NavBar from '../shared/NavBar';
+import AuthGuard from '../guards/AuthGuard';
+import UnAuthGuard from '../guards/UnAuthGuard';
 
 const Loading = () => (
   <p className="p-4 w-full h-full text-center">Loading...</p>
@@ -43,11 +45,13 @@ const InnerRouter = () => {
       children: [
         {
           index: true,
-          element: <IndexScreen />,
+          element: (
+            <UnAuthGuard pathToRedirect="/home" element={<IndexScreen />} />
+          ),
         },
         {
           path: 'home',
-          element: <Home />,
+          element: <AuthGuard pathToRedirect="/" element={<Home />} />,
         },
       ],
     },
