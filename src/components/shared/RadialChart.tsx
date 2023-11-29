@@ -30,10 +30,11 @@ const RadialChart = ({
         const result = stocksHistory[0].results.find(
           stockHistory => stockHistory.symbol === stock.ticker,
         );
-        const dataStockThisMonth = getDataStocksThisMonth([result as Result]);
+        const dataStockThisMonth = getDataStocksThisMonth([
+          result as Result & { date: number },
+        ]);
         if (
-          dataStockThisMonth.firstDay.close * 1000 <
-          new Date(stock.startDate).getTime()
+          dataStockThisMonth.firstDay.date < new Date(stock.startDate).getTime()
         ) {
           // if the stock was bought in this month, take variation from the first day of the month
           const variation = Number(
