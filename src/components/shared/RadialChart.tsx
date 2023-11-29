@@ -95,7 +95,9 @@ const RadialChart = ({
       interval: '1d',
     });
     // takes the percent variation between the first value of the current month and the last value
-    const { firstDay, lastDay } = getDataStocksThisMonth(ibov[0].results);
+    const { firstDay, lastDay } = getDataStocksThisMonth(
+      ibov[0].results as Array<Result & { date: number }>,
+    );
     const result = getProfit(firstDay.close, lastDay.close);
     return result;
   }
