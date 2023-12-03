@@ -4,7 +4,7 @@ import {
   StockDividend,
   StockDividendLabel,
   Subscription,
-} from '~/clients/foxbat-client/models/DividendsAPI';
+} from '~/clients/invetu-client/models/DividendsAPI';
 import { formatDateBr } from './format-date-br';
 import { isStockDividend } from '~/type-guards/is-stock-dividend';
 import { isCashDividend } from '~/type-guards/is-cash-dividend';

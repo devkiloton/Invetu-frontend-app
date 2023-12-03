@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
-import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
+import { invetuClient } from '~/clients/invetu-client/invetu-client';
 
 export default function DropdownInput({
   setTicker,
@@ -14,7 +14,7 @@ export default function DropdownInput({
 
   useEffect(() => {
     if (query !== '' && query.length > 1 && query.length < 10) {
-      foxbatClient()
+      invetuClient()
         .stocks.fuzzy(query)
         .then(response => {
           setFilteredStocks(response);

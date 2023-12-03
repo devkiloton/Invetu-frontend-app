@@ -1,5 +1,5 @@
 import { isNil } from 'lodash-es';
-import { Result } from '~/clients/foxbat-client/models/HistoryAPI';
+import { Result } from '~/clients/invetu-client/models/HistoryAPI';
 
 export function getDataStocksThisMonth(
   history: Array<Result & { date: number }>,

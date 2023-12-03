@@ -2,7 +2,7 @@ import {
   CashDividend,
   StockDividend,
   Subscription,
-} from '~/clients/foxbat-client/models/DividendsAPI';
+} from '~/clients/invetu-client/models/DividendsAPI';
 import { isCashDividend } from '~/type-guards/is-cash-dividend';
 import { isStockDividend } from '~/type-guards/is-stock-dividend';
 
