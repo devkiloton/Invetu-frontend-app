@@ -22,6 +22,7 @@ export const EVOLUTION_CHART_OPTIONS: ApexOptions = {
   },
   grid: {
     borderColor: '#4093ff4b',
+    padding: { left: -5, right: 0, top: 0, bottom: 0 },
   },
   legend: {
     show: false,
@@ -51,6 +52,7 @@ export const EVOLUTION_CHART_OPTIONS: ApexOptions = {
   },
   yaxis: {
     labels: {
+      offsetX: -15,
       style: {
         cssClass: 'fill-base-content',
       },

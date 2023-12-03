@@ -114,18 +114,20 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     });
   }, [stocks]);
   return (
-    <div className="flex flex-col gap-y-4 w-full border-opacity-50">
+    <div className="flex lg:flex-col gap-4 border-opacity-50">
       {advices.map(value => {
         const presentation = handlePresentation(value);
         return (
           <div
             key={crypto.randomUUID()}
             className="grid card bg-base-300 rounded-xl py-2 px-4">
-            <div className="flex justify-between">
+            <div className="flex gap-2 lg:gap-[unset] justify-between">
               <h3 className="font-semibold text-xs">{presentation.title}</h3>
               <span className="text-xs">{presentation.label}</span>
             </div>
-            <span className="text-xs">{presentation.description}</span>
+            <span className="text-xs whitespace-nowrap">
+              {presentation.description}
+            </span>
             <span className="text-xs">{presentation.date}</span>
           </div>
         );
