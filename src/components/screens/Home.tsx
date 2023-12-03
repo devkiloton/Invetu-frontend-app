@@ -90,7 +90,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex gap-x-4">
-          <div className="w-full h-full sticky top-24 max-w-120 hidden min-[768px]:block ">
+          <div className="w-full h-full sticky top-24 max-w-120 hidden min-[1024px]:block ">
             <AddStocksForm />
           </div>
           <div className="w-full flex flex-col gap-4">
