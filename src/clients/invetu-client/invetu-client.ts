@@ -4,7 +4,7 @@ import { HistoryAPI } from './models/HistoryAPI';
 import { RawStocksAPI, StocksAPI } from './models/StocksAPI';
 import { FindHistoryParams } from './types/find-history-params';
 
-export const foxbatClient = () => {
+export const invetuClient = () => {
   const API_URL = import.meta.env.VITE_API_ORIGIN;
   const client = {
     stocks: {

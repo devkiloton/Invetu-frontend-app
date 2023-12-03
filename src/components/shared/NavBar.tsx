@@ -6,11 +6,15 @@ const NavBar = () => {
   return (
     <div className="pt-4 px-4 sticky top-0 z-[100] min-[768px]:px-8">
       <div className="navbar glass bg-none hover:bg-none rounded-box relative">
-        <div className="flex-1 px-2 lg:flex-none">
-          <a className="font-bold btn btn-ghost normal-case text-xl gap-x-1">
-            <img src={logoSymbol} className="h-4 w-4" />
-            Foxbat{' '}
-            <span className="text-[0.6rem] font-normal">1.0.0-alpha</span>
+        <div className="flex-1 lg:flex-none">
+          <a className="font-bold btn btn-ghost normal-case text-xl gap-x-2 p-2">
+            <img src={logoSymbol} className="h-7 w-7" />
+            <div className="flex flex-col">
+              <span className="leading-4">Invetu</span>
+              <span className="text-[0.6rem] leading-3 font-normal text-start">
+                1.0.0-alpha
+              </span>
+            </div>
           </a>
         </div>
         <div className="flex justify-end flex-1 px-2">

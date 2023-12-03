@@ -8,10 +8,10 @@ import { useAuth } from '~/lib/firebase';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
-import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
+import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
-import { HistoryAPI } from '~/clients/foxbat-client/models/HistoryAPI';
+import { HistoryAPI } from '~/clients/invetu-client/models/HistoryAPI';
 import Dividends from '../shared/Dividends';
 import EvolutionChart from '../shared/EvolutionChart';
 
@@ -31,7 +31,7 @@ export default function Home() {
         setInvestedAmount(response.investedAmount);
         const stocks = response.stocks;
         const tickers = stocks.map(stock => stock.ticker);
-        foxbatClient()
+        invetuClient()
           .stocks.findHistory({
             ticker: tickers,
             range: '1mo',

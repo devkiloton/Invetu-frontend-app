@@ -2,8 +2,8 @@ import { isNull } from 'lodash-es';
 import { useEffect, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
-import { StockAPI } from '~/clients/foxbat-client/models/StockAPI';
+import { invetuClient } from '~/clients/invetu-client/invetu-client';
+import { StockAPI } from '~/clients/invetu-client/models/StockAPI';
 import { useAuth } from '~/lib/firebase';
 import InvestementCardChart from './InvestementCardChart';
 import getBestInterval from '~/helpers/get-best-interval';
@@ -25,7 +25,7 @@ export default function InvestmentCard(
   const auth = useAuth();
 
   useEffect(() => {
-    foxbatClient()
+    invetuClient()
       .stocks.tickerInfo(props.ticker)
       .then(response => {
         setStockInfo(response);
@@ -34,7 +34,7 @@ export default function InvestmentCard(
 
   useEffect(() => {
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
-    foxbatClient()
+    invetuClient()
       .stocks.findHistory({
         ticker: [props.ticker],
         range,

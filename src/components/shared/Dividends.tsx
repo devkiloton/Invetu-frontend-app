@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
+import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import {
   CashDividend,
   StockDividend,
   Subscription,
-} from '~/clients/foxbat-client/models/DividendsAPI';
+} from '~/clients/invetu-client/models/DividendsAPI';
 import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
@@ -22,7 +22,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
 
   async function getValidAdvices() {
     // fetching all the dividends and subscriptions
-    const advices = await foxbatClient().stocks.findDividends(
+    const advices = await invetuClient().stocks.findDividends(
       joinStockData(stocks).map(stock => stock.ticker),
     );
 

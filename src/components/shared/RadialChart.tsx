@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { foxbatClient } from '~/clients/foxbat-client/foxbat-client';
-import { HistoryAPI, Result } from '~/clients/foxbat-client/models/HistoryAPI';
+import { invetuClient } from '~/clients/invetu-client/invetu-client';
+import { HistoryAPI, Result } from '~/clients/invetu-client/models/HistoryAPI';
 import { RADIAL_CHART_OPTIONS } from '~/constants/radial-chart-options';
 import { getDataStocksThisMonth } from '~/helpers/get-data-stock-this-month';
 import getProfit from '~/helpers/get-profit';
@@ -89,7 +89,7 @@ const RadialChart = ({
   }
 
   async function getIbov() {
-    const ibov = await foxbatClient().stocks.findHistory({
+    const ibov = await invetuClient().stocks.findHistory({
       ticker: ['^BVSP'],
       range: '1mo',
       interval: '1d',
