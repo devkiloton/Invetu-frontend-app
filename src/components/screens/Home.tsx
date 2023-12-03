@@ -78,7 +78,7 @@ export default function Home() {
               stocksHistory={stocksHistory!}
             />
           </div>
-          <div className="glassy-border rounded-2xl w-full p-8">
+          <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
             <h1 className="font-semibold mb-3">
               Evolução patrimonial(Under development)
             </h1>
