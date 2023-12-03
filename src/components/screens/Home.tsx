@@ -70,21 +70,25 @@ export default function Home() {
           investedAmount={investedAmount}
           currentBalance={currentBalance}
         />
-        <div className="flex gap-x-4">
-          <div className="glassy-border rounded-2xl w-fit p-8 hidden min-[768px]:block">
-            <h1 className="font-semibold">Resultados desse mês</h1>
-            <RadialChart
-              investments={investmentsJoined}
-              stocksHistory={stocksHistory!}
-            />
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col md:flex-row w-full gap-4">
+            <div className="glassy-border rounded-2xl p-4 md:p-8">
+              <h1 className="font-semibold">Resultados desse mês</h1>
+              <div className="flex justify-center">
+                <RadialChart
+                  investments={investmentsJoined}
+                  stocksHistory={stocksHistory!}
+                />
+              </div>
+            </div>
+            <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
+              <h1 className="font-semibold mb-3">
+                Evolução patrimonial(Under development)
+              </h1>
+              <EvolutionChart />
+            </div>
           </div>
-          <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
-            <h1 className="font-semibold mb-3">
-              Evolução patrimonial(Under development)
-            </h1>
-            <EvolutionChart />
-          </div>
-          <div className="glassy-border rounded-2xl w-fit min-w-80 p-8 max-h-[388px] overflow-scroll hidden min-[768px]:block">
+          <div className="glassy-border rounded-2xl min-w-80 p-4 md:p-8 max-h-[388px] overflow-scroll">
             <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
             {investmentsJoined.length > 0 && <Dividends stocks={investments} />}
           </div>
