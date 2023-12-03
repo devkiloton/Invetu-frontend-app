@@ -69,7 +69,7 @@ export default function InvestmentCard(
   return (
     <>
       <div className="card w-full bg-base-100 shadow-xl glassy-border z-0">
-        <div className="card-body">
+        <div className="card-body p-4 md:p-8">
           <div className="flex justify-between">
             <div className="flex items-center gap-x-2">
               {stockInfo?.results[0].logourl !==
