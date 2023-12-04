@@ -117,7 +117,6 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     <div className="flex lg:flex-col gap-4 border-opacity-50 overflow-scroll">
       {advices.map(value => {
         const presentation = handlePresentation(value);
-        console.log(advices);
         return (
           <div
             key={crypto.randomUUID()}
