@@ -70,11 +70,15 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
-              <h1 className="font-semibold mb-3">
-                Evolução patrimonial(Under development)
-              </h1>
-              <EvolutionChart />
+            <div
+              className="tooltip tooltip-error w-full z-0"
+              data-tip="Ops, funcionalidade em desenvolvimento">
+              <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
+                <h1 className="font-semibold mb-3 text-start">
+                  Evolução patrimonial
+                </h1>
+                <EvolutionChart />
+              </div>
             </div>
           </div>
           <div className="glassy-border rounded-2xl min-w-80 p-4 md:p-8 max-h-[388px] overflow-scroll">
