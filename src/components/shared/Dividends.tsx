@@ -117,18 +117,19 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     <div className="flex lg:flex-col gap-4 border-opacity-50">
       {advices.map(value => {
         const presentation = handlePresentation(value);
+        console.log(advices);
         return (
           <div
             key={crypto.randomUUID()}
             className="grid card bg-base-300 rounded-xl py-2 px-4">
             <div className="flex gap-2 lg:gap-[unset] justify-between">
-              <h3 className="font-semibold text-xs">{presentation.title}</h3>
-              <span className="text-xs">{presentation.label}</span>
+              <h3 className="font-semibold text-xs">{presentation?.title}</h3>
+              <span className="text-xs">{presentation?.label}</span>
             </div>
             <span className="text-xs whitespace-nowrap">
-              {presentation.description}
+              {presentation?.description}
             </span>
-            <span className="text-xs">{presentation.date}</span>
+            <span className="text-xs">{presentation?.date}</span>
           </div>
         );
       })}

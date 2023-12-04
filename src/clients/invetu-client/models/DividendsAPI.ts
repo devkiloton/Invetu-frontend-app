@@ -13,6 +13,7 @@ export enum CashDividendLabel {
   dividendo = 'DIVIDENDO',
   jrsCapProprio = 'JRS CAP PROPRIO',
   rendimento = 'RENDIMENTO',
+  amortizacao = 'AMORTIZACAO RF',
 }
 
 export type CashDividend = {

@@ -43,6 +43,16 @@ export function handlePresentation(
           date: `Pagamento: ${formatDateBr(item.paymentDate)}`,
           datePrior: `Data com: ${formatDateBr(item.lastDatePrior)}`,
         };
+      case CashDividendLabel.amortizacao:
+        return {
+          title: item.ticker,
+          label: 'Amortização',
+          description: `${Number(item.rate.toFixed(2))} x ${
+            item.amount
+          } = R$ ${(Number(item.rate.toFixed(2)) * item.amount).toFixed(2)}`,
+          date: `Pagamento: ${formatDateBr(item.paymentDate)}`,
+          datePrior: `Data com: ${formatDateBr(item.lastDatePrior)}`,
+        };
       case CashDividendLabel.rendimento:
         return {
           title: item.ticker,
