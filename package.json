@@ -1,9 +1,8 @@
 {
   "name": "vite-react-ts-tailwind-starter",
-  "version": "1.0.0",
-  "license": "MIT",
+  "version": "0.0.1",
   "author": {
-    "name": "TeXmeijin"
+    "name": "devkiloton"
   },
   "engines": {
     "node": ">=16.17.0",

@@ -12,7 +12,7 @@ const NavBar = () => {
             <div className="flex flex-col">
               <span className="leading-4">Invetu</span>
               <span className="text-[0.6rem] leading-3 font-normal text-start">
-                1.0.0-alpha
+                0.0.1-alpha
               </span>
             </div>
           </a>
