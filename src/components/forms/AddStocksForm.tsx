@@ -43,14 +43,11 @@ export default function AddStocksForm() {
         type: 'stock',
       };
       dispatch(addStock(data));
-      firebaseClient()
-        .firestore.investments.stocks.add(data)
-        .then(() => {
-          setTicker('');
-          priceInput.current!.value = '';
-          amountInput.current!.value = '';
-          setStartDate(new Date().toISOString());
-        });
+      setTicker('');
+      priceInput.current!.value = '';
+      amountInput.current!.value = '';
+      setStartDate(new Date().toISOString());
+      firebaseClient();
     }
   }
 
