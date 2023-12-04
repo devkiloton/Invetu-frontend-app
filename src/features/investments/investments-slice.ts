@@ -23,7 +23,11 @@ const initialState: Investments & { asyncState: AsyncStateRedux } = {
 
 export const fetchInvestments: any = createAsyncThunk(
   'investments/fetchInvestments',
-  async () => {
+  async (_arg, { getState }) => {
+    const state = getState() as {
+      investments: Investments & { asyncState: AsyncStateRedux };
+    };
+    if (state.investments.asyncState.isLoaded) return state.investments;
     const auth = useAuth();
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error('User not found');
@@ -37,7 +41,7 @@ export const investmentsSlice = createSlice({
   name: 'investments',
   initialState,
   reducers: {
-    updateStocks: (state, action: PayloadAction<Stock>) => {
+    addStock: (state, action: PayloadAction<Stock>) => {
       state.stocks = [...state.stocks, action.payload];
       state.investedAmount =
         state.investedAmount + action.payload.price * action.payload.amount;
@@ -72,5 +76,5 @@ export const investmentsSlice = createSlice({
   },
 });
 
-export const { deleteStock, updateStocks } = investmentsSlice.actions;
+export const { deleteStock, addStock } = investmentsSlice.actions;
 export const investmentsReducer = investmentsSlice.reducer;
