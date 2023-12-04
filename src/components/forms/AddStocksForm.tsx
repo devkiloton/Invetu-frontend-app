@@ -47,7 +47,7 @@ export default function AddStocksForm() {
       priceInput.current!.value = '';
       amountInput.current!.value = '';
       setStartDate(new Date().toISOString());
-      firebaseClient();
+      firebaseClient().firestore.investments.stocks.add(data);
     }
   }
 
@@ -75,6 +75,11 @@ export default function AddStocksForm() {
               className="tab disabled"
               onClick={event => handleTabChange(event)}>
               Cripto
+            </a>
+            <a
+              className="tab disabled"
+              onClick={event => handleTabChange(event)}>
+              EUA
             </a>
           </div>
           <div className="form-control">
