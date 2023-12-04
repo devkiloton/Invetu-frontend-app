@@ -3,8 +3,6 @@ import PageContainer from '../containers/PageContainer';
 import AddStocksForm from '../forms/AddStocksForm';
 import AccountStats from '../shared/AccountStats';
 import InvestmentCard from '../shared/InvestmentCard';
-import { firebaseClient } from '~/clients/firebase-client/firebase-client';
-import { useAuth } from '~/lib/firebase';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
@@ -14,60 +12,51 @@ import RadialChart from '../shared/RadialChart';
 import { HistoryAPI } from '~/clients/invetu-client/models/HistoryAPI';
 import Dividends from '../shared/Dividends';
 import EvolutionChart from '../shared/EvolutionChart';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
+import { useDispatch } from 'react-redux';
+import { fetchInvestments } from '~/features/investments/investments-slice';
 
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
-  const [investments, setInvestments] = useState<Array<Stock>>([]);
-  const [investedAmount, setInvestedAmount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const auth = useAuth();
   const [currentBalance, setCurrentBalance] = useState(0);
   const [stocksHistory, setStocksHistory] = useState<Array<HistoryAPI>>();
+  const investmentsStore = useCustomSelector(state => state.investments);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    firebaseClient()
-      .firestore.investments.get(auth.currentUser?.uid as string)
+    dispatch(fetchInvestments());
+  }, []);
+
+  useEffect(() => {
+    if (investmentsStore.asyncState.isLoaded === false) return;
+    const stocks = investmentsStore.stocks;
+    setInvestmentsJoined(joinStockData(stocks));
+    const tickers = stocks.map(stock => stock.ticker);
+    invetuClient()
+      .stocks.findHistory({
+        ticker: tickers,
+        range: '1mo',
+        interval: '1d',
+      })
       .then(response => {
-        setInvestedAmount(response.investedAmount);
-        const stocks = response.stocks;
-        const tickers = stocks.map(stock => stock.ticker);
-        invetuClient()
-          .stocks.findHistory({
-            ticker: tickers,
-            range: '1mo',
-            interval: '1d',
-          })
-          .then(response => {
-            setStocksHistory(response);
-            // take the current price of each stock and multiply by the amount
-            const currentBalance = stocks.reduce((acc, stock) => {
-              const currentPrice = response[0].results.find(
-                stockResponse => stockResponse.symbol === stock.ticker,
-              )?.regularMarketPrice;
-              return acc + (currentPrice as number) * stock.amount;
-            }, 0);
-            setCurrentBalance(currentBalance);
-          });
+        setStocksHistory(response);
+        // take the current price of each stock and multiply by the amount
+        const currentBalance = stocks.reduce((acc, stock) => {
+          const currentPrice = response[0].results.find(
+            stockResponse => stockResponse.symbol === stock.ticker,
+          )?.regularMarketPrice;
+          return acc + (currentPrice as number) * stock.amount;
+        }, 0);
+        setCurrentBalance(currentBalance);
       });
-  }, []);
-
-  useEffect(() => {
-    if (auth.currentUser?.uid !== undefined) {
-      firebaseClient()
-        .firestore.investments.stocks.get(auth.currentUser.uid)
-        .then(investiments => {
-          setInvestmentsJoined(joinStockData(investiments.stocks));
-          setInvestments(investiments.stocks);
-          setInvestedAmount(investiments.investedAmount);
-        });
-    }
-  }, []);
+  }, [investmentsStore]);
   return (
     <>
       <Head title="Home" />
       <PageContainer>
         <AccountStats
-          investedAmount={investedAmount}
+          investedAmount={investmentsStore.investedAmount}
           currentBalance={currentBalance}
         />
         <div className="flex flex-col lg:flex-row gap-4">
@@ -81,16 +70,22 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
-              <h1 className="font-semibold mb-3">
-                Evolução patrimonial(Under development)
-              </h1>
-              <EvolutionChart />
+            <div
+              className="tooltip tooltip-error w-full z-0"
+              data-tip="Ops, funcionalidade em desenvolvimento">
+              <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
+                <h1 className="font-semibold mb-3 text-start">
+                  Evolução patrimonial
+                </h1>
+                <EvolutionChart />
+              </div>
             </div>
           </div>
           <div className="glassy-border rounded-2xl min-w-80 p-4 md:p-8 max-h-[388px] overflow-scroll">
             <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
-            {investmentsJoined.length > 0 && <Dividends stocks={investments} />}
+            {investmentsJoined.length > 0 && (
+              <Dividends stocks={investmentsStore.stocks} />
+            )}
           </div>
         </div>
         <div className="flex gap-x-4">
@@ -104,7 +99,7 @@ export default function Home() {
                   key={crypto.randomUUID()}
                   {...investment}
                   currentBalance={currentBalance}
-                  investedAmount={investedAmount}
+                  investedAmount={investmentsStore.investedAmount}
                 />
               );
             })}

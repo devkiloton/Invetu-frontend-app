@@ -3,6 +3,8 @@ import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
 import DropdownInput from '../shared/DropdownInput';
+import { useDispatch } from 'react-redux';
+import { addStock } from '~/features/investments/investments-slice';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
@@ -12,6 +14,8 @@ export default function AddStocksForm() {
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
   const defaultTab = useRef<HTMLAnchorElement>(null);
   const auth = useAuth();
+
+  const dispatch = useDispatch();
 
   function handleTabChange(event: MouseEvent<HTMLAnchorElement>) {
     if (event.currentTarget.classList.contains('disabled')) return;
@@ -38,14 +42,12 @@ export default function AddStocksForm() {
         userID: auth.currentUser.uid,
         type: 'stock',
       };
-      firebaseClient()
-        .firestore.investments.stocks.add(data)
-        .then(() => {
-          setTicker('');
-          priceInput.current!.value = '';
-          amountInput.current!.value = '';
-          setStartDate(new Date().toISOString());
-        });
+      dispatch(addStock(data));
+      setTicker('');
+      priceInput.current!.value = '';
+      amountInput.current!.value = '';
+      setStartDate(new Date().toISOString());
+      firebaseClient().firestore.investments.stocks.add(data);
     }
   }
 
@@ -73,6 +75,11 @@ export default function AddStocksForm() {
               className="tab disabled"
               onClick={event => handleTabChange(event)}>
               Cripto
+            </a>
+            <a
+              className="tab disabled"
+              onClick={event => handleTabChange(event)}>
+              EUA
             </a>
           </div>
           <div className="form-control">

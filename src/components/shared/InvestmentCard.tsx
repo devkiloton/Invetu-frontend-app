@@ -12,6 +12,8 @@ import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import getBalance from '~/helpers/get-balance';
 import { Range } from '~/types/range';
+import { useDispatch } from 'react-redux';
+import { deleteStock } from '~/features/investments/investments-slice';
 
 export default function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -23,6 +25,7 @@ export default function InvestmentCard(
     range: Range;
   } | null>(null);
   const auth = useAuth();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     invetuClient()
@@ -58,12 +61,15 @@ export default function InvestmentCard(
       });
   }, [stockInfo]);
 
-  function deleteStock() {
+  function deleteSelectedStock() {
+    dispatch(deleteStock(props.ticker));
     if (auth.currentUser?.uid !== undefined)
-      firebaseClient().firestore.investments.stocks.delete(
-        auth.currentUser?.uid,
-        props.ticker,
-      );
+      firebaseClient()
+        .firestore.investments.stocks.delete(
+          auth.currentUser?.uid,
+          props.ticker,
+        )
+        .then(() => {});
   }
 
   return (
@@ -99,7 +105,7 @@ export default function InvestmentCard(
               </summary>
               <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52 glassy-border">
                 <li>
-                  <button onClick={() => deleteStock()}>Deletar</button>
+                  <button onClick={() => deleteSelectedStock()}>Deletar</button>
                 </li>
                 <li className="disabled">
                   <button>Atualizar</button>
