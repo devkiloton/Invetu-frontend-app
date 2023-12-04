@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { invetuClient } from '~/clients/invetu-client/invetu-client';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
 
 export default function DropdownInput({
   setTicker,
@@ -11,6 +12,7 @@ export default function DropdownInput({
   const [selected, setSelected] = useState('');
   const [query, setQuery] = useState('');
   const [filteredStocks, setFilteredStocks] = useState<string[]>([]);
+  const investments = useCustomSelector(state => state.investments);
 
   useEffect(() => {
     if (query !== '' && query.length > 1 && query.length < 10) {
@@ -27,6 +29,10 @@ export default function DropdownInput({
       setTicker(selected);
     }
   }, [selected]);
+
+  useEffect(() => {
+    setSelected('');
+  }, [investments]);
 
   return (
     <Combobox value={selected} onChange={setSelected}>
