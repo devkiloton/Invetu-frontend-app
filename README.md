@@ -1,4 +1,4 @@
-![Logo invetu](https://github.com/devkiloton/react-vite-app/assets/78966160/2ddaa22b-4158-424a-99a3-7f1c77259638)
+![Logo invetu](https://github.com/devkiloton/react-vite-app/assets/78966160/069f8845-5c91-4c46-819e-d4a8c1b6f77b)
 
 <p align="center"> 
 <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
