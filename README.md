@@ -15,8 +15,15 @@
   <img src="https://spotify-github-profile.vercel.app/api/view?uid=22yoc4ioabem6hfrtwxudllsy&cover_image=true&theme=novatorem&show_offline=false&background_color=121212&interchange=false&bar_color=53b14f&bar_color_cover=false)](https://github.com/kittinan/spotify-github-profile"/>
 </p>
 
-## Overview(Alpha)
-![OVERVIEW](https://github.com/devkiloton/react-vite-app/assets/78966160/8089f440-0a5b-48c2-8710-712c76087b52)
+## Overview
+![Overview](https://github.com/devkiloton/react-vite-app/assets/78966160/8089f440-0a5b-48c2-8710-712c76087b52)
+
+## Important versions
+<details><summary>0.0.1-alpha</summary>
+  <li>After 3 weekends(and a few days in the week) of development, took the decision to create a landing page and make Invetu available for free.</li>
+  <li>Some components are presenting bugs, the application make too many request and the functionalities are very limited. I am aware of these issues and I'll improve the application in the next versions</li>
+  <li>The baby is born! 🔥</li>
+</details>
 
 
 
