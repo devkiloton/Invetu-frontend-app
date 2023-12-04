@@ -4,7 +4,7 @@ import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
 import DropdownInput from '../shared/DropdownInput';
 import { useDispatch } from 'react-redux';
-import { updateStocks } from '~/features/investments/investments-slice';
+import { addStock } from '~/features/investments/investments-slice';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
@@ -42,10 +42,10 @@ export default function AddStocksForm() {
         userID: auth.currentUser.uid,
         type: 'stock',
       };
+      dispatch(addStock(data));
       firebaseClient()
         .firestore.investments.stocks.add(data)
         .then(() => {
-          dispatch(updateStocks(data));
           setTicker('');
           priceInput.current!.value = '';
           amountInput.current!.value = '';
