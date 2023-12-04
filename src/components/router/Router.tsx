@@ -1,3 +1,4 @@
+/* eslint-disable react/self-closing-comp */
 import { lazy, Suspense } from 'react';
 import {
   Outlet,
@@ -12,7 +13,10 @@ import AuthGuard from '../guards/AuthGuard';
 import UnAuthGuard from '../guards/UnAuthGuard';
 
 const Loading = () => (
-  <p className="p-4 w-full h-full text-center">Loading...</p>
+  <div className="h-screen w-screen flex flex-col gap-4 justify-center items-center">
+    <span>Carregando...</span>
+    <progress className="progress w-56"></progress>
+  </div>
 );
 
 const IndexScreen = lazy(() => import('~/components/screens/Index'));
