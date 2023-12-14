@@ -3,6 +3,8 @@ import { Head } from '~/components/shared/Head';
 import { SignInWithMicrosoft } from '~/components/domain/auth/SignInWithMicrosoft';
 import { SignInWithGitHub } from '~/components/domain/auth/SignInWithGithub';
 import CoupleTouchingSaturn from '~/assets/illustrations/couple-touching-saturn.svg';
+import { SignInWithX } from '../domain/auth/SignInWithX';
+import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
 
 const Index = () => {
   return (
@@ -11,11 +13,14 @@ const Index = () => {
       <div className="hero" style={{ height: 'calc(100vh - 80px)' }}>
         <div className="text-center h-full w-full hero-content justify-evenly flex-col-reverse md:flex-row">
           <div className="mt-4 grid gap-2">
+            <span className="font-semibold mb-3">Como você deseja entrar?</span>
             <SignInWithGoogle />
             <SignInWithMicrosoft />
+            <SignInWithFacebook />
+            <SignInWithX />
             <SignInWithGitHub />
             <p className="text-xs text-center mt-8">
-              Ao criar uma conta, você concorda com
+              Ao entrar, você concorda com
               <br /> nossos{' '}
               <a className="text-blue-600" href="/#">
                 termos de serviço

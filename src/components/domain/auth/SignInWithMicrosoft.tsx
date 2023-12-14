@@ -19,7 +19,7 @@ export const SignInWithMicrosoft = () => {
     <button
       onClick={handleClick}
       type="button"
-      className="btn btn-active btn-ghost normal-case gap-3 justify-start px-6">
+      className="btn btn-outline normal-case gap-3 justify-start px-6">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 32 32"
