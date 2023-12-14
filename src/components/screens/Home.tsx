@@ -15,6 +15,9 @@ import EvolutionChart from '../shared/EvolutionChart';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { useDispatch } from 'react-redux';
 import { fetchInvestments } from '~/features/investments/investments-slice';
+import Ghost from '~/assets/illustrations/ghost.svg';
+import Add from '~/assets/illustrations/add.svg';
+import WrapperIcon from '../shared/WrapperIcon';
 
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
@@ -83,6 +86,15 @@ export default function Home() {
           </div>
           <div className="glassy-border rounded-2xl min-w-80 p-4 md:p-8 max-h-[388px] overflow-scroll">
             <h1 className="font-semibold mb-3">Próximos rendimentos</h1>
+            <div className="flex h-full justify-center items-center flex-col gap-4">
+              <WrapperIcon>
+                <img src={Ghost} alt="Fantasma" className="w-16 h-16" />
+              </WrapperIcon>
+              <span className="text-center text-xs font-semibold   max-w-[230px] opacity-70">
+                Cadastre ações, FIIs e ETFs para ver os próximos rendimentos,
+                JCP, bonificações e mais.
+              </span>
+            </div>
             {investmentsJoined.length > 0 && (
               <Dividends stocks={investmentsStore.stocks} />
             )}
@@ -92,7 +104,19 @@ export default function Home() {
           <div className="w-full h-full sticky top-24 max-w-120 hidden min-[1024px]:block ">
             <AddStocksForm />
           </div>
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4 py-8">
+            <div className="flex h-full justify-center items-center flex-col gap-4">
+              <WrapperIcon>
+                <img
+                  src={Add}
+                  alt="Simbolo de adicionar"
+                  className="w-16 h-16"
+                />
+              </WrapperIcon>
+              <span className="text-center text-xs font-semibold   max-w-[230px] opacity-70">
+                Cadastre seus investimentos e veja o resultado deles aqui.
+              </span>
+            </div>
             {investmentsJoined.map(investment => {
               return (
                 <InvestmentCard
