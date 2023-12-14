@@ -5,6 +5,7 @@ import { SignInWithGitHub } from '~/components/domain/auth/SignInWithGithub';
 import CoupleTouchingSaturn from '~/assets/illustrations/couple-touching-saturn.svg';
 import { SignInWithX } from '../domain/auth/SignInWithX';
 import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
+import { SignInWithYahoo } from '../domain/auth/SignInWithYahoo';
 
 const Index = () => {
   return (
@@ -19,6 +20,7 @@ const Index = () => {
             <SignInWithFacebook />
             <SignInWithX />
             <SignInWithGitHub />
+            <SignInWithYahoo />
             <p className="text-xs text-center mt-8">
               Ao entrar, você concorda com
               <br /> nossos{' '}
