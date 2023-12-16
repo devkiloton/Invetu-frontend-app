@@ -6,6 +6,8 @@ import CoupleTouchingSaturn from '~/assets/illustrations/couple-touching-saturn.
 import { SignInWithX } from '../domain/auth/SignInWithX';
 import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
 import { SignInWithYahoo } from '../domain/auth/SignInWithYahoo';
+import { SignInWithPhone } from '../domain/auth/SignInWithPhone';
+import { SignInWithEmailLink } from '../domain/auth/SignInWithEmailLink';
 
 const Index = () => {
   return (
@@ -15,6 +17,8 @@ const Index = () => {
         <div className="text-center h-full w-full hero-content justify-evenly flex-col-reverse md:flex-row">
           <div className="mt-4 grid gap-2">
             <span className="font-semibold mb-3">Como você deseja entrar?</span>
+            <SignInWithEmailLink />
+            <SignInWithPhone />
             <SignInWithGoogle />
             <SignInWithMicrosoft />
             <SignInWithFacebook />
