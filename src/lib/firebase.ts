@@ -1,5 +1,11 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, Auth, connectAuthEmulator } from 'firebase/auth';
+import {
+  getAuth,
+  Auth,
+  connectAuthEmulator,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+} from 'firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
@@ -52,4 +58,16 @@ export const useStorage = () => {
     }
   }
   return storage;
+};
+
+export const emailLinkCheck = () => {
+  if (isSignInWithEmailLink(auth, window.location.href)) {
+    let email = window.localStorage.getItem('emailForSignIn');
+    if (!email) {
+      email = window.prompt('Please provide your email for confirmation');
+    }
+    signInWithEmailLink(auth, email ?? '', window.location.href).then(() => {
+      window.localStorage.removeItem('emailForSignIn');
+    });
+  }
 };
