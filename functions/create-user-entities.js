@@ -3,6 +3,7 @@ const functions = require('firebase-functions');
 
 exports.createUserEntities = functions
   .region('southamerica-east1')
+  .runWith({ maxInstances: 4 })
   .auth.user()
   .onCreate(async user => {
     try {
