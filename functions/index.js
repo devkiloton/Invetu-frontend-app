@@ -1,33 +1,8 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
+const { setGlobalOptions } = require('firebase-functions/v2');
 
-exports.createUserEntities = functions.auth.user().onCreate(async user => {
-  try {
-    const users = await admin
-      .firestore()
-      .collection('users')
-      .doc(user.uid)
-      .set({
-        email: user.email,
-        uid: user.uid,
-      });
+setGlobalOptions({ maxInstances: 4, timeoutSeconds: 15 });
 
-    const investments = await admin
-      .firestore()
-      .collection('investments')
-      .doc(user.uid)
-      .set({
-        investedAmount: 0,
-        stocks: [],
-        crypto: [],
-        treasuries: [],
-        companyLoans: [],
-        cash: [],
-      });
-    return { users, investments };
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-});
+exports.createUserEntities =
+  require('./create-user-entities').createUserEntities;
+exports.findHistoryStocksBR =
+  require('./find-history-stocks-br').findHistoryStocksBR;
