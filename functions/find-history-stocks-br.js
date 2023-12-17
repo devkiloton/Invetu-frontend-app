@@ -2,7 +2,7 @@ const { default: axios } = require('axios');
 const { onRequest } = require('firebase-functions/v2/https');
 
 exports.findHistoryStocksBR = onRequest(
-  { secrets: ['API_TOKEN', 'API_URL'] },
+  { secrets: ['API_TOKEN', 'API_URL'], region: 'southamerica-east1' },
   (req, res) => {
     const idsString = req.query.ids;
     const range = req.query.range;
