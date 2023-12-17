@@ -7,10 +7,10 @@ exports.findHistoryStocksBR = onRequest(
     const idsString = req.query.ids;
     const range = req.query.range;
     const interval = req.query.interval;
-    // run an await loop over the idsString array and each loop has 10 elements
     const promises = [];
 
-    const asyncIterator = (async function* () {
+    // Using async generator to iterate over ids as a woraround to avoid the 20 ids limit, in this way we can get 20+ ids in a single request
+    const asyncGen = (async function* () {
       // returns 20 elements at a time
       for (let i = 0; i < idsString.length; i += 20) {
         const ids = idsString.slice(i, i + 20);
@@ -18,7 +18,7 @@ exports.findHistoryStocksBR = onRequest(
       }
     })();
     const stocksIterator = async () => {
-      for await (const value of asyncIterator) {
+      for await (const value of asyncGen) {
         await axios
           .get(
             `${process.env.API_URL}/quote/${value}?range=${range}&interval=${interval}&token=${process.env.API_TOKEN}&dividends=true`,
