@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import {
   CashDividend,
   StockDividend,
   Subscription,
-} from '~/clients/invetu-client/models/DividendsAPI';
+} from '~/clients/firebase-client/models/history-stock-br';
 import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
 
 export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
@@ -19,15 +19,18 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       }
     >
   >([]);
+  const investmentsDataStore = useCustomSelector(
+    state => state.investmentsData.data,
+  );
 
   async function getValidAdvices() {
     // fetching all the dividends and subscriptions
-    const advices = await invetuClient().stocks.findDividends(
-      joinStockData(stocks).map(stock => stock.ticker),
+    const advices = joinStockData(stocks).map(
+      stock => investmentsDataStore[stock.ticker],
     );
 
     // takes the cash dividends that will happen after today
-    const cashDividendsAfterToday = advices.results
+    const cashDividendsAfterToday = advices
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
         const { cashDividends } = investment.dividendsData;
@@ -41,7 +44,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       );
 
     // takes the stock dividends that will happen after today
-    const stockDividendsAfterToday = advices.results
+    const stockDividendsAfterToday = advices
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
         const { stockDividends } = investment.dividendsData;
@@ -56,7 +59,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       );
 
     // takes the subscriptions that will happen after today
-    const subscriptionsAfterToday = advices.results
+    const subscriptionsAfterToday = advices
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
         const { subscriptions } = investment.dividendsData;
