@@ -23,7 +23,7 @@ const initialState: InvestmentsData = {
 export const fetchAllInvestmentsData: any = createAsyncThunk(
   'investments-data/fetchAllInvestmentsData',
   async (_arg, { getState }) => {
-    const state = getState();
+    const state = getState() as any;
     if (state.investmentsData.asyncState.isLoaded) return state.investmentsData;
     const auth = useAuth();
     const uid = auth.currentUser?.uid;
