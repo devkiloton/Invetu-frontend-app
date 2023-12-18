@@ -21,9 +21,6 @@ export const firebaseClient = () => {
         const res = await fetch(
           `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksBR?ids=${parametrizedTickers}&range=${range}&interval=${interval}`,
         );
-        console.log(
-          `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksBR?ids=${parametrizedTickers}&range=${range}&interval=${interval}`,
-        );
         const data = await res.json();
 
         const joinResults = data.flatMap(
