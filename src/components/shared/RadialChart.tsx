@@ -2,9 +2,9 @@ import { ApexOptions } from 'apexcharts';
 import { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
+import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
-import { HistoryAPI, Result } from '~/clients/invetu-client/models/HistoryAPI';
+import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import { RADIAL_CHART_OPTIONS } from '~/constants/radial-chart-options';
 import { getDataStocksThisMonth } from '~/helpers/get-data-stock-this-month';
 import getProfit from '~/helpers/get-profit';
@@ -14,10 +14,10 @@ import { valueToPercent } from '~/helpers/value-to-percent';
 
 const RadialChart = ({
   investments,
-  stocksHistory,
+  results,
 }: {
   investments: Array<Stock>;
-  stocksHistory: Array<HistoryAPI>;
+  results: Array<Result>;
 }) => {
   const [series, setSeries] = useState<Array<number>>([]);
   const [apexOptions, setApexOptions] = useState<ApexOptions>({});
@@ -27,7 +27,7 @@ const RadialChart = ({
     const ibov = getIbov();
     const portfolio = investments
       .map(stock => {
-        const result = stocksHistory[0].results.find(
+        const result = results.find(
           stockHistory => stockHistory.symbol === stock.ticker,
         );
         const dataStockThisMonth = getDataStocksThisMonth([
@@ -89,11 +89,11 @@ const RadialChart = ({
   }
 
   async function getIbov() {
-    const ibov = await invetuClient().stocks.findHistory({
-      ticker: ['^BVSP'],
-      range: '1mo',
-      interval: '1d',
-    });
+    const ibov = await firebaseClient().functions.findHistoryStocksBR(
+      ['^BVSP'],
+      '1mo',
+      '1d',
+    );
     // takes the percent variation between the first value of the current month and the last value
     const { firstDay, lastDay } = getDataStocksThisMonth(
       ibov[0].results as Array<Result & { date: number }>,
@@ -115,7 +115,7 @@ const RadialChart = ({
         ],
       });
     });
-  }, [stocksHistory]);
+  }, [results]);
   const options: ApexOptions = RADIAL_CHART_OPTIONS;
 
   return (
