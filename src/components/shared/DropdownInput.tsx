@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
+import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 
 export default function DropdownInput({
   setTicker,
@@ -16,8 +16,8 @@ export default function DropdownInput({
 
   useEffect(() => {
     if (query !== '' && query.length > 1 && query.length < 10) {
-      invetuClient()
-        .stocks.fuzzy(query)
+      firebaseClient()
+        .functions.fuzzyStocksBR(query)
         .then(response => {
           setFilteredStocks(response);
         });
