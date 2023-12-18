@@ -1,5 +1,5 @@
 import { isNil } from 'lodash-es';
-import { Result } from '~/clients/invetu-client/models/HistoryAPI';
+import { Result } from '~/clients/firebase-client/models/history-stock-br';
 
 export function getDataStocksThisMonth(
   history: Array<Result & { date: number }>,
