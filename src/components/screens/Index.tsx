@@ -8,8 +8,13 @@ import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
 import { SignInWithYahoo } from '../domain/auth/SignInWithYahoo';
 import { SignInWithPhone } from '../domain/auth/SignInWithPhone';
 import { SignInWithEmailLink } from '../domain/auth/SignInWithEmailLink';
+import { useEffect } from 'react';
+import { setupOneTapGoogle } from '~/helpers/setup-one-tap-google';
 
 const Index = () => {
+  useEffect(() => {
+    setupOneTapGoogle();
+  }, []);
   return (
     <>
       <Head title="Login" />
