@@ -1,5 +1,5 @@
 import { isNull } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
@@ -14,7 +14,7 @@ import { deleteStock } from '~/features/investments/investments-slice';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 
-export default function InvestmentCard(
+function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
 ) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
@@ -153,3 +153,5 @@ export default function InvestmentCard(
     </>
   );
 }
+
+export default React.memo(InvestmentCard);
