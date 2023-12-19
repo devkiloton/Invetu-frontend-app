@@ -58,7 +58,7 @@ export const firebaseClient = () => {
             );
             const stock: Stock = {
               ticker: data.ticker,
-              price: data.price,
+              price: Number(data.price.toFixed(2)),
               amount: data.amount,
               startDate: data.startDate,
               currency: data.currency,
@@ -66,8 +66,11 @@ export const firebaseClient = () => {
               type: data.type,
             };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
-              investedAmount:
-                investments.investedAmount + data.price * data.amount,
+              investedAmount: Number(
+                (investments.investedAmount + data.price * data.amount).toFixed(
+                  2,
+                ),
+              ),
               stocks: arrayUnion(stock),
             });
           },
@@ -86,8 +89,12 @@ export const firebaseClient = () => {
             );
             if (!stock) return;
             await updateDoc(doc(firestore, 'investments', `${userID}`), {
-              investedAmount:
-                investments.investedAmount - stock.price * stock.amount,
+              investedAmount: Number(
+                (
+                  investments.investedAmount -
+                  stock.price * stock.amount
+                ).toFixed(2),
+              ),
               stocks: stocksUpdated,
             });
           },
