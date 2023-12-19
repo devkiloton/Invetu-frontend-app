@@ -50,7 +50,7 @@ export const investmentsDataSlice = createSlice({
   name: 'investments-data',
   initialState,
   reducers: {
-    addStock: (state, action: PayloadAction<Result>) => {
+    addStockData: (state, action: PayloadAction<Result>) => {
       state.data = {
         ...state.data,
         [action.payload.symbol]: action.payload,
@@ -78,5 +78,5 @@ export const investmentsDataSlice = createSlice({
   },
 });
 
-export const { addStock } = investmentsDataSlice.actions;
+export const { addStockData } = investmentsDataSlice.actions;
 export const investmentsDataReducer = investmentsDataSlice.reducer;

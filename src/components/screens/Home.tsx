@@ -38,13 +38,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (
-      investmentsStore.asyncState.isLoaded === false ||
-      investmentsDataStore.asyncState.isLoaded === false
-    )
-      return;
+    if (investmentsStore.asyncState.isLoaded === false) return;
     const stocks = investmentsStore.stocks;
     setInvestmentsJoined(joinStockData(stocks));
+  }, [investmentsDataStore]);
+
+  useEffect(() => {
+    if (investmentsStore.asyncState.isLoaded === false) return;
+    const stocks = investmentsStore.stocks;
     const response = Object.values(investmentsDataStore.data);
     setStocksHistory(response);
     // take the current price of each stock and multiply by the amount
@@ -55,7 +56,7 @@ export default function Home() {
       return acc + (currentPrice as number) * stock.amount;
     }, 0);
     setCurrentBalance(currentBalance);
-  }, [investmentsStore, investmentsDataStore]);
+  }, [investmentsDataStore]);
   return (
     <>
       <Head title="Home" />

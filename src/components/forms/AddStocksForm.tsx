@@ -5,6 +5,9 @@ import { useAuth } from '~/lib/firebase';
 import DropdownInput from '../shared/DropdownInput';
 import { useDispatch } from 'react-redux';
 import { addStock } from '~/features/investments/investments-slice';
+import getNearestDateRange from '~/helpers/get-nearest-date-range';
+import getBestInterval from '~/helpers/get-best-interval';
+import { addStockData } from '~/features/investments-data/investments-data-slice';
 
 export default function AddStocksForm() {
   const [ticker, setTicker] = useState('');
@@ -42,8 +45,18 @@ export default function AddStocksForm() {
         userID: auth.currentUser.uid,
         type: 'stock',
       };
-      dispatch(addStock(data));
       firebaseClient().firestore.investments.stocks.add(data);
+      dispatch(addStock(data));
+      const nearestRnage = getNearestDateRange(data.startDate);
+      firebaseClient()
+        .functions.findHistoryStocksBR(
+          [data.ticker],
+          nearestRnage,
+          getBestInterval(nearestRnage),
+        )
+        .then(res => {
+          dispatch(addStockData(res[0].results[0]));
+        });
       setTicker('');
       priceInput.current!.value = '';
       amountInput.current!.value = '';
