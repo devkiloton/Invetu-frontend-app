@@ -40,7 +40,10 @@ export default function Home() {
   useEffect(() => {
     if (investmentsStore.asyncState.isLoaded === false) return;
     const stocks = investmentsStore.stocks;
-    setInvestmentsJoined(joinStockData(stocks));
+    const orderedDataByVolume = joinStockData(stocks).sort((a, b) => {
+      return b.amount * b.price - a.amount * a.price;
+    });
+    setInvestmentsJoined(orderedDataByVolume);
   }, [investmentsDataStore]);
 
   useEffect(() => {
