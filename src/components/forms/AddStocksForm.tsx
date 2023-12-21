@@ -46,7 +46,6 @@ export default function AddStocksForm() {
         type: 'stock',
       };
       firebaseClient().firestore.investments.stocks.add(data);
-      dispatch(addStock(data));
       const nearestRnage = getNearestDateRange(data.startDate);
       firebaseClient()
         .functions.findHistoryStocksBR(
@@ -56,6 +55,7 @@ export default function AddStocksForm() {
         )
         .then(res => {
           dispatch(addStockData(res[0].results[0]));
+          dispatch(addStock(data));
         });
       setTicker('');
       priceInput.current!.value = '';
