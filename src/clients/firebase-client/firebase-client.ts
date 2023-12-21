@@ -58,7 +58,7 @@ export const firebaseClient = () => {
             );
             const stock: Stock = {
               ticker: data.ticker,
-              price: Number(data.price.toFixed(2)),
+              price: Number(data.price),
               amount: data.amount,
               startDate: data.startDate,
               currency: data.currency,
@@ -90,10 +90,7 @@ export const firebaseClient = () => {
             if (!stock) return;
             await updateDoc(doc(firestore, 'investments', `${userID}`), {
               investedAmount: Number(
-                (
-                  investments.investedAmount -
-                  stock.price * stock.amount
-                ).toFixed(2),
+                investments.investedAmount - stock.price * stock.amount,
               ),
               stocks: stocksUpdated,
             });
