@@ -67,7 +67,7 @@ export const SignInWithPhone = () => {
         className="relative z-[100]">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <Dialog.Panel className="max-w-120 flex justify-center items-center bg-base-100 h-64 w-full overflow-scroll max-h-[90vh] rounded-xl">
+          <Dialog.Panel className="max-w-120 flex justify-center items-center bg-base-100 w-full overflow-scroll max-h-[90vh] rounded-xl">
             <div className="w-full p-8">
               <Transition
                 as={Fragment}
