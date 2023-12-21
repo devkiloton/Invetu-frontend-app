@@ -23,7 +23,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     state => state.investmentsData.data,
   );
 
-  async function getValidAdvices() {
+  function getValidAdvices() {
     // fetching all the dividends and subscriptions
     const advices = joinStockData(stocks).map(
       stock => investmentsDataStore[stock.ticker],
@@ -81,40 +81,39 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   }
 
   useEffect(() => {
-    getValidAdvices().then(result => {
-      // Join the stocks with the advices
-      const presentation = stocks.flatMap(stock => {
-        const findStock = result
-          .filter(
-            advice =>
-              advice.ticker === stock.ticker &&
-              stock.startDate < advice.lastDatePrior,
-          )
-          .map(advice => ({ ...advice, amount: stock.amount }));
-        return findStock;
-      });
-
-      // Elements with the same rate will be grouped together and the amount will be summed
-      const grouped = presentation.reduce(
-        (acc, curr) => {
-          const find = acc.find(
-            obj => getSpecificProp(obj) === getSpecificProp(curr),
-          );
-          if (find) {
-            find.amount += curr.amount;
-            return acc;
-          }
-          return [...acc, curr];
-        },
-        [] as Array<
-          (StockDividend | CashDividend | Subscription) & {
-            amount: number;
-            ticker: string;
-          }
-        >,
-      );
-      setAdvices(grouped);
+    const result = getValidAdvices();
+    // Join the stocks with the advices
+    const presentation = stocks.flatMap(stock => {
+      const findStock = result
+        .filter(
+          advice =>
+            advice.ticker === stock.ticker &&
+            stock.startDate < advice.lastDatePrior,
+        )
+        .map(advice => ({ ...advice, amount: stock.amount }));
+      return findStock;
     });
+
+    // Elements with the same rate will be grouped together and the amount will be summed
+    const grouped = presentation.reduce(
+      (acc, curr) => {
+        const find = acc.find(
+          obj => getSpecificProp(obj) === getSpecificProp(curr),
+        );
+        if (find) {
+          find.amount += curr.amount;
+          return acc;
+        }
+        return [...acc, curr];
+      },
+      [] as Array<
+        (StockDividend | CashDividend | Subscription) & {
+          amount: number;
+          ticker: string;
+        }
+      >,
+    );
+    setAdvices(grouped);
   }, [stocks]);
   return (
     <div className="flex lg:flex-col gap-4 border-opacity-50 overflow-scroll">
