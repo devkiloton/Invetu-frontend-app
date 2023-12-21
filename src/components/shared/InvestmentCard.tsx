@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { deleteStock } from '~/features/investments/investments-slice';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
+import { deleteStockData } from '~/features/investments-data/investments-data-slice';
 
 function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -53,13 +54,12 @@ function InvestmentCard(
 
   function deleteSelectedStock() {
     dispatch(deleteStock(props.ticker));
+    dispatch(deleteStockData(props.ticker));
     if (auth.currentUser?.uid !== undefined)
-      firebaseClient()
-        .firestore.investments.stocks.delete(
-          auth.currentUser?.uid,
-          props.ticker,
-        )
-        .then(() => {});
+      firebaseClient().firestore.investments.stocks.delete(
+        auth.currentUser?.uid,
+        props.ticker,
+      );
   }
 
   return (
@@ -109,6 +109,7 @@ function InvestmentCard(
                 {props.amount}
               </span>
               <span className="text-sm  font-semibold">
+                {/* There is something pretty wrong here, the avg price isnt updating when adding a new stock */}
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
                 {props.price.toFixed(2)}
               </span>
@@ -154,4 +155,4 @@ function InvestmentCard(
   );
 }
 
-export default React.memo(InvestmentCard);
+export default InvestmentCard;
