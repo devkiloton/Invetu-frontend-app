@@ -30,7 +30,7 @@ export default function InvestementCardChart({
         options={options}
         series={series}
         type="area"
-        height={250}
+        height={200}
       />
     </div>
   );
