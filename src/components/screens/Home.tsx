@@ -128,7 +128,7 @@ export default function Home() {
             {investmentsJoined.map(investment => {
               return (
                 <InvestmentCard
-                  key={crypto.randomUUID()}
+                  key={investment.ticker}
                   {...investment}
                   currentBalance={currentBalance}
                   investedAmount={investmentsStore.investedAmount}
