@@ -23,6 +23,13 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
         type,
       };
     } else {
+      // calculate the new average price considering the new amount
+      const newAveragePrice =
+        (stockMap[stockKey].price * stockMap[stockKey].amount +
+          price * amount) /
+        (stockMap[stockKey].amount + amount);
+      stockMap[stockKey].price = newAveragePrice;
+
       stockMap[stockKey].amount += amount;
       stockMap[stockKey].startDate = new Date(
         Math.min(
@@ -41,3 +48,62 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
 
   return stockAnalysis;
 };
+
+/*
+
+export const joinStockData = (
+  stocks: Array<Stock>,
+): Array<
+  Stock & {
+    averagePrice: number;
+    result: number;
+  }
+> => {
+  const stockMap: Record<string, Stock> = {};
+
+  stocks.forEach(stock => {
+    const { userID, ticker, price, amount, startDate, currency, type } = stock;
+    const stockKey = `${userID}_${ticker}_${currency}`;
+
+    if (!stockMap[stockKey]) {
+      stockMap[stockKey] = {
+        userID,
+        ticker,
+        price,
+        amount,
+        startDate,
+        currency,
+        type,
+      };
+    } else {
+      stockMap[stockKey].amount += amount;
+      stockMap[stockKey].startDate = new Date(
+        Math.min(
+          new Date(stockMap[stockKey].startDate).getTime(),
+          new Date(startDate).getTime(),
+        ),
+      ).toISOString();
+    }
+  });
+
+  const stockAnalysis = [];
+
+  for (const key in stockMap) {
+    stockAnalysis.push(stockMap[key]);
+  }
+
+  return stockAnalysis.map(stock => {
+    const { price, amount } = stock;
+    const averagePrice = price / amount;
+
+    const result = amount * averagePrice;
+
+    return {
+      ...stock,
+      averagePrice,
+      result,
+    };
+  });
+};
+
+*/
