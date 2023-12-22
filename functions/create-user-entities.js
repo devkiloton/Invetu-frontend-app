@@ -1,6 +1,8 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 
+admin.initializeApp();
+
 exports.createUserEntities = functions
   .region('southamerica-east1')
   .runWith({ maxInstances: 4 })

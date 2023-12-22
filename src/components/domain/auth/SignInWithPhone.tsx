@@ -3,6 +3,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { Fragment, useEffect, useState } from 'react';
+import { initialEntitiesFactory } from '~/helpers/initial-entities-factory';
 import { useAuth, useFirestore } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
@@ -39,37 +40,7 @@ export const SignInWithPhone = () => {
 
   const handleSubmitCode = async () => {
     const confirmationResult = window.confirmationResult;
-    await confirmationResult.confirm(code).then(result => {
-      // IMPORTANT: Since Firebase's cloud functions doesn't have authentication triggers when signing in with credentials;
-      // the backend can't generate the initial data, as a workaround, the front can take the time diff between the creation
-      // time and the current time. If it's less than 30s, it's probably a new user, so I judge that there's no problem in
-      // allow a data creation on every login in the first 30s.
-      if (
-        new Date().getTime() -
-          new Date(result.user.metadata.creationTime!).getTime() <
-        30000
-      ) {
-        const firestore = useFirestore();
-        // Configuring docs for the new user
-        try {
-          setDoc(doc(firestore, 'users', result.user.uid), {
-            email: result.user.email,
-            uid: result.user.uid,
-          });
-
-          setDoc(doc(firestore, 'investments', result.user.uid), {
-            investedAmount: 0,
-            stocks: [],
-            crypto: [],
-            treasuries: [],
-            companyLoans: [],
-            cash: [],
-          });
-        } catch (error) {
-          return error;
-        }
-      }
-    });
+    await confirmationResult.confirm(code).then(initialEntitiesFactory);
   };
 
   const phoneMask = (value: string) => {
