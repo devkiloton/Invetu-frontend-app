@@ -1,5 +1,5 @@
 import { isNull } from 'lodash-es';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
@@ -9,11 +9,9 @@ import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import getBalance from '~/helpers/get-balance';
 import { Range } from '~/types/range';
-import { useDispatch } from 'react-redux';
-import { deleteStock } from '~/features/investments/investments-slice';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
-import { deleteStockData } from '~/features/investments-data/investments-data-slice';
+import useDeleteStock from '~/hooks/use-delete-stock';
 
 function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -25,10 +23,10 @@ function InvestmentCard(
     range: Range;
   } | null>(null);
   const auth = useAuth();
-  const dispatch = useDispatch();
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
   );
+  const deleteStock = useDeleteStock();
 
   useEffect(() => {
     setStockInfo(investmentsDataStore.data[props.ticker]);
@@ -56,15 +54,14 @@ function InvestmentCard(
     });
   }, [stockInfo]);
 
-  function deleteSelectedStock() {
-    dispatch(deleteStock(props.ticker));
-    dispatch(deleteStockData(props.ticker));
+  const deleteSelectedStock = useCallback(() => {
+    deleteStock(props.ticker);
     if (auth.currentUser?.uid !== undefined)
       firebaseClient().firestore.investments.stocks.delete(
         auth.currentUser?.uid,
         props.ticker,
       );
-  }
+  }, [props.ticker, auth.currentUser?.uid]);
 
   return (
     <>
