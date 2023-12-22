@@ -27,8 +27,6 @@ function Main() {
   return (
     <main>
       <Router />
-      {/* This div is for reCAPTCHA */}
-      <div id="recaptcha-container" className="justify-center flex" />
     </main>
   );
 }
