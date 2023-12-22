@@ -9,13 +9,10 @@ import { Head } from '../shared/Head';
 import RadialChart from '../shared/RadialChart';
 import EvolutionChart from '../shared/EvolutionChart';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
-import { useDispatch } from 'react-redux';
-import { fetchInvestments } from '~/features/investments/investments-slice';
 import Ghost from '~/assets/illustrations/ghost.svg';
 import Add from '~/assets/illustrations/add.svg';
 import WrapperIcon from '../shared/WrapperIcon';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
-import { fetchAllInvestmentsData } from '~/features/investments-data/investments-data-slice';
 import InvestmentCard from '../shared/InvestmentCard';
 import Dividends from '../shared/Dividends';
 export default function Home() {
@@ -27,15 +24,6 @@ export default function Home() {
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
   );
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchInvestments());
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchAllInvestmentsData());
-  }, []);
 
   useEffect(() => {
     if (investmentsStore.asyncState.isLoaded === false) return;
