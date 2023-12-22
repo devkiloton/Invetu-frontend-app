@@ -1,10 +1,37 @@
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '~/lib/firebase';
 import { Investments, Stock } from './models/Investments';
+import { Interval } from '~/types/interval';
+import { Range } from '~/types/range';
+import { HistoryStockBR } from './models/history-stock-br';
 
 export const firebaseClient = () => {
+  const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
   const firestore = useFirestore();
   const client = {
+    functions: {
+      findHistoryStocksBR: async (
+        tickers: Array<string>,
+        range: Range,
+        interval: Interval,
+      ): Promise<Array<HistoryStockBR>> => {
+        const joinedStocks = tickers.map(ticker => ticker);
+        const unifyStocks = new Set(joinedStocks);
+        const parametrizedTickers = Array.from(unifyStocks).join(',');
+        const res = await fetch(
+          `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksBR?ids=${parametrizedTickers}&range=${range}&interval=${interval}`,
+        );
+        const data = await res.json();
+        return data;
+      },
+      fuzzyStocksBR: async (ticker: string): Promise<Array<string>> => {
+        const res = await fetch(
+          `${FIREBASE_FUNCTIONS_URL}/fuzzyStocksBR?id=${ticker}`,
+        );
+        const data = await res.json();
+        return data.stocks;
+      },
+    },
     firestore: {
       investments: {
         get: async (userID: string): Promise<Investments> => {
@@ -19,7 +46,7 @@ export const firebaseClient = () => {
             );
             const stock: Stock = {
               ticker: data.ticker,
-              price: data.price,
+              price: Number(data.price),
               amount: data.amount,
               startDate: data.startDate,
               currency: data.currency,
@@ -27,8 +54,11 @@ export const firebaseClient = () => {
               type: data.type,
             };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
-              investedAmount:
-                investments.investedAmount + data.price * data.amount,
+              investedAmount: Number(
+                (investments.investedAmount + data.price * data.amount).toFixed(
+                  2,
+                ),
+              ),
               stocks: arrayUnion(stock),
             });
           },
@@ -47,8 +77,9 @@ export const firebaseClient = () => {
             );
             if (!stock) return;
             await updateDoc(doc(firestore, 'investments', `${userID}`), {
-              investedAmount:
+              investedAmount: Number(
                 investments.investedAmount - stock.price * stock.amount,
+              ),
               stocks: stocksUpdated,
             });
           },

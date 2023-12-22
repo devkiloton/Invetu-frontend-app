@@ -8,11 +8,18 @@ import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
 import { SignInWithYahoo } from '../domain/auth/SignInWithYahoo';
 import { SignInWithPhone } from '../domain/auth/SignInWithPhone';
 import { SignInWithEmailLink } from '../domain/auth/SignInWithEmailLink';
+import { useEffect } from 'react';
+import { setupOneTapGoogle } from '~/helpers/setup-one-tap-google';
 
 const Index = () => {
+  useEffect(() => {
+    setupOneTapGoogle();
+  }, []);
   return (
     <>
       <Head title="Login" />
+      {/* This div is for reCAPTCHA */}
+      <div id="recaptcha-container" className="justify-center flex" />
       <div className="hero" style={{ height: 'calc(100vh - 80px)' }}>
         <div className="text-center h-full w-full hero-content justify-evenly flex-col-reverse md:flex-row">
           <div className="mt-4 grid gap-2">

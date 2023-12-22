@@ -23,6 +23,13 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
         type,
       };
     } else {
+      // calculate the new average price considering the new amount
+      const newAveragePrice =
+        (stockMap[stockKey].price * stockMap[stockKey].amount +
+          price * amount) /
+        (stockMap[stockKey].amount + amount);
+      stockMap[stockKey].price = newAveragePrice;
+
       stockMap[stockKey].amount += amount;
       stockMap[stockKey].startDate = new Date(
         Math.min(

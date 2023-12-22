@@ -1,76 +1,67 @@
 import { isNull } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
-import { StockAPI } from '~/clients/invetu-client/models/StockAPI';
 import { useAuth } from '~/lib/firebase';
 import InvestementCardChart from './InvestementCardChart';
-import getBestInterval from '~/helpers/get-best-interval';
 import getNearestDateRange from '~/helpers/get-nearest-date-range';
 import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import getBalance from '~/helpers/get-balance';
 import { Range } from '~/types/range';
-import { useDispatch } from 'react-redux';
-import { deleteStock } from '~/features/investments/investments-slice';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
+import { Result } from '~/clients/firebase-client/models/history-stock-br';
+import useDeleteStock from '~/hooks/use-delete-stock';
 
-export default function InvestmentCard(
+function InvestmentCard(
   props: Stock & { investedAmount: number; currentBalance: number },
 ) {
-  const [stockInfo, setStockInfo] = useState<StockAPI | null>(null);
+  const [stockInfo, setStockInfo] = useState<Result | null>(null);
   const [chartData, setChartData] = useState<{
     dates: string[];
     prices: number[];
     range: Range;
   } | null>(null);
   const auth = useAuth();
-  const dispatch = useDispatch();
+  const investmentsDataStore = useCustomSelector(
+    state => state.investmentsData,
+  );
+  const deleteStock = useDeleteStock();
 
   useEffect(() => {
-    invetuClient()
-      .stocks.tickerInfo(props.ticker)
-      .then(response => {
-        setStockInfo(response);
-      });
+    setStockInfo(investmentsDataStore.data[props.ticker]);
   }, []);
 
   useEffect(() => {
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
-    invetuClient()
-      .stocks.findHistory({
-        ticker: [props.ticker],
-        range,
-        interval: getBestInterval(range),
-      })
-      .then(response => {
-        const dates = response[0].results[0].historicalDataPrice
-          // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
-          .map(price => price.date * 1000 - 10800000)
-          .filter(
-            value => value > Date.parse(props.startDate) || range === '1d',
-          )
-          .map(value => new Date(value).toISOString());
-        setChartData({
-          range,
-          dates,
-          prices: response[0].results[0].historicalDataPrice
-            .slice(dates.length * -1)
-            .map(price => price.close),
-        });
-      });
+
+    const results = investmentsDataStore.data[props.ticker];
+
+    // Dates that will be used in the chart X axis
+    const dates = results.historicalDataPrice
+      // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
+      .map(price => price.date * 1000 - 10800000)
+      // filtering dates that are greater than the start date or the range is 1d
+      .filter(value => value > Date.parse(props.startDate) || range === '1d')
+      // converting dates to ISO string
+      .map(value => new Date(value).toISOString());
+    setChartData({
+      range,
+      dates,
+      prices: results.historicalDataPrice
+        .slice(dates.length * -1)
+        .map(price => price.close),
+    });
   }, [stockInfo]);
 
-  function deleteSelectedStock() {
-    dispatch(deleteStock(props.ticker));
+  const deleteSelectedStock = useCallback(() => {
+    deleteStock(props.ticker);
     if (auth.currentUser?.uid !== undefined)
-      firebaseClient()
-        .firestore.investments.stocks.delete(
-          auth.currentUser?.uid,
-          props.ticker,
-        )
-        .then(() => {});
-  }
+      firebaseClient().firestore.investments.stocks.delete(
+        auth.currentUser?.uid,
+        props.ticker,
+      );
+  }, [props.ticker, auth.currentUser?.uid]);
 
   return (
     <>
@@ -78,14 +69,10 @@ export default function InvestmentCard(
         <div className="card-body p-4 md:p-8">
           <div className="flex justify-between">
             <div className="flex items-center gap-x-2">
-              {stockInfo?.results[0].logourl !==
+              {stockInfo?.logourl !==
                 'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
-                stockInfo?.results[0].logourl !==
-                  'https://brapi.dev/favicon.svg' && (
-                  <img
-                    className="h-8 w-8 rounded"
-                    src={stockInfo?.results[0].logourl}
-                  />
+                stockInfo?.logourl !== 'https://brapi.dev/favicon.svg' && (
+                  <img className="h-8 w-8 rounded" src={stockInfo?.logourl} />
                 )}
 
               <h2 className="card-title">{props.ticker}</h2>
@@ -123,30 +110,25 @@ export default function InvestmentCard(
                 {props.amount}
               </span>
               <span className="text-sm  font-semibold">
+                {/* There is something pretty wrong here, the avg price isnt updating when adding a new stock */}
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
                 {props.price.toFixed(2)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Resultado:</span> %{' '}
-                {getProfit(
-                  props.price,
-                  stockInfo!.results[0].regularMarketPrice,
-                )}
+                {getProfit(props.price, stockInfo!.regularMarketPrice)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Carteira:</span> %{' '}
                 {getStockAllocation(
                   props.amount,
-                  stockInfo!.results[0].regularMarketPrice,
+                  stockInfo!.regularMarketPrice,
                   props.currentBalance,
                 )}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Balanço:</span> R${' '}
-                {getBalance(
-                  stockInfo!.results[0].regularMarketPrice,
-                  props.amount,
-                )}
+                {getBalance(stockInfo!.regularMarketPrice, props.amount)}
               </span>
             </div>
           )}
@@ -173,3 +155,5 @@ export default function InvestmentCard(
     </>
   );
 }
+
+export default InvestmentCard;

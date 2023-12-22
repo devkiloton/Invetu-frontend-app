@@ -1,13 +1,13 @@
+import { formatDateBr } from './format-date-br';
+import { isStockDividend } from '~/type-guards/is-stock-dividend';
+import { isCashDividend } from '~/type-guards/is-cash-dividend';
 import {
   CashDividend,
   CashDividendLabel,
   StockDividend,
   StockDividendLabel,
   Subscription,
-} from '~/clients/invetu-client/models/DividendsAPI';
-import { formatDateBr } from './format-date-br';
-import { isStockDividend } from '~/type-guards/is-stock-dividend';
-import { isCashDividend } from '~/type-guards/is-cash-dividend';
+} from '~/clients/firebase-client/models/history-stock-br';
 
 export function handlePresentation(
   item: (StockDividend | CashDividend | Subscription) & {
@@ -107,13 +107,14 @@ export function handlePresentation(
           datePrior: formatDateBr(item.lastDatePrior),
         };
     }
-  } else {
-    return {
-      title: item.ticker,
-      label: 'Subscrição',
-      description: `Preço unitário: ${item.priceUnit.toFixed(2)}`,
-      date: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
-      datePrior: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
-    };
   }
+  return {
+    title: item.ticker,
+    label: 'Subscrição',
+    description: `Preço unitário: ${(item as Subscription).priceUnit.toFixed(
+      2,
+    )}`,
+    date: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
+    datePrior: `Encerramento: ${formatDateBr(item.lastDatePrior)}`,
+  };
 }

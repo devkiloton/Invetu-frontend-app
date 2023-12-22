@@ -6,5 +6,7 @@ declare global {
     recaptchaVerifier: RecaptchaVerifier;
     // Used to store the confirmation result from the auth provider, in this case email link
     confirmationResult: ConfirmationResult;
+    // Used to google one tap
+    google: any;
   }
 }

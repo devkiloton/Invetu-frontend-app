@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { Dialog, Transition } from '@headlessui/react';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
-import { Fragment, useState } from 'react';
-import { useAuth } from '~/lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { Fragment, useEffect, useState } from 'react';
+import { initialEntitiesFactory } from '~/helpers/initial-entities-factory';
+import { useAuth, useFirestore } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
 export const SignInWithPhone = () => {
@@ -12,19 +14,22 @@ export const SignInWithPhone = () => {
   const [step, setStep] = useState(0);
   const auth = useAuth();
 
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    auth,
-    'recaptcha-container',
-    {
-      size: 'invisible',
-    },
-  );
+  useEffect(() => {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      'recaptcha-container',
+      {
+        size: 'invisible',
+      },
+    );
+
+    window.recaptchaVerifier.verify();
+  }, []);
 
   const handleSubmitPhoneNumber = async () => {
     const onlyNumbers = phoneUser.replace(/\D/g, '');
     const phoneNumberBR = `+55${onlyNumbers}`;
     const appVerifier = window.recaptchaVerifier;
-    console.log(phoneNumberBR);
     signInWithPhoneNumber(auth, phoneNumberBR, appVerifier).then(
       confirmationResult => {
         window.confirmationResult = confirmationResult;
@@ -35,7 +40,7 @@ export const SignInWithPhone = () => {
 
   const handleSubmitCode = async () => {
     const confirmationResult = window.confirmationResult;
-    await confirmationResult.confirm(code);
+    await confirmationResult.confirm(code).then(initialEntitiesFactory);
   };
 
   const phoneMask = (value: string) => {
@@ -67,7 +72,7 @@ export const SignInWithPhone = () => {
         className="relative z-[100]">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <Dialog.Panel className="max-w-120 flex justify-center items-center bg-base-100 h-64 w-full overflow-scroll max-h-[90vh] rounded-xl">
+          <Dialog.Panel className="max-w-120 flex justify-center items-center bg-base-100 w-full overflow-scroll max-h-[90vh] rounded-xl">
             <div className="w-full p-8">
               <Transition
                 as={Fragment}
@@ -99,6 +104,7 @@ export const SignInWithPhone = () => {
                     className="input input-bordered w-full"
                   />
                   <button
+                    type="button"
                     onClick={handleSubmitPhoneNumber}
                     className="btn btn-active btn-primary self-end">
                     Enviar código

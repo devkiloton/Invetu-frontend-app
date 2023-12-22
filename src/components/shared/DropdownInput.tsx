@@ -1,8 +1,9 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
+import { firebaseClient } from '~/clients/firebase-client/firebase-client';
+import { useDebounce } from '@uidotdev/usehooks';
 
 export default function DropdownInput({
   setTicker,
@@ -11,18 +12,19 @@ export default function DropdownInput({
 }) {
   const [selected, setSelected] = useState('');
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 400);
   const [filteredStocks, setFilteredStocks] = useState<string[]>([]);
   const investments = useCustomSelector(state => state.investments);
 
   useEffect(() => {
     if (query !== '' && query.length > 1 && query.length < 10) {
-      invetuClient()
-        .stocks.fuzzy(query)
+      firebaseClient()
+        .functions.fuzzyStocksBR(query)
         .then(response => {
           setFilteredStocks(response);
         });
     }
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     if (selected !== '') {
@@ -54,7 +56,7 @@ export default function DropdownInput({
           <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
             {filteredStocks.length === 0 && query !== '' ? (
               <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                Nothing found.
+                Hmm, nada por aqui...
               </div>
             ) : (
               filteredStocks.map(stock => (

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export type HistoricalDataPrice = {
   date: number;
   open: number;
@@ -8,6 +9,13 @@ export type HistoricalDataPrice = {
   adjustedClose: number;
 };
 
+export enum CashDividendLabel {
+  dividendo = 'DIVIDENDO',
+  jrsCapProprio = 'JRS CAP PROPRIO',
+  rendimento = 'RENDIMENTO',
+  amortizacao = 'AMORTIZACAO RF',
+}
+
 export type CashDividend = {
   assetIssued: string;
   paymentDate: string;
@@ -15,17 +23,25 @@ export type CashDividend = {
   relatedTo: string;
   approvedOn: string;
   isinCode: string;
-  label: string;
+  label: CashDividendLabel;
   lastDatePrior: string;
   remarks: string;
 };
+
+export enum StockDividendLabel {
+  desdobramento = 'DESDOBRAMENTO',
+  grupamento = 'GRUPAMENTO',
+  cisRedCap = 'CIS RED CAP',
+  bonificacao = 'BONIFICACAO',
+}
 
 export type StockDividend = {
   assetIssued: string;
   factor: number;
   approvedOn: string;
   isinCode: string;
-  label: string;
+  // CIS RED CAP: https://www.infomoney.com.br/mercados/atencao-5-acoes-da-bovespa-sofrem-alteracao-nos-precos-apos-proventos-nesta-6a/
+  label: StockDividendLabel;
   lastDatePrior: string;
   remarks: string;
 };
@@ -38,15 +54,15 @@ export type Subscription = {
   subscriptionDate: string;
   approvedOn: string;
   isinCode: string;
-  label: string;
+  label: 'SUBSCRICAO';
   lastDatePrior: string;
   remarks: string;
 };
 
 export type DividendsData = {
-  cashDividends?: CashDividend[];
-  stockDividends?: StockDividend[];
-  subscriptions?: Subscription[];
+  cashDividends: CashDividend[];
+  stockDividends: StockDividend[];
+  subscriptions: Subscription[];
 };
 
 export type Result = {
@@ -89,7 +105,7 @@ export type Result = {
   dividendsData: DividendsData;
 };
 
-export type HistoryAPI = {
+export type HistoryStockBR = {
   results: Result[];
   requestedAt: string;
   took: string;
