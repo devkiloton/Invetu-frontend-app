@@ -95,6 +95,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     });
 
     // Elements with the same rate will be grouped together and the amount will be summed
+    // Take care when having different rates for the same stock but with same payment date
     const grouped = presentation.reduce(
       (acc, curr) => {
         const find = acc.find(
