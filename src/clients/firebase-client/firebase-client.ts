@@ -22,18 +22,6 @@ export const firebaseClient = () => {
           `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksBR?ids=${parametrizedTickers}&range=${range}&interval=${interval}`,
         );
         const data = await res.json();
-
-        const joinResults = data.flatMap(
-          (item: HistoryStockBR) => item.results,
-        );
-        // Case when the API returns 2 arrays(it happens when the stocks requested are more than 20) we'll join them
-        // PS: We should apply this to all the other methods
-        data[0].results = joinResults;
-        if (data.length > 1) {
-          for (let i = 1; i < data.length; i++) {
-            delete data[i];
-          }
-        }
         return data;
       },
       fuzzyStocksBR: async (ticker: string): Promise<Array<string>> => {
