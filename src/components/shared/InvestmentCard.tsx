@@ -38,10 +38,14 @@ function InvestmentCard(
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
 
     const results = investmentsDataStore.data[props.ticker];
+
+    // Dates that will be used in the chart X axis
     const dates = results.historicalDataPrice
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
       .map(price => price.date * 1000 - 10800000)
+      // filtering dates that are greater than the start date or the range is 1d
       .filter(value => value > Date.parse(props.startDate) || range === '1d')
+      // converting dates to ISO string
       .map(value => new Date(value).toISOString());
     setChartData({
       range,
