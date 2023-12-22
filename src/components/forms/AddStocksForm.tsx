@@ -46,12 +46,12 @@ export default function AddStocksForm() {
         type: 'stock',
       };
       firebaseClient().firestore.investments.stocks.add(data);
-      const nearestRnage = getNearestDateRange(data.startDate);
+      const nearestRange = getNearestDateRange(data.startDate);
       firebaseClient()
         .functions.findHistoryStocksBR(
           [data.ticker],
-          nearestRnage,
-          getBestInterval(nearestRnage),
+          nearestRange,
+          getBestInterval(nearestRange),
         )
         .then(res => {
           dispatch(addStockData(res[0].results[0]));
