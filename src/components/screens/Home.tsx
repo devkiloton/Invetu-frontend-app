@@ -15,6 +15,7 @@ import WrapperIcon from '../shared/WrapperIcon';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import InvestmentCard from '../shared/InvestmentCard';
 import Dividends from '../shared/Dividends';
+import { getCurrentBalanceFromManyStocks } from '~/helpers/get-current-balance-from-many-stocks';
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,12 +41,7 @@ export default function Home() {
     const response = Object.values(investmentsDataStore.data);
     setStocksHistory(response);
     // take the current price of each stock and multiply by the amount
-    const currentBalance = stocks.reduce((acc, stock) => {
-      const currentPrice = response.find(
-        stockResponse => stockResponse.symbol === stock.ticker,
-      )?.regularMarketPrice;
-      return acc + (currentPrice as number) * stock.amount;
-    }, 0);
+    const currentBalance = getCurrentBalanceFromManyStocks(stocks, response);
     setCurrentBalance(currentBalance);
   }, [investmentsDataStore]);
   return (
