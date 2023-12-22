@@ -3,6 +3,7 @@ import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
+import { useDebounce } from '@uidotdev/usehooks';
 
 export default function DropdownInput({
   setTicker,
@@ -11,6 +12,7 @@ export default function DropdownInput({
 }) {
   const [selected, setSelected] = useState('');
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 400);
   const [filteredStocks, setFilteredStocks] = useState<string[]>([]);
   const investments = useCustomSelector(state => state.investments);
 
@@ -22,7 +24,7 @@ export default function DropdownInput({
           setFilteredStocks(response);
         });
     }
-  }, [query]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     if (selected !== '') {
