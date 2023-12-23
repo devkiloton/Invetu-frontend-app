@@ -5,7 +5,7 @@ import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { useDebounce } from '@uidotdev/usehooks';
 
-export default function DropdownInput({
+export default function DropdownStocksInput({
   setTicker,
 }: {
   setTicker: (ticker: string) => void;
