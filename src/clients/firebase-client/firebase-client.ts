@@ -4,6 +4,9 @@ import { Investments, Stock } from './models/Investments';
 import { Interval } from '~/types/interval';
 import { Range } from '~/types/range';
 import { HistoryStockBR } from './models/history-stock-br';
+import { DataCryptos } from './models/data-cryptos';
+import { StatusCryptos } from './models/status-cryptos';
+import { Fiats } from './models/fiats';
 
 export const firebaseClient = () => {
   const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
@@ -30,6 +33,28 @@ export const firebaseClient = () => {
         );
         const data = await res.json();
         return data.stocks;
+      },
+      findCryptosData: async (
+        ids: Array<string>,
+        period: string,
+      ): Promise<DataCryptos> => {
+        const parametrizedIds = ids.join(',');
+        const res = await fetch(
+          `${FIREBASE_FUNCTIONS_URL}/findCryptosData/?ids=${parametrizedIds}&period=${period}`,
+        );
+        const data = await res.json();
+        console.log(data);
+        return data;
+      },
+      findAllCryptos: async (): Promise<StatusCryptos> => {
+        const res = await fetch(`${FIREBASE_FUNCTIONS_URL}/findAllCryptos`);
+        const data = await res.json();
+        return data;
+      },
+      findFiats: async (): Promise<Fiats> => {
+        const res = await fetch(`${FIREBASE_FUNCTIONS_URL}/findFiats`);
+        const data = await res.json();
+        return data;
       },
     },
     firestore: {
