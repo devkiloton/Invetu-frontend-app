@@ -7,13 +7,29 @@ import {
 } from '~/clients/firebase-client/models/history-stock-br';
 import { useAuth } from '~/lib/firebase';
 import getStocksHighestDateRange from '~/helpers/get-stocks-highest-date-range';
+import { DataCryptos } from '~/clients/firebase-client/models/data-cryptos';
+import {
+  CryptoCurrency,
+  StatusCryptos,
+} from '~/clients/firebase-client/models/status-cryptos';
+import { Fiats } from '~/clients/firebase-client/models/fiats';
 type InvestmentsData = {
   data: Record<string, Result>;
+  cryptos: {
+    statusCryptos: CryptoCurrency[];
+    dataCryptos: DataCryptos;
+  };
+  fiats: Fiats;
   asyncState: AsyncStateRedux;
 };
 
 const initialState: InvestmentsData = {
   data: {},
+  cryptos: {
+    statusCryptos: [],
+    dataCryptos: [],
+  },
+  fiats: [],
   asyncState: {
     isLoading: false,
     isLoaded: false,
@@ -91,6 +107,22 @@ export const fetchAllInvestmentsData: any = createAsyncThunk(
   },
 );
 
+export const fetchCryptoStatus: any = createAsyncThunk(
+  'investments-data/fetchCryptoStatus',
+  async () => {
+    const statusCryptos = await firebaseClient().functions.findAllCryptos();
+    return statusCryptos;
+  },
+);
+
+export const fetchFiats: any = createAsyncThunk(
+  'investments-data/fetchFiats',
+  async () => {
+    const fiats = await firebaseClient().functions.findFiats();
+    return fiats;
+  },
+);
+
 export const investmentsDataSlice = createSlice({
   name: 'investments-data',
   initialState,
@@ -123,6 +155,27 @@ export const investmentsDataSlice = createSlice({
       state.asyncState.error =
         action.error.message ?? new Error('Fetch investments failed').message;
     });
+    builder.addCase(
+      fetchCryptoStatus.fulfilled,
+      (state, action: PayloadAction<StatusCryptos>) => {
+        return {
+          ...state,
+          cryptos: {
+            ...state.cryptos,
+            statusCryptos: action.payload.result,
+          },
+        };
+      },
+    );
+    builder.addCase(
+      fetchFiats.fulfilled,
+      (state, action: PayloadAction<Fiats>) => {
+        return {
+          ...state,
+          fiats: action.payload,
+        };
+      },
+    );
   },
 });
 
