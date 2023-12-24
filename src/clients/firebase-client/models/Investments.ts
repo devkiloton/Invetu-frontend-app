@@ -4,7 +4,7 @@ export type Stock = {
   price: number;
   amount: number;
   startDate: string;
-  currency: 'BRL';
+  currency: 'BRL' | 'USD';
   type: 'real-state' | 'etf' | 'stock' | null;
 };
 
