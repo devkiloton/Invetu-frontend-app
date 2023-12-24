@@ -7,7 +7,7 @@ import Fuse from 'fuse.js';
 export default function DropdownCryptoInput({
   setCryptoCurrency,
 }: {
-  setCryptoCurrency: (ticker: string) => void;
+  setCryptoCurrency: (ticker: any) => void;
 }) {
   const [selected, setSelected] = useState<{
     name: string;
