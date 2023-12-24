@@ -4,6 +4,7 @@ import { fetchCryptoStatus } from '~/features/investments-data/investments-data-
 import AddFixedIncomeForm from './AddFixedIncomeForm';
 import AddStockForm from './AddStockForm';
 import AddCryptoForm from './AddCryptoForm';
+import AddStockUSAForm from './AddStockUSAForm';
 
 export default function AddInvestmentsForm() {
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
@@ -57,15 +58,14 @@ export default function AddInvestmentsForm() {
               onClick={event => handleTabChange(event, 'crypto')}>
               Cripto
             </a>
-            <a
-              className="tab disabled"
-              onClick={event => handleTabChange(event, 'usa')}>
+            <a className="tab" onClick={event => handleTabChange(event, 'usa')}>
               EUA
             </a>
           </div>
           {kind === 'stock' ? <AddStockForm /> : <></>}
           {kind === 'crypto' ? <AddCryptoForm /> : <></>}
           {kind === 'fixed-income' ? <AddFixedIncomeForm /> : <></>}
+          {kind === 'usa' ? <AddStockUSAForm /> : <></>}
         </div>
       </div>
     </div>
