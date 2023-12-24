@@ -25,7 +25,7 @@ export const initialEntitiesFactory = (userCredential: UserCredential) => {
         stocks: [],
         crypto: [],
         treasuries: [],
-        companyLoans: [],
+        fixedIncomes: [],
         cash: [],
       });
     } catch (error) {

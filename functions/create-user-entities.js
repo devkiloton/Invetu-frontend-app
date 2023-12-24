@@ -27,7 +27,7 @@ exports.createUserEntities = functions
           stocks: [],
           crypto: [],
           treasuries: [],
-          companyLoans: [],
+          fixedIncomes: [],
           cash: [],
         });
       return { users, investments };
