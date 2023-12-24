@@ -1,6 +1,6 @@
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '~/lib/firebase';
-import { Investments, Stock } from './models/Investments';
+import { Crypto, FixedIncome, Investments, Stock } from './models/Investments';
 import { Interval } from '~/types/interval';
 import { Range } from '~/types/range';
 import { HistoryStockBR } from './models/history-stock-br';
@@ -65,7 +65,7 @@ export const firebaseClient = () => {
           return docSnap.data() as Investments;
         },
         stocks: {
-          add: async (data: Stock): Promise<void> => {
+          add: async (data: Stock & { userID: string }): Promise<void> => {
             const investments = await client.firestore.investments.get(
               data.userID,
             );
@@ -75,7 +75,6 @@ export const firebaseClient = () => {
               amount: data.amount,
               startDate: data.startDate,
               currency: data.currency,
-              userID: data.userID,
               type: data.type,
             };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
@@ -106,6 +105,50 @@ export const firebaseClient = () => {
                 investments.investedAmount - stock.price * stock.amount,
               ),
               stocks: stocksUpdated,
+            });
+          },
+        },
+        fixedIncomes: {
+          add: async (
+            data: FixedIncome & { userID: string },
+          ): Promise<void> => {
+            const investments = await client.firestore.investments.get(
+              data.userID,
+            );
+            const fixedIncome: FixedIncome = {
+              investedAmount: data.investedAmount,
+              rateIndex: data.rateIndex,
+              rate: data.rate,
+              index: data.index,
+              currency: data.currency,
+              startDate: data.startDate,
+              endDate: data.endDate,
+            };
+            await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
+              investedAmount: Number(
+                investments.investedAmount + data.investedAmount,
+              ),
+              fixedIncomes: arrayUnion(fixedIncome),
+            });
+          },
+        },
+        cryptoCurrencies: {
+          add: async (data: Crypto & { userID: string }): Promise<void> => {
+            const investments = await client.firestore.investments.get(
+              data.userID,
+            );
+            const crypto: Crypto = {
+              ticker: data.ticker,
+              price: Number(data.price),
+              amount: data.amount,
+              startDate: data.startDate,
+              currency: data.currency,
+            };
+            await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
+              investedAmount: Number(
+                investments.investedAmount + data.price * data.amount,
+              ),
+              cryptos: arrayUnion(crypto),
             });
           },
         },
