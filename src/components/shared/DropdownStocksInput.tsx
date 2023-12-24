@@ -4,25 +4,33 @@ import { CheckIcon } from '@heroicons/react/20/solid';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { useDebounce } from '@uidotdev/usehooks';
+import useFuzzyStocksUS from '~/hooks/use-fuzzy-stocks-us';
 
 export default function DropdownStocksInput({
   setTicker,
+  country = 'BR',
 }: {
   setTicker: (ticker: string) => void;
+  country?: 'BR' | 'USA';
 }) {
   const [selected, setSelected] = useState('');
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 400);
   const [filteredStocks, setFilteredStocks] = useState<string[]>([]);
   const investments = useCustomSelector(state => state.investments);
+  const fuzzyStocksUS = useFuzzyStocksUS();
 
   useEffect(() => {
     if (query !== '' && query.length > 1 && query.length < 10) {
-      firebaseClient()
-        .functions.fuzzyStocksBR(query)
-        .then(response => {
-          setFilteredStocks(response);
-        });
+      if (country === 'USA') {
+        fuzzyStocksUS(query, setFilteredStocks);
+      } else {
+        firebaseClient()
+          .functions.fuzzyStocksBR(query)
+          .then(response => {
+            setFilteredStocks(response);
+          });
+      }
     }
   }, [debouncedQuery]);
 
@@ -42,7 +50,11 @@ export default function DropdownStocksInput({
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Input
             className="input input-bordered w-full max-w-xs"
-            placeholder="PETR4, VALE3, MXRF11, etc."
+            placeholder={
+              country === 'BR'
+                ? 'PETR4, VALE3, MXRF11, etc.'
+                : 'AAPL, MSFT, BA, etc.'
+            }
             displayValue={() => selected}
             onChange={event => setQuery(event.target.value)}
           />
