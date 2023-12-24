@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import PageContainer from '../containers/PageContainer';
-import AddStocksForm from '../forms/AddStocksForm';
 import AccountStats from '../shared/AccountStats';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
@@ -16,6 +15,7 @@ import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import InvestmentCard from '../shared/InvestmentCard';
 import Dividends from '../shared/Dividends';
 import { getCurrentBalanceFromManyStocks } from '~/helpers/get-current-balance-from-many-stocks';
+import AddInvestmentsForm from '../forms/AddInvestmentsForm';
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -95,7 +95,7 @@ export default function Home() {
         </div>
         <div className="flex gap-x-4">
           <div className="w-full h-full sticky top-24 max-w-120 hidden min-[1024px]:block ">
-            <AddStocksForm />
+            <AddInvestmentsForm />
           </div>
           <div className="w-full flex flex-col gap-4">
             {investmentsJoined.length === 0 && (
@@ -148,7 +148,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
             <Dialog.Panel className="max-w-120 w-full overflow-scroll max-h-[90vh]">
-              <AddStocksForm />
+              <AddInvestmentsForm />
             </Dialog.Panel>
           </div>
         </Dialog>
