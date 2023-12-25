@@ -8,6 +8,7 @@ import { DataCryptos } from './models/data-cryptos';
 import { StatusCryptos } from './models/status-cryptos';
 import { Fiats } from './models/fiats';
 import { FuzzyUS } from './models/fuzzy-us';
+import { HistoryStockUS } from './models/history-stock-us';
 
 export const firebaseClient = () => {
   const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
@@ -24,6 +25,14 @@ export const firebaseClient = () => {
         const parametrizedTickers = Array.from(unifyStocks).join(',');
         const res = await fetch(
           `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksBR?ids=${parametrizedTickers}&range=${range}&interval=${interval}`,
+        );
+        const data = await res.json();
+        return data;
+      },
+      findHistoryStocksUS: async (ids: string[]): Promise<HistoryStockUS> => {
+        const parametrizedIds = ids.join(',');
+        const res = await fetch(
+          `${FIREBASE_FUNCTIONS_URL}/findHistoryStocksUS/?ids=${parametrizedIds}&outputsize=full`,
         );
         const data = await res.json();
         return data;
