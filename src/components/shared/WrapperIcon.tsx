@@ -5,7 +5,5 @@ export default function WrapperIcon({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="p-4 rounded-badge bg-primary opacity-95">{children}</div>
-  );
+  return <div className="p-1 rounded-badge">{children}</div>;
 }
