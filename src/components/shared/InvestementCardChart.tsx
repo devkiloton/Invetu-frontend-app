@@ -12,7 +12,7 @@ export default function InvestementCardChart({
 }: {
   dates: string[];
   prices: number[];
-  range: Range;
+  range?: Range;
 }) {
   const [options] = useState<ApexOptions>(
     INVESTMENT_CARD_CHART_OPTIONS(dates, range),
