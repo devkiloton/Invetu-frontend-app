@@ -8,6 +8,7 @@ import ListboxIndexFixedIncome from '../shared/ListboxIndexFixedIncome';
 
 export default function AddFixedIncomeForm() {
   const [fixedIncomeData, setFixedIncomeData] = useState<FixedIncome>({
+    name: '',
     index: FixedIncomeIndex.CDI,
     rateIndex: 0,
     rate: 0,
@@ -44,6 +45,13 @@ export default function AddFixedIncomeForm() {
     setFixedIncomeData({
       ...fixedIncomeData,
       investedAmount: event.target.valueAsNumber,
+    });
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFixedIncomeData({
+      ...fixedIncomeData,
+      name: event.target.value,
     });
   };
 
@@ -97,6 +105,20 @@ export default function AddFixedIncomeForm() {
           <span className="label-text">Indexador</span>
         </label>
         <ListboxIndexFixedIncome onChange={handleIndexChange} />
+      </div>
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text">Nome do investimento</span>
+        </label>
+        <label className="input p-0">
+          <input
+            onChange={handleNameChange}
+            type="text"
+            required
+            placeholder="ex. Caixinha Nubank"
+            className="input input-bordered w-full"
+          />
+        </label>
       </div>
 
       <div className="form-control">
