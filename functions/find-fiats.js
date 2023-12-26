@@ -9,7 +9,12 @@ exports.findFiats = onRequest(
   (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     axios
-      .get(`${process.env.API_CRYPTO_URL}/fiats`)
+      .get(`${process.env.API_CRYPTO_URL}/fiats`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': process.env.API_CRYPTO_TOKEN,
+        },
+      })
       .then(response => res.status(200).send(response.data));
   },
 );
