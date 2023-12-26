@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import {
+  FixedIncome,
   Investments,
   Stock,
 } from '~/clients/firebase-client/models/Investments';
@@ -11,7 +12,7 @@ const initialState: Investments & { asyncState: AsyncStateRedux } = {
   stocks: [],
   cryptos: [],
   treasuries: [],
-  companyLoans: [],
+  fixedIncomes: [],
   cash: [],
   investedAmount: 0,
   asyncState: {
@@ -46,6 +47,11 @@ export const investmentsSlice = createSlice({
       state.investedAmount =
         state.investedAmount + action.payload.price * action.payload.amount;
     },
+    addFixedIncome: (state, action: PayloadAction<FixedIncome>) => {
+      state.fixedIncomes = [...state.fixedIncomes, action.payload];
+      state.investedAmount =
+        state.investedAmount + action.payload.investedAmount;
+    },
     deleteStock: (state, action: PayloadAction<string>) => {
       const stock = state.stocks.find(stock => stock.ticker === action.payload);
       if (!stock) return;
@@ -76,5 +82,6 @@ export const investmentsSlice = createSlice({
   },
 });
 
-export const { deleteStock, addStock } = investmentsSlice.actions;
+export const { deleteStock, addStock, addFixedIncome } =
+  investmentsSlice.actions;
 export const investmentsReducer = investmentsSlice.reducer;
