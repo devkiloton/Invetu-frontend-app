@@ -3,7 +3,7 @@ import { Range } from '~/types/range';
 
 export const INVESTMENT_CARD_CHART_OPTIONS = (
   dates: Array<string>,
-  range: Range,
+  range?: Range,
 ): ApexOptions => ({
   chart: {
     height: 250,
