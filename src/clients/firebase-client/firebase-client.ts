@@ -134,6 +134,7 @@ export const firebaseClient = () => {
               data.userID,
             );
             const fixedIncome: FixedIncome = {
+              name: data.name,
               investedAmount: data.investedAmount,
               rateIndex: data.rateIndex,
               rate: data.rate,

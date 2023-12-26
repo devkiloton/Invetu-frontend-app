@@ -32,6 +32,7 @@ export enum FixedIncomeIndex {
 }
 
 export type FixedIncome = {
+  name: string;
   investedAmount: number;
   rateIndex: number;
   rate?: number;
@@ -51,7 +52,7 @@ export type Investments = {
   stocks: Stock[];
   cryptos: Crypto[];
   treasuries: Treasuries[];
-  companyLoans: FixedIncome[];
+  fixedIncomes: FixedIncome[];
   cash: Cash[];
   investedAmount: number;
 };
