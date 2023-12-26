@@ -13,11 +13,20 @@ import {
   StatusCryptos,
 } from '~/clients/firebase-client/models/status-cryptos';
 import { Fiats } from '~/clients/firebase-client/models/fiats';
+import { HistoryIPCA } from '~/clients/bacen-client/models/history-ipca';
+import { HistoryCDI } from '~/clients/bacen-client/models/history-cdi';
+import bacenClient from '~/clients/bacen-client';
+
 type InvestmentsData = {
   data: Record<string, Result>;
   cryptos: {
     statusCryptos: CryptoCurrency[];
     dataCryptos: DataCryptos;
+  };
+  fixedIncomes: {
+    cdi: HistoryCDI;
+    ipca: HistoryIPCA;
+    asyncState: AsyncStateRedux;
   };
   fiats: Fiats;
   asyncState: AsyncStateRedux;
@@ -29,6 +38,15 @@ const initialState: InvestmentsData = {
     statusCryptos: [],
     dataCryptos: [],
   },
+  fixedIncomes: {
+    cdi: [],
+    ipca: [],
+    asyncState: {
+      isLoading: false,
+      isLoaded: false,
+      error: null,
+    },
+  },
   fiats: [],
   asyncState: {
     isLoading: false,
@@ -37,8 +55,8 @@ const initialState: InvestmentsData = {
   },
 };
 
-export const fetchAllInvestmentsData: any = createAsyncThunk(
-  'investments-data/fetchAllInvestmentsData',
+export const fetchAllStocksData: any = createAsyncThunk(
+  'investments-data/fetchAllStocksData',
   async (_arg, { getState }) => {
     const state = getState() as any;
     if (state.investmentsData.asyncState.isLoaded) return state.investmentsData;
@@ -123,6 +141,17 @@ export const fetchFiats: any = createAsyncThunk(
   },
 );
 
+export const fetchAllFixedIncomeData: any = createAsyncThunk(
+  'investments-data/fetchAllFixedIncomeData',
+  async () => {
+    const cdi = await bacenClient().cdi.findHistory();
+    const ipca = await bacenClient().ipca.findHistory();
+    const fixedIncomes = { cdi, ipca };
+
+    return fixedIncomes;
+  },
+);
+
 export const investmentsDataSlice = createSlice({
   name: 'investments-data',
   initialState,
@@ -138,11 +167,11 @@ export const investmentsDataSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(fetchAllInvestmentsData.pending, state => {
+    builder.addCase(fetchAllStocksData.pending, state => {
       state.asyncState.isLoading = true;
     });
     builder.addCase(
-      fetchAllInvestmentsData.fulfilled,
+      fetchAllStocksData.fulfilled,
       (_state, action: PayloadAction<InvestmentsData>) => {
         return {
           ...action.payload,
@@ -150,7 +179,7 @@ export const investmentsDataSlice = createSlice({
         };
       },
     );
-    builder.addCase(fetchAllInvestmentsData.rejected, (state, action) => {
+    builder.addCase(fetchAllStocksData.rejected, (state, action) => {
       state.asyncState.isLoading = false;
       state.asyncState.error =
         action.error.message ?? new Error('Fetch investments failed').message;
@@ -173,6 +202,27 @@ export const investmentsDataSlice = createSlice({
         return {
           ...state,
           fiats: action.payload,
+        };
+      },
+    );
+    builder.addCase(
+      fetchAllFixedIncomeData.fulfilled,
+      (
+        state,
+        action: PayloadAction<{ cdi: HistoryCDI; ipca: HistoryIPCA }>,
+      ) => {
+        return {
+          ...state,
+          fixedIncomes: {
+            ...state.fixedIncomes,
+            cdi: action.payload.cdi,
+            ipca: action.payload.ipca,
+            asyncState: {
+              isLoading: false,
+              isLoaded: true,
+              error: null,
+            },
+          },
         };
       },
     );
