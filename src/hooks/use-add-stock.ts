@@ -6,23 +6,32 @@ import { addStockData } from '~/features/investments-data/investments-data-slice
 import { addStock } from '~/features/investments/investments-slice';
 import getBestInterval from '~/helpers/get-best-interval';
 import getNearestDateRange from '~/helpers/get-nearest-date-range';
+import { useAuth } from '~/lib/firebase';
 
 function useAddStock() {
   const dispatch = useDispatch();
+  const auth = useAuth();
   return useCallback(
     (stock: Stock) => {
-      firebaseClient().firestore.investments.stocks.add(stock);
+      firebaseClient().firestore.investments.stocks.add({
+        ...stock,
+        userID: auth.currentUser?.uid!,
+      });
       const nearestRange = getNearestDateRange(stock.startDate);
-      firebaseClient()
-        .functions.findHistoryStocksBR(
-          [stock.ticker],
-          nearestRange,
-          getBestInterval(nearestRange),
-        )
-        .then(res => {
-          dispatch(addStockData(res[0].results[0]));
-          dispatch(addStock(stock));
-        });
+      if (stock.currency === 'BRL') {
+        firebaseClient()
+          .functions.findHistoryStocksBR(
+            [stock.ticker],
+            nearestRange,
+            getBestInterval(nearestRange),
+          )
+          .then(res => {
+            dispatch(addStockData(res[0].results[0]));
+            dispatch(addStock(stock));
+          });
+      } else {
+        // Handle USD
+      }
     },
     [dispatch],
   );
