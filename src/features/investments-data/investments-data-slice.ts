@@ -174,7 +174,8 @@ export const investmentsDataSlice = createSlice({
       fetchAllStocksData.fulfilled,
       (_state, action: PayloadAction<InvestmentsData>) => {
         return {
-          ...action.payload,
+          ..._state,
+          data: action.payload.data,
           asyncState: { isLoading: false, error: null, isLoaded: true },
         };
       },
