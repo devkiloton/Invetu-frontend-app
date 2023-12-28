@@ -10,7 +10,8 @@
     "npm": ">=9.5.0"
   },
   "scripts": {
-    "start": "vite",
+    "dev": "vite",
+    "deploy": "npm run build && npm run serve",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "lint": "eslint --fix --ext .ts,.tsx .",
