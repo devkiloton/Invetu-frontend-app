@@ -9,12 +9,11 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
   const stockMap: Record<string, Stock> = {};
 
   stocks.forEach(stock => {
-    const { userID, ticker, price, amount, startDate, currency, type } = stock;
-    const stockKey = `${userID}_${ticker}_${currency}`;
+    const { ticker, price, amount, startDate, currency, type } = stock;
+    const stockKey = `${ticker}_${currency}`;
 
     if (!stockMap[stockKey]) {
       stockMap[stockKey] = {
-        userID,
         ticker,
         price,
         amount,
