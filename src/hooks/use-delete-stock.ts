@@ -1,14 +1,25 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { deleteStockData } from '~/features/investments-data/investments-data-slice';
 import { deleteStock } from '~/features/investments/investments-slice';
+import { useAuth } from '~/lib/firebase';
+import useTooltip from './use-tooltip';
 
 function useDeleteStock() {
   const dispatch = useDispatch();
+  const auth = useAuth();
+  const tooltip = useTooltip();
   return useCallback(
     (ticker: string) => {
-      dispatch(deleteStock(ticker));
-      dispatch(deleteStockData(ticker));
+      if (auth.currentUser?.uid !== undefined)
+        firebaseClient()
+          .firestore.investments.stocks.delete(auth.currentUser?.uid, ticker)
+          .then(() => {
+            dispatch(deleteStock(ticker));
+            dispatch(deleteStockData(ticker));
+            tooltip('Ação removida com sucesso!');
+          });
     },
     [dispatch],
   );
