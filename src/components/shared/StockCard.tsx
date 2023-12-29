@@ -103,7 +103,6 @@ function StockCard(
                 {props.amount}
               </span>
               <span className="text-sm  font-semibold">
-                {/* There is something pretty wrong here, the avg price isnt updating when adding a new stock */}
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
                 {props.price.toFixed(2)}
               </span>
