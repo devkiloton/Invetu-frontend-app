@@ -5,6 +5,7 @@ exports.findCryptosData = onRequest(
   {
     secrets: ['API_CRYPTO_TOKEN', 'API_CRYPTO_URL'],
     region: 'southamerica-east1',
+    timeoutSeconds: 30,
   },
   (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
