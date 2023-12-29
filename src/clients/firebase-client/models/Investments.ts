@@ -10,6 +10,7 @@ export type Stock = {
 
 export type Crypto = {
   ticker: string;
+  name: string;
   price: number;
   amount: number;
   startDate: string;
