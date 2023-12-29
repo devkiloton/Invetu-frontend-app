@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import {
+  Crypto,
   FixedIncome,
   Investments,
   Stock,
@@ -47,11 +48,6 @@ export const investmentsSlice = createSlice({
       state.investedAmount =
         state.investedAmount + action.payload.price * action.payload.amount;
     },
-    addFixedIncome: (state, action: PayloadAction<FixedIncome>) => {
-      state.fixedIncomes = [...state.fixedIncomes, action.payload];
-      state.investedAmount =
-        state.investedAmount + action.payload.investedAmount;
-    },
     deleteStock: (state, action: PayloadAction<string>) => {
       const stock = state.stocks.find(stock => stock.ticker === action.payload);
       if (!stock) return;
@@ -59,6 +55,27 @@ export const investmentsSlice = createSlice({
       state.stocks = state.stocks.filter(
         stock => stock.ticker !== action.payload,
       );
+    },
+    addCrypto: (state, action: PayloadAction<Crypto>) => {
+      state.cryptos = [...state.cryptos, action.payload];
+      state.investedAmount =
+        state.investedAmount + action.payload.price * action.payload.amount;
+    },
+    deleteCrypto: (state, action: PayloadAction<string>) => {
+      const crypto = state.cryptos.find(
+        crypto => crypto.ticker === action.payload,
+      );
+      if (!crypto) return;
+      state.investedAmount =
+        state.investedAmount - crypto.price * crypto.amount;
+      state.cryptos = state.cryptos.filter(
+        crypto => crypto.ticker !== action.payload,
+      );
+    },
+    addFixedIncome: (state, action: PayloadAction<FixedIncome>) => {
+      state.fixedIncomes = [...state.fixedIncomes, action.payload];
+      state.investedAmount =
+        state.investedAmount + action.payload.investedAmount;
     },
   },
   extraReducers: builder => {
@@ -82,6 +99,11 @@ export const investmentsSlice = createSlice({
   },
 });
 
-export const { deleteStock, addStock, addFixedIncome } =
-  investmentsSlice.actions;
+export const {
+  deleteStock,
+  addStock,
+  addFixedIncome,
+  addCrypto,
+  deleteCrypto,
+} = investmentsSlice.actions;
 export const investmentsReducer = investmentsSlice.reducer;
