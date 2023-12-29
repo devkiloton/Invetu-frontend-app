@@ -4,12 +4,12 @@ import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { deleteStockData } from '~/features/investments-data/investments-data-slice';
 import { deleteStock } from '~/features/investments/investments-slice';
 import { useAuth } from '~/lib/firebase';
-import useTooltip from './use-tooltip';
+import useSnackbar from './use-snackbar';
 
 function useDeleteStock() {
   const dispatch = useDispatch();
   const auth = useAuth();
-  const tooltip = useTooltip();
+  const tooltip = useSnackbar();
   return useCallback(
     (ticker: string) => {
       if (auth.currentUser?.uid !== undefined)

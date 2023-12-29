@@ -4,12 +4,12 @@ import { Crypto } from '~/clients/firebase-client/models/Investments';
 import { addCryptoData } from '~/features/investments-data/investments-data-slice';
 import { addCrypto } from '~/features/investments/investments-slice';
 import { useAuth } from '~/lib/firebase';
-import useTooltip from './use-tooltip';
+import useSnackbar from './use-snackbar';
 
 function useAddCrypto() {
   const dispatch = useDispatch();
   const auth = useAuth();
-  const tooltip = useTooltip();
+  const tooltip = useSnackbar();
 
   return (investment: Crypto) => {
     firebaseClient()
