@@ -35,11 +35,15 @@ const Index = () => {
             <p className="text-xs text-center mt-8">
               Ao entrar, você concorda com
               <br /> nossos{' '}
-              <a className="text-blue-600" href="/#">
+              <a
+                className="text-blue-600"
+                href="https://invetu.com/legal/terms-of-use">
                 termos de serviço
               </a>{' '}
               e{' '}
-              <a className="text-blue-600" href="/#">
+              <a
+                className="text-blue-600"
+                href="https://invetu.com/legal/privacy-policy">
                 privacidade
               </a>
               .
