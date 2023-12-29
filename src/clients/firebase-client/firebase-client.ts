@@ -61,7 +61,6 @@ export const firebaseClient = () => {
           `${FIREBASE_FUNCTIONS_URL}/findCryptosData/?ids=${parametrizedIds}&period=${period}`,
         );
         const data = await res.json();
-        console.log(data);
         return data;
       },
       findAllCryptos: async (): Promise<StatusCryptos> => {
@@ -157,6 +156,7 @@ export const firebaseClient = () => {
               data.userID,
             );
             const crypto: Crypto = {
+              name: data.name,
               ticker: data.ticker,
               price: Number(data.price),
               amount: data.amount,
@@ -168,6 +168,22 @@ export const firebaseClient = () => {
                 investments.investedAmount + data.price * data.amount,
               ),
               cryptos: arrayUnion(crypto),
+            });
+          },
+          delete: async (userID: string, ticker: string): Promise<void> => {
+            const investments = await client.firestore.investments.get(userID);
+            const crypto = investments.cryptos.find(
+              crypto => crypto.ticker === ticker,
+            );
+            const cryptosUpdated = investments.cryptos.filter(
+              crypto => crypto.ticker !== ticker,
+            );
+            if (!crypto) return;
+            await updateDoc(doc(firestore, 'investments', `${userID}`), {
+              investedAmount: Number(
+                investments.investedAmount - crypto.price * crypto.amount,
+              ),
+              cryptos: cryptosUpdated,
             });
           },
         },
