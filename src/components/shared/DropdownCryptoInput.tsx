@@ -7,12 +7,13 @@ import Fuse from 'fuse.js';
 export default function DropdownCryptoInput({
   setCryptoCurrency,
 }: {
-  setCryptoCurrency: (ticker: any) => void;
+  setCryptoCurrency: (id: string, name: string) => void;
 }) {
   const [selected, setSelected] = useState<{
     name: string;
     imageUrl: string;
-  }>({ name: '', imageUrl: '' });
+    id: string;
+  }>({ name: '', imageUrl: '', id: '' });
   const [query, setQuery] = useState('');
   const [filteredCryptocurrencies, setFilteredCryptocurrencies] = useState<
     Array<{
@@ -45,7 +46,7 @@ export default function DropdownCryptoInput({
 
   useEffect(() => {
     if (selected.name !== '') {
-      setCryptoCurrency(selected.name);
+      setCryptoCurrency(selected.id, selected.name);
     }
   }, [selected]);
 
@@ -53,6 +54,7 @@ export default function DropdownCryptoInput({
     setSelected({
       name: '',
       imageUrl: '',
+      id: '',
     });
   }, [statusCryptos]);
 

@@ -14,6 +14,7 @@ export default function AddCryptoForm() {
     amount: 0,
     startDate: '',
     currency: 'BRL',
+    name: '',
   });
 
   const handleDateDeposit = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,12 +38,11 @@ export default function AddCryptoForm() {
     });
   };
 
-  const handleCryptocurrencyChange = (
-    ticker: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleCryptocurrencyChange = (ticker: string, name: string) => {
     setCryptoData({
       ...cryptoData,
-      ticker: ticker.target.value,
+      ticker,
+      name,
     });
   };
 
