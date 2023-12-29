@@ -8,6 +8,8 @@ import { fetchInvestments } from '~/features/investments/investments-slice';
 import {
   fetchAllFixedIncomeData,
   fetchAllStocksData,
+  fetchCryptoData,
+  fetchCryptoStatus,
   fetchFiats,
 } from '~/features/investments-data/investments-data-slice';
 
@@ -27,6 +29,8 @@ function Main() {
         dispatch(fetchAllStocksData());
         dispatch(fetchAllFixedIncomeData());
         dispatch(fetchFiats());
+        dispatch(fetchCryptoStatus());
+        dispatch(fetchCryptoData());
       } else {
         signOut();
       }
