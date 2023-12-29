@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
-import { Stock } from '~/clients/firebase-client/models/Investments';
+import { Crypto, Stock } from '~/clients/firebase-client/models/Investments';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import { RADIAL_CHART_OPTIONS } from '~/constants/radial-chart-options';
 import { getDataStocksThisMonth } from '~/helpers/get-data-stock-this-month';
@@ -11,12 +11,13 @@ import getProfit from '~/helpers/get-profit';
 import getStockAllocation from '~/helpers/get-stock-allocation';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { valueToPercent } from '~/helpers/value-to-percent';
+import { isStock } from '~/type-guards/is-stock';
 
 const RadialChart = ({
   investments,
   results,
 }: {
-  investments: Array<Stock>;
+  investments: Array<Stock | Crypto>;
   results: Array<Result>;
 }) => {
   const [series, setSeries] = useState<Array<number>>([]);
@@ -25,7 +26,7 @@ const RadialChart = ({
   async function getSeries() {
     const cdi = bacenClient().cdi.findAccumulatedCurrentMonth();
     const ibov = getIbov();
-    const portfolio = investments
+    const userInvestments = investments
       .map(stock => {
         const result = results.find(
           stockHistory => stockHistory.symbol === stock.ticker,
@@ -50,12 +51,14 @@ const RadialChart = ({
           return (allocation * variation) / 100;
         }
         // take all the investements before this month
-        const investimentsBeforeThisMonth = investments.filter(
-          value =>
-            new Date(value.startDate).getTime() <
-            dataStockThisMonth.firstDay.date * 1000,
-        );
-        // join  them
+        const investimentsBeforeThisMonth = investments
+          .filter(isStock)
+          .filter(
+            value =>
+              new Date(value.startDate).getTime() <
+              dataStockThisMonth.firstDay.date * 1000,
+          );
+        // join them
         const joinedStockData = joinStockData(investimentsBeforeThisMonth);
         // take the value of each one
         const investimentsBeforeThisMonthValue = joinedStockData
@@ -84,7 +87,7 @@ const RadialChart = ({
       .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     return await Promise.all([ibov, cdi]).then(values => {
-      return [portfolio, Number(values[0]), Number(values[1][0].valor)];
+      return [userInvestments, Number(values[0]), Number(values[1][0].valor)];
     });
   }
 
