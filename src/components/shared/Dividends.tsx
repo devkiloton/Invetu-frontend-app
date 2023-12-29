@@ -20,7 +20,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     >
   >([]);
   const investmentsDataStore = useCustomSelector(
-    state => state.investmentsData.data,
+    state => state.investmentsData.stocks.stockData,
   );
 
   function getValidAdvices() {
