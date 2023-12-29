@@ -56,11 +56,6 @@ function InvestmentCard(
 
   const deleteSelectedStock = useCallback(() => {
     deleteStock(props.ticker);
-    if (auth.currentUser?.uid !== undefined)
-      firebaseClient().firestore.investments.stocks.delete(
-        auth.currentUser?.uid,
-        props.ticker,
-      );
   }, [props.ticker, auth.currentUser?.uid]);
 
   return (
