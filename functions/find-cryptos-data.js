@@ -7,6 +7,8 @@ exports.findCryptosData = onRequest(
     region: 'southamerica-east1',
   },
   (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+
     const idsString = req.query.ids.split(',');
     const period = req.query.period;
 
