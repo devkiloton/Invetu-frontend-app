@@ -98,6 +98,11 @@ export const INVESTMENT_CARD_CHART_OPTIONS = (
       style: {
         cssClass: 'fill-base-content',
       },
+      formatter: (value: number) =>
+        new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(value),
     },
   },
   tooltip: {
