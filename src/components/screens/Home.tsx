@@ -24,6 +24,7 @@ import CryptoCard from '../shared/CryptoCard';
 import Dividends from '../shared/Dividends';
 import RadialChart from '../shared/RadialChart';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
+import { joinCryptoData } from '~/helpers/joiN-crypto-data';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 
@@ -41,13 +42,13 @@ export default function Home() {
 
   useEffect(() => {
     if (investmentsStore.asyncState.isLoaded === false) return;
-    const stocks = investmentsStore.stocks;
-    // const fixedIncomes = investmentsStore.fixedIncomes;
-    const cryptos = investmentsStore.cryptos;
-    const orderedDataByVolume = joinStockData(stocks).sort((a, b) => {
-      return b.amount * b.price - a.amount * a.price;
-    });
-    setInvestmentsJoined([...orderedDataByVolume, ...cryptos]);
+    const joinedStocks = joinStockData(investmentsStore.stocks);
+    const joinedCryptos = joinCryptoData(investmentsStore.cryptos);
+
+    const orderedInvestments = [...joinedStocks, ...joinedCryptos].sort(
+      invvestment => invvestment.amount,
+    );
+    setInvestmentsJoined(orderedInvestments);
   }, [investmentsDataStore]);
 
   useEffect(() => {
