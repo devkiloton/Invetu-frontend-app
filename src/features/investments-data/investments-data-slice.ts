@@ -7,7 +7,10 @@ import {
 } from '~/clients/firebase-client/models/history-stock-br';
 import { useAuth } from '~/lib/firebase';
 import getStocksHighestDateRange from '~/helpers/get-stocks-highest-date-range';
-import { DataCryptos } from '~/clients/firebase-client/models/data-cryptos';
+import {
+  DataCryptos,
+  HistoryCryptoUS,
+} from '~/clients/firebase-client/models/data-cryptos';
 import {
   CryptoCurrency,
   StatusCryptos,
@@ -18,25 +21,40 @@ import { HistoryCDI } from '~/clients/bacen-client/models/history-cdi';
 import bacenClient from '~/clients/bacen-client';
 
 type InvestmentsData = {
-  data: Record<string, Result>;
+  stocks: { stockData: Record<string, Result>; asyncState: AsyncStateRedux };
   cryptos: {
     statusCryptos: CryptoCurrency[];
     dataCryptos: DataCryptos;
+    asyncState: AsyncStateRedux;
   };
   fixedIncomes: {
     cdi: HistoryCDI;
     ipca: HistoryIPCA;
     asyncState: AsyncStateRedux;
   };
-  fiats: Fiats;
-  asyncState: AsyncStateRedux;
+  fiats: {
+    fiatData: Fiats;
+    asyncState: AsyncStateRedux;
+  };
 };
 
 const initialState: InvestmentsData = {
-  data: {},
+  stocks: {
+    stockData: {},
+    asyncState: {
+      isLoading: false,
+      isLoaded: false,
+      error: null,
+    },
+  },
   cryptos: {
     statusCryptos: [],
     dataCryptos: [],
+    asyncState: {
+      isLoading: false,
+      isLoaded: false,
+      error: null,
+    },
   },
   fixedIncomes: {
     cdi: [],
@@ -47,11 +65,13 @@ const initialState: InvestmentsData = {
       error: null,
     },
   },
-  fiats: [],
-  asyncState: {
-    isLoading: false,
-    isLoaded: false,
-    error: null,
+  fiats: {
+    fiatData: [],
+    asyncState: {
+      isLoading: false,
+      isLoaded: false,
+      error: null,
+    },
   },
 };
 
@@ -133,6 +153,22 @@ export const fetchCryptoStatus: any = createAsyncThunk(
   },
 );
 
+export const fetchCryptoData: any = createAsyncThunk(
+  'investments-data/fetchCryptoData',
+  async () => {
+    const auth = useAuth();
+    const uid = auth.currentUser?.uid;
+    if (!uid) throw new Error('User not found');
+    const investments = await firebaseClient().firestore.investments.get(uid);
+    const joinedCryptos = investments.cryptos.map(crypto => crypto.ticker);
+    const dataCryptos = await firebaseClient().functions.findCryptosData(
+      joinedCryptos,
+      'all',
+    );
+    return dataCryptos;
+  },
+);
+
 export const fetchFiats: any = createAsyncThunk(
   'investments-data/fetchFiats',
   async () => {
@@ -157,34 +193,53 @@ export const investmentsDataSlice = createSlice({
   initialState,
   reducers: {
     addStockData: (state, action: PayloadAction<Result>) => {
-      state.data = {
-        ...state.data,
-        [action.payload.symbol]: action.payload,
+      state.stocks = {
+        stockData: {
+          ...state.stocks.stockData,
+          [action.payload.symbol]: action.payload,
+        },
+        asyncState: { isLoading: false, error: null, isLoaded: true },
       };
     },
     deleteStockData: (state, action: PayloadAction<string>) => {
-      delete state.data[action.payload];
+      delete state.stocks.stockData[action.payload];
+    },
+    addCryptoData: (state, action: PayloadAction<HistoryCryptoUS>) => {
+      state.cryptos.dataCryptos = [
+        ...state.cryptos.dataCryptos,
+        action.payload,
+      ];
+    },
+    deleteCryptoData: (state, action: PayloadAction<string>) => {
+      state.cryptos.dataCryptos = state.cryptos.dataCryptos.filter(
+        crypto => crypto.id !== action.payload,
+      );
     },
   },
   extraReducers: builder => {
+    // Stocks extra reducers
     builder.addCase(fetchAllStocksData.pending, state => {
-      state.asyncState.isLoading = true;
+      state.stocks.asyncState.isLoading = true;
     });
     builder.addCase(
       fetchAllStocksData.fulfilled,
-      (_state, action: PayloadAction<InvestmentsData>) => {
+      (_state, action: PayloadAction<{ data: Record<string, Result> }>) => {
         return {
           ..._state,
-          data: action.payload.data,
-          asyncState: { isLoading: false, error: null, isLoaded: true },
+          stocks: {
+            ..._state.stocks,
+            stockData: action.payload.data,
+            asyncState: { isLoading: false, error: null, isLoaded: true },
+          },
         };
       },
     );
     builder.addCase(fetchAllStocksData.rejected, (state, action) => {
-      state.asyncState.isLoading = false;
-      state.asyncState.error =
+      state.stocks.asyncState.isLoading = false;
+      state.stocks.asyncState.error =
         action.error.message ?? new Error('Fetch investments failed').message;
     });
+    // Cryptos extra reducers
     builder.addCase(
       fetchCryptoStatus.fulfilled,
       (state, action: PayloadAction<StatusCryptos>) => {
@@ -193,19 +248,41 @@ export const investmentsDataSlice = createSlice({
           cryptos: {
             ...state.cryptos,
             statusCryptos: action.payload.result,
+            asyncState: {
+              isLoading: false,
+              isLoaded: true,
+              error: null,
+            },
           },
         };
       },
     );
     builder.addCase(
+      fetchCryptoData.fulfilled,
+      (state, action: PayloadAction<DataCryptos>) => {
+        return {
+          ...state,
+          cryptos: {
+            ...state.cryptos,
+            dataCryptos: action.payload,
+          },
+        };
+      },
+    );
+    // Fiats extra reducers
+    builder.addCase(
       fetchFiats.fulfilled,
       (state, action: PayloadAction<Fiats>) => {
         return {
           ...state,
-          fiats: action.payload,
+          fiats: {
+            ...state.fiats,
+            fiatData: action.payload,
+          },
         };
       },
     );
+    // Fixed Income extra reducers
     builder.addCase(
       fetchAllFixedIncomeData.fulfilled,
       (
@@ -230,5 +307,10 @@ export const investmentsDataSlice = createSlice({
   },
 });
 
-export const { addStockData, deleteStockData } = investmentsDataSlice.actions;
+export const {
+  addStockData,
+  deleteStockData,
+  addCryptoData,
+  deleteCryptoData,
+} = investmentsDataSlice.actions;
 export const investmentsDataReducer = investmentsDataSlice.reducer;
