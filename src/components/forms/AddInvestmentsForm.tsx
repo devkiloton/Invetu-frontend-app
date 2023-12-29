@@ -1,6 +1,4 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchCryptoStatus } from '~/features/investments-data/investments-data-slice';
 import AddFixedIncomeForm from './AddFixedIncomeForm';
 import AddStockForm from './AddStockForm';
 import AddCryptoForm from './AddCryptoForm';
@@ -12,8 +10,6 @@ export default function AddInvestmentsForm() {
   const [kind, setKind] = useState<'stock' | 'fixed-income' | 'crypto' | 'usa'>(
     'stock',
   );
-
-  const dispatch = useDispatch();
 
   function handleTabChange(
     event: MouseEvent<HTMLAnchorElement>,
@@ -30,12 +26,6 @@ export default function AddInvestmentsForm() {
     defaultTab.current?.classList.add('tab-active');
     setActiveTab(defaultTab.current as HTMLAnchorElement);
   }, []);
-
-  useEffect(() => {
-    if (kind === 'crypto') {
-      dispatch(fetchCryptoStatus());
-    }
-  }, [kind]);
 
   return (
     <div className="w-full relative">
