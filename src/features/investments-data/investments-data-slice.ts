@@ -161,6 +161,7 @@ export const fetchCryptoData: any = createAsyncThunk(
     if (!uid) throw new Error('User not found');
     const investments = await firebaseClient().firestore.investments.get(uid);
     const joinedCryptos = investments.cryptos.map(crypto => crypto.ticker);
+    if (joinedCryptos.length === 0) return Promise.resolve([]);
     const dataCryptos = await firebaseClient().functions.findCryptosData(
       joinedCryptos,
       'all',

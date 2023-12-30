@@ -24,7 +24,7 @@ import CryptoCard from '../shared/CryptoCard';
 import Dividends from '../shared/Dividends';
 import RadialChart from '../shared/RadialChart';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
-import { joinCryptoData } from '~/helpers/joiN-crypto-data';
+import { joinCryptoData } from '~/helpers/join-crypto-data';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 

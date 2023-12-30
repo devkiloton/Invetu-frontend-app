@@ -8,6 +8,7 @@ import {
 } from '~/clients/firebase-client/models/Investments';
 import { AsyncStateRedux } from '../types/async-state';
 import { useAuth } from '~/lib/firebase';
+import { isNil } from 'lodash-es';
 
 const initialState: Investments & { asyncState: AsyncStateRedux } = {
   stocks: [],
@@ -84,7 +85,10 @@ export const investmentsSlice = createSlice({
     });
     builder.addCase(
       fetchInvestments.fulfilled,
-      (_state, action: PayloadAction<Investments>) => {
+      (state, action: PayloadAction<Investments>) => {
+        if (isNil(action.payload)) {
+          return state;
+        }
         return {
           ...action.payload,
           asyncState: { isLoading: false, error: null, isLoaded: true },
