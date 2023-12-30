@@ -9,15 +9,6 @@ exports.createUserEntities = functions
   .auth.user()
   .onCreate(async user => {
     try {
-      const users = await admin
-        .firestore()
-        .collection('users')
-        .doc(user.uid)
-        .set({
-          email: user.email,
-          uid: user.uid,
-        });
-
       const investments = await admin
         .firestore()
         .collection('investments')
@@ -30,9 +21,8 @@ exports.createUserEntities = functions
           fixedIncomes: [],
           cash: [],
         });
-      return { users, investments };
+      return { investments };
     } catch (error) {
-      console.log(error);
       return error;
     }
   });
