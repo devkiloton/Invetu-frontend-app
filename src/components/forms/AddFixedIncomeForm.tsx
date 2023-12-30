@@ -100,6 +100,14 @@ export default function AddFixedIncomeForm() {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div
+        className="tooltip tooltip-error w-full z-0"
+        data-tip="Ops, funcionalidade em desenvolvimento">
+        <label className="cursor-pointer label">
+          <span className="label-text">Adicionar IR regressivo</span>
+          <input type="checkbox" className="toggle toggle-primary" disabled />
+        </label>
+      </div>
       <div className="form-control">
         <label className="label">
           <span className="label-text">Indexador</span>

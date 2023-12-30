@@ -58,7 +58,11 @@ export default function AddCryptoForm() {
     <form onSubmit={handleSubmit}>
       <label className="cursor-pointer label">
         <span className="label-text">Adicionar endereço de wallet</span>
-        <input type="checkbox" className="toggle toggle-primary" disabled />
+        <div
+          className="tooltip tooltip-error w-full z-0"
+          data-tip="Ops, funcionalidade em desenvolvimento">
+          <input type="checkbox" className="toggle toggle-primary" disabled />
+        </div>
       </label>
       <div className="form-control">
         <label className="label">
