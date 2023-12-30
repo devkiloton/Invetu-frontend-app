@@ -25,7 +25,7 @@ exports.createUserEntities = functions
         .set({
           investedAmount: 0,
           stocks: [],
-          crypto: [],
+          cryptos: [],
           treasuries: [],
           fixedIncomes: [],
           cash: [],
