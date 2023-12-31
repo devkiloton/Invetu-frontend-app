@@ -13,9 +13,15 @@ export const bacenClient = () => {
         ).then(res => res.json());
         return cdi;
       },
-      findHistory: async (): Promise<HistoryCDI> => {
+      findMonthlyHistory: async (): Promise<HistoryCDI> => {
         const cdiHistory = (await fetch(
           `${API_URL}/dados/serie/bcdata.sgs.4391/dados?formato=json`,
+        ).then(res => res.json())) as HistoryCDI;
+        return cdiHistory;
+      },
+      findDailyHistory: async (): Promise<HistoryCDI> => {
+        const cdiHistory = (await fetch(
+          `${API_URL}/dados/serie/bcdata.sgs.12/dados?formato=json`,
         ).then(res => res.json())) as HistoryCDI;
         return cdiHistory;
       },
