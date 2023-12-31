@@ -14,7 +14,7 @@ export default function AddFixedIncomeForm() {
     rate: 0,
     startDate: '',
     endDate: '',
-    investedAmount: 0,
+    amount: 0,
     currency: 'BRL',
   });
 
@@ -44,7 +44,7 @@ export default function AddFixedIncomeForm() {
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFixedIncomeData({
       ...fixedIncomeData,
-      investedAmount: event.target.valueAsNumber,
+      amount: event.target.valueAsNumber,
     });
   };
 
@@ -75,15 +75,14 @@ export default function AddFixedIncomeForm() {
   ) => {
     setFixedIncomeData({
       ...fixedIncomeData,
-      rate: event.target.valueAsNumber,
+      rateIndex: event.target.valueAsNumber,
     });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (fixedIncomeData.investedAmount === 0)
-      return alert('Amount is required');
-    if (fixedIncomeData.rate === 0) return alert('Rate is required');
+    if (fixedIncomeData.amount === 0) return alert('Amount is required');
+    if (fixedIncomeData.rateIndex === 0) return alert('Rate is required');
     if (fixedIncomeData.startDate === '')
       return alert('Start date is required');
     addFixedIncome(fixedIncomeData);
@@ -93,7 +92,7 @@ export default function AddFixedIncomeForm() {
       rate: 0,
       startDate: '',
       endDate: '',
-      investedAmount: 0,
+      amount: 0,
       currency: 'BRL',
     });
   };
