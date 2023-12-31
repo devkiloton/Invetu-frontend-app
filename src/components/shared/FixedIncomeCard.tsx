@@ -25,7 +25,7 @@ function FixedIncomeCard(
       new Date(props.startDate),
       isNil(props?.endDate) ? new Date() : new Date(props.endDate),
       props.amount,
-      props.rateIndex,
+      props.rate,
     ).then(profit => {
       setProfit(profit);
     });

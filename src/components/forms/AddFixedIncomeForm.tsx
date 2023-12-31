@@ -10,7 +10,6 @@ export default function AddFixedIncomeForm() {
   const [fixedIncomeData, setFixedIncomeData] = useState<FixedIncome>({
     name: '',
     index: FixedIncomeIndex.CDI,
-    rateIndex: 0,
     rate: 0,
     startDate: '',
     endDate: '',
@@ -75,20 +74,18 @@ export default function AddFixedIncomeForm() {
   ) => {
     setFixedIncomeData({
       ...fixedIncomeData,
-      rateIndex: event.target.valueAsNumber,
+      rate: event.target.valueAsNumber,
     });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (fixedIncomeData.amount === 0) return alert('Amount is required');
-    if (fixedIncomeData.rateIndex === 0) return alert('Rate is required');
     if (fixedIncomeData.startDate === '')
       return alert('Start date is required');
     addFixedIncome(fixedIncomeData);
     setFixedIncomeData({
       ...fixedIncomeData,
-      rateIndex: 0,
       rate: 0,
       startDate: '',
       endDate: '',

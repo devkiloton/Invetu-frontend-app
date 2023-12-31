@@ -35,8 +35,7 @@ export enum FixedIncomeIndex {
 export type FixedIncome = {
   name: string;
   amount: number;
-  rateIndex: number;
-  rate?: number;
+  rate: number;
   index: FixedIncomeIndex;
   currency: 'BRL';
   startDate: string;
