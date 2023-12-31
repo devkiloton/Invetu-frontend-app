@@ -22,15 +22,16 @@ import { isCrypto } from '~/type-guards/is-crypto';
 import StockCard from '../shared/StockCard';
 import CryptoCard from '../shared/CryptoCard';
 import Dividends from '../shared/Dividends';
-import RadialChart from '../shared/RadialChart';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import { joinCryptoData } from '~/helpers/join-crypto-data';
+import FixedIncomeCard from '../shared/FixedIncomeCard';
+import RadialChart from '../shared/RadialChart';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 
 export default function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<
-    Array<Stock | Crypto>
+    Array<Stock | Crypto | FixedIncome>
   >([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(0);
@@ -44,10 +45,13 @@ export default function Home() {
     if (investmentsStore.asyncState.isLoaded === false) return;
     const joinedStocks = joinStockData(investmentsStore.stocks);
     const joinedCryptos = joinCryptoData(investmentsStore.cryptos);
+    const fixedIncomes = investmentsStore.fixedIncomes;
 
-    const orderedInvestments = [...joinedStocks, ...joinedCryptos].sort(
-      invvestment => invvestment.amount,
-    );
+    const orderedInvestments = [
+      ...joinedStocks,
+      ...joinedCryptos,
+      ...fixedIncomes,
+    ].sort(investment => investment.amount);
     setInvestmentsJoined(orderedInvestments);
   }, [investmentsDataStore]);
 
@@ -85,8 +89,15 @@ export default function Home() {
             />
           );
         default:
-          // const fixedIncome = investment as FixedIncome;
-          return <></>;
+          const fixedIncome = investment as FixedIncome;
+          return (
+            <FixedIncomeCard
+              key={fixedIncome.name}
+              {...fixedIncome}
+              currentBalance={currentBalance}
+              investedAmount={investmentsStore.investedAmount}
+            />
+          );
       }
     },
     [investmentsDataStore, investmentsStore, currentBalance],
