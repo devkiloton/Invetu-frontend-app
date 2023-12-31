@@ -73,6 +73,18 @@ export const firebaseClient = () => {
         const data = await res.json();
         return data;
       },
+      getProfitCdi: async (
+        startDate: number,
+        endDate: number,
+        amount: number,
+        tax: number,
+      ): Promise<number> => {
+        const res = await fetch(
+          `${FIREBASE_FUNCTIONS_URL}/getProfitCdi/?startDate=${startDate}&endDate=${endDate}&amount=${amount}&tax=${tax}`,
+        );
+        const data = await res.json();
+        return data;
+      },
     },
     firestore: {
       investments: {
@@ -132,20 +144,9 @@ export const firebaseClient = () => {
             const investments = await client.firestore.investments.get(
               data.userID,
             );
-            const fixedIncome: FixedIncome = {
-              name: data.name,
-              investedAmount: data.investedAmount,
-              rateIndex: data.rateIndex,
-              rate: data.rate,
-              index: data.index,
-              currency: data.currency,
-              startDate: data.startDate,
-              endDate: data.endDate,
-            };
+            const fixedIncome: FixedIncome = { ...data };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
-              investedAmount: Number(
-                investments.investedAmount + data.investedAmount,
-              ),
+              investedAmount: Number(investments.investedAmount + data.amount),
               fixedIncomes: arrayUnion(fixedIncome),
             });
           },
