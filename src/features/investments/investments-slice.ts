@@ -75,8 +75,7 @@ export const investmentsSlice = createSlice({
     },
     addFixedIncome: (state, action: PayloadAction<FixedIncome>) => {
       state.fixedIncomes = [...state.fixedIncomes, action.payload];
-      state.investedAmount =
-        state.investedAmount + action.payload.investedAmount;
+      state.investedAmount = state.investedAmount + action.payload.amount;
     },
   },
   extraReducers: builder => {
