@@ -18,7 +18,7 @@ export type Crypto = {
 };
 
 export type Treasuries = {
-  investedAmount: number;
+  amount: number;
   rate: number;
   operation: 'pre' | 'post' | 'inflation';
   currency: 'BRL';
@@ -34,7 +34,7 @@ export enum FixedIncomeIndex {
 
 export type FixedIncome = {
   name: string;
-  investedAmount: number;
+  amount: number;
   rateIndex: number;
   rate?: number;
   index: FixedIncomeIndex;
@@ -44,7 +44,7 @@ export type FixedIncome = {
 };
 
 export type Cash = {
-  investedAmount: number;
+  amount: number;
   currency: 'BRL';
   startDate: string;
 };
