@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
-import { Crypto, Stock } from '~/clients/firebase-client/models/Investments';
+import {
+  Crypto,
+  FixedIncome,
+  Stock,
+} from '~/clients/firebase-client/models/Investments';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import { RADIAL_CHART_OPTIONS } from '~/constants/radial-chart-options';
 import { getDataStocksThisMonth } from '~/helpers/get-data-stock-this-month';
@@ -17,7 +21,7 @@ const RadialChart = ({
   investments,
   results,
 }: {
-  investments: Array<Stock | Crypto>;
+  investments: Array<Stock | Crypto | FixedIncome>;
   results: Array<Result>;
 }) => {
   const [series, setSeries] = useState<Array<number>>([]);
