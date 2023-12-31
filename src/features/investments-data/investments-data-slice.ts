@@ -28,7 +28,10 @@ type InvestmentsData = {
     asyncState: AsyncStateRedux;
   };
   fixedIncomes: {
-    cdi: HistoryCDI;
+    cdi: {
+      monthly: HistoryCDI;
+      daily: HistoryCDI;
+    };
     ipca: HistoryIPCA;
     asyncState: AsyncStateRedux;
   };
@@ -57,7 +60,10 @@ const initialState: InvestmentsData = {
     },
   },
   fixedIncomes: {
-    cdi: [],
+    cdi: {
+      monthly: [],
+      daily: [],
+    },
     ipca: [],
     asyncState: {
       isLoading: false,
@@ -181,7 +187,9 @@ export const fetchFiats: any = createAsyncThunk(
 export const fetchAllFixedIncomeData: any = createAsyncThunk(
   'investments-data/fetchAllFixedIncomeData',
   async () => {
-    const cdi = await bacenClient().cdi.findHistory();
+    const cdiMonthly = await bacenClient().cdi.findMonthlyHistory();
+    const cdiDaily = await bacenClient().cdi.findDailyHistory();
+    const cdi = { monthly: cdiMonthly, daily: cdiDaily };
     const ipca = await bacenClient().ipca.findHistory();
     const fixedIncomes = { cdi, ipca };
 
@@ -288,7 +296,13 @@ export const investmentsDataSlice = createSlice({
       fetchAllFixedIncomeData.fulfilled,
       (
         state,
-        action: PayloadAction<{ cdi: HistoryCDI; ipca: HistoryIPCA }>,
+        action: PayloadAction<{
+          cdi: {
+            monthly: HistoryCDI;
+            daily: HistoryCDI;
+          };
+          ipca: HistoryIPCA;
+        }>,
       ) => {
         return {
           ...state,
