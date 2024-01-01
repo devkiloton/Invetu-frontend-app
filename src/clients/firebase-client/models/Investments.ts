@@ -39,7 +39,7 @@ export type FixedIncome = {
   index: FixedIncomeIndex;
   currency: 'BRL';
   startDate: string;
-  endDate?: string;
+  endDate: string | null;
 };
 
 export type Cash = {
