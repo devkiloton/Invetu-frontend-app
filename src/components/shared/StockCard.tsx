@@ -10,6 +10,7 @@ import { Range } from '~/types/range';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import useDeleteStock from '~/hooks/use-delete-stock';
+import { useUsLogos } from '~/hooks/use-us-logos';
 
 function StockCard(
   props: Stock & { investedAmount: number; currentBalance: number },
@@ -24,6 +25,7 @@ function StockCard(
     state => state.investmentsData,
   );
   const deleteStock = useDeleteStock();
+  const usLogos = useUsLogos();
 
   useEffect(() => {
     setStockInfo(
@@ -71,9 +73,19 @@ function StockCard(
             <div className="flex items-center gap-x-2">
               {stockInfo?.logourl !==
                 'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
+                props.currency === 'BRL' &&
                 stockInfo?.logourl !== 'https://brapi.dev/favicon.svg' && (
-                  <img className="h-8 w-8 rounded" src={stockInfo?.logourl} />
+                  <img
+                    className="h-8 w-8 rounded drop-shadow"
+                    src={stockInfo?.logourl}
+                  />
                 )}
+              {props.currency === 'USD' && (
+                <img
+                  className="h-8 w-8 rounded drop-shadow"
+                  src={usLogos(props.ticker)}
+                />
+              )}
 
               <h2 className="card-title">{props.ticker}</h2>
             </div>
@@ -145,9 +157,13 @@ function StockCard(
           )}
 
           <div className="card-actions">
-            <button disabled className="btn btn-primary w-full">
-              Mais detalhes
-            </button>
+            <div
+              className="tooltip tooltip-error w-full z-0"
+              data-tip="Ops, funcionalidade em desenvolvimento">
+              <button disabled className="btn btn-primary w-full">
+                Mais detalhes
+              </button>
+            </div>
           </div>
         </div>
       </div>
