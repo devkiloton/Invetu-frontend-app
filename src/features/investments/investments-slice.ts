@@ -77,6 +77,16 @@ export const investmentsSlice = createSlice({
       state.fixedIncomes = [...state.fixedIncomes, action.payload];
       state.investedAmount = state.investedAmount + action.payload.amount;
     },
+    deleteFixedIncome: (state, action: PayloadAction<string>) => {
+      const fixedIncome = state.fixedIncomes.find(
+        fixedIncome => fixedIncome.name === action.payload,
+      );
+      if (!fixedIncome) return;
+      state.investedAmount = state.investedAmount - fixedIncome.amount;
+      state.fixedIncomes = state.fixedIncomes.filter(
+        fixedIncome => fixedIncome.name !== action.payload,
+      );
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchInvestments.pending, state => {
@@ -106,6 +116,7 @@ export const {
   deleteStock,
   addStock,
   addFixedIncome,
+  deleteFixedIncome,
   addCrypto,
   deleteCrypto,
 } = investmentsSlice.actions;

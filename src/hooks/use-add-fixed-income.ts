@@ -4,10 +4,12 @@ import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { FixedIncome } from '~/clients/firebase-client/models/Investments';
 import { addFixedIncome } from '~/features/investments/investments-slice';
 import { useAuth } from '~/lib/firebase';
+import useSnackbar from './use-snackbar';
 
 function useAddFixedIncome() {
   const dispatch = useDispatch();
   const auth = useAuth();
+  const snackbar = useSnackbar();
   return useCallback(
     (investment: FixedIncome) => {
       firebaseClient()
@@ -17,6 +19,7 @@ function useAddFixedIncome() {
         })
         .then(() => {
           dispatch(addFixedIncome(investment));
+          snackbar('Investimento adicionado com sucesso!');
         });
     },
     [dispatch],
