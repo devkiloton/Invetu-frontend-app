@@ -1,9 +1,14 @@
+/* eslint-disable no-case-declarations */
 import { isNil, isNull } from 'lodash-es';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FixedIncome } from '~/clients/firebase-client/models/Investments';
+import {
+  FixedIncome,
+  FixedIncomeIndex,
+} from '~/clients/firebase-client/models/Investments';
 import { getProfitCdi } from '~/helpers/get-profit-cdi';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import InvestementCardChart from './InvestementCardChart';
+import { getProfitPre } from '~/helpers/get-profit-pre';
 
 function FixedIncomeCard(
   props: FixedIncome & { investedAmount: number; currentBalance: number },
@@ -21,46 +26,76 @@ function FixedIncomeCard(
     state => state.investmentsData.fixedIncomes,
   );
   useEffect(() => {
-    getProfitCdi(
-      new Date(props.startDate),
-      isNil(props?.endDate) ? new Date() : new Date(props.endDate),
-      props.amount,
-      props.rate,
-    ).then(profit => {
-      setProfit(profit);
-    });
+    switch (props.index) {
+      case FixedIncomeIndex.CDI:
+        getProfitCdi(
+          new Date(props.startDate),
+          isNil(props?.endDate) ? new Date() : new Date(props.endDate),
+          props.amount,
+          props.rate,
+        ).then(profit => {
+          setProfit(profit);
+        });
+        break;
+      case FixedIncomeIndex.PRE:
+        const data = getProfitPre(
+          new Date(props.startDate),
+          isNil(props?.endDate) ? new Date() : new Date(props.endDate),
+          props.amount,
+          props.rate,
+        );
+        setProfit(data.totalProfit / props.amount);
+        setChartData({
+          dates: data.dates.map(date => date.toISOString()),
+          prices: data.prices,
+        });
+        console.log(profit);
+        break;
+      default:
+        break;
+    }
   }, [fixedIncomeData]);
 
   useEffect(() => {
     if (!investmentsDataStore.asyncState.isLoaded) return;
-    const data = investmentsDataStore.cdi.daily
-      .map(daily => {
-        return {
-          date: new Date(daily.data.split('/').reverse().join('-')),
-          value: Number(daily.valor),
-        };
-      })
-      .filter(
-        dailyFormatted =>
-          dailyFormatted.date.getTime() > new Date(props.startDate).getTime() &&
-          dailyFormatted.date.getTime() <=
-            new Date(props?.endDate ?? new Date()).getTime() + 86400000,
-      )
-      .map(finalValue => ({
-        date: finalValue.date.toISOString(),
-        value: Number(finalValue.value),
-      }));
-    const dates = data.map(daily => daily.date);
-    // Calculate the daily earnings using the daily taxes with reduce
-    const prices = data.reduce(
-      (acc, curr) => {
-        const lastValue = acc[acc.length - 1];
-        const newValue = lastValue * (1 + curr.value / 100);
-        return [...acc, newValue];
-      },
-      [props.amount],
-    );
-    setChartData({ dates, prices });
+    switch (props.index) {
+      case FixedIncomeIndex.CDI:
+        const data = investmentsDataStore.cdi.daily
+          .map(daily => {
+            return {
+              date: new Date(daily.data.split('/').reverse().join('-')),
+              value: Number(daily.valor),
+            };
+          })
+          .filter(
+            dailyFormatted =>
+              dailyFormatted.date.getTime() >
+                new Date(props.startDate).getTime() &&
+              dailyFormatted.date.getTime() <=
+                new Date(props?.endDate ?? new Date()).getTime() + 86400000,
+          )
+          .map(finalValue => ({
+            date: finalValue.date.toISOString(),
+            value: Number(finalValue.value),
+          }));
+        const dates = data.map(daily => daily.date);
+        // Calculate the daily earnings using the daily taxes with reduce
+        const prices = data.reduce(
+          (acc, curr) => {
+            const lastValue = acc[acc.length - 1];
+            const newValue = lastValue * (1 + curr.value / 100);
+            return [...acc, newValue];
+          },
+          [props.amount],
+        );
+        setChartData({ dates, prices });
+        break;
+      case FixedIncomeIndex.PRE:
+        // Already solved in the useEffect above
+        break;
+      default:
+        break;
+    }
   }, [investmentsDataStore]);
 
   const deleteSelectedFixedIncome = useCallback(() => {}, []);
@@ -116,7 +151,7 @@ function FixedIncomeCard(
               {new Intl.NumberFormat('pt-BR', {
                 style: 'percent',
                 maximumFractionDigits: 2,
-              }).format(profit / 100)}
+              }).format((profit / 100) * 100 - 1)}
             </span>
             {/* <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Carteira:</span> %{' '}
