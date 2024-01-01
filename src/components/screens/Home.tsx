@@ -116,10 +116,10 @@ export default function Home() {
             <div className="glassy-border rounded-2xl p-4 md:p-8">
               <h1 className="font-semibold">Resultados desse mês</h1>
               <div className="flex justify-center">
-                <RadialChart
+                {/* <RadialChart
                   investments={investmentsJoined}
                   results={stocksHistory!}
-                />
+                /> */}
               </div>
             </div>
             <div
@@ -147,9 +147,9 @@ export default function Home() {
               </div>
             )}
 
-            {investmentsJoined.length > 0 && (
+            {/* {investmentsJoined.length > 0 && (
               <Dividends stocks={investmentsStore.stocks} />
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex gap-x-4">
