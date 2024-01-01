@@ -5,6 +5,7 @@ import {
   FixedIncomeIndex,
 } from '~/clients/firebase-client/models/Investments';
 import ListboxIndexFixedIncome from '../shared/ListboxIndexFixedIncome';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
 
 export default function AddFixedIncomeForm() {
   const [fixedIncomeData, setFixedIncomeData] = useState<FixedIncome>({
@@ -18,6 +19,7 @@ export default function AddFixedIncomeForm() {
   });
 
   const addFixedIncome = useAddFixedIncome();
+  const investments = useCustomSelector(state => state.investments);
 
   const handleDateDeposit = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFixedIncomeData({
@@ -83,6 +85,11 @@ export default function AddFixedIncomeForm() {
     if (fixedIncomeData.amount === 0) return alert('Amount is required');
     if (fixedIncomeData.startDate === '')
       return alert('Start date is required');
+    const isNameUsed = investments.fixedIncomes.some(
+      fixedIncome => fixedIncome.name === fixedIncomeData.name,
+    );
+    if (fixedIncomeData.name === '') return alert('Name is required');
+    if (isNameUsed) return alert('Name is already used');
     addFixedIncome(fixedIncomeData);
     setFixedIncomeData({
       ...fixedIncomeData,
