@@ -13,31 +13,35 @@ export default function AddStockForm() {
   const auth = useAuth();
   const addStock = useAddStock();
 
-  const handleSubmitStock = useCallback((event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (ticker === '') return alert('Ticker is required');
-    if (priceInput.current?.value === 0) return alert('Price is required');
-    if (amountInput.current?.value === 0) return alert('Amount is required');
+  const handleSubmitStock = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (ticker === '') return alert('Ticker is required');
+      if (priceInput.current?.value === 0) return alert('Price is required');
+      if (amountInput.current?.value === 0) return alert('Amount is required');
 
-    const price = priceInput.current?.valueAsNumber as number;
-    const amount = amountInput.current?.valueAsNumber as number;
-    if (auth.currentUser?.uid !== undefined) {
-      const data: Stock = {
-        ticker,
-        price,
-        amount,
-        startDate,
-        currency: 'BRL',
-        type: 'stock',
-      };
+      const price = priceInput.current?.valueAsNumber as number;
+      const amount = amountInput.current?.valueAsNumber as number;
+      if (auth.currentUser?.uid !== undefined) {
+        const data: Stock = {
+          ticker,
+          price,
+          amount,
+          startDate,
+          currency: 'BRL',
+          type: 'stock',
+        };
 
-      addStock(data);
-      setTicker('');
-      priceInput.current!.value = '';
-      amountInput.current!.value = '';
-      setStartDate(new Date().toISOString());
-    }
-  }, []);
+        addStock(data);
+        setTicker('');
+        priceInput.current!.value = '';
+        amountInput.current!.value = '';
+        setStartDate(new Date().toISOString());
+      }
+    },
+    [ticker, startDate, priceInput, amountInput],
+  );
+
   return (
     <form onSubmit={handleSubmitStock}>
       <div className="form-control">
