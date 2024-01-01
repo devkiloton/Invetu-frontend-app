@@ -210,10 +210,7 @@ export const investmentsDataSlice = createSlice({
   reducers: {
     addStockData: (state, action: PayloadAction<Result>) => {
       state.stocks = {
-        stockData: {
-          ...state.stocks.stockData,
-          [action.payload.symbol]: action.payload,
-        },
+        stockData: [...state.stocks.stockData, action.payload],
         asyncState: { isLoading: false, error: null, isLoaded: true },
       };
     },
