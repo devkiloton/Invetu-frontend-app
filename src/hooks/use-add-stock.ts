@@ -20,21 +20,18 @@ function useAddStock() {
         userID: auth.currentUser?.uid!,
       });
       const nearestRange = getNearestDateRange(stock.startDate);
-      if (stock.currency === 'BRL') {
-        firebaseClient()
-          .functions.findHistoryStocksBR(
-            [stock.ticker],
-            nearestRange,
-            getBestInterval(nearestRange),
-          )
-          .then(res => {
-            dispatch(addStockData(res[0].results[0]));
-            dispatch(addStock(stock));
-            snackbar('Ação adicionada com sucesso!');
-          });
-      } else {
-        // Handle USD
-      }
+
+      firebaseClient()
+        .functions.findHistoryStocksBR(
+          [stock.ticker],
+          nearestRange,
+          getBestInterval(nearestRange),
+        )
+        .then(res => {
+          dispatch(addStockData(res[0].results[0]));
+          dispatch(addStock(stock));
+          snackbar('Ação adicionada com sucesso!');
+        });
     },
     [dispatch],
   );
