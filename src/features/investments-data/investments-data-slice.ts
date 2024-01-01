@@ -21,7 +21,7 @@ import { HistoryCDI } from '~/clients/bacen-client/models/history-cdi';
 import bacenClient from '~/clients/bacen-client';
 
 type InvestmentsData = {
-  stocks: { stockData: Record<string, Result>; asyncState: AsyncStateRedux };
+  stocks: { stockData: Result[]; asyncState: AsyncStateRedux };
   cryptos: {
     statusCryptos: CryptoCurrency[];
     dataCryptos: DataCryptos;
@@ -43,7 +43,7 @@ type InvestmentsData = {
 
 const initialState: InvestmentsData = {
   stocks: {
-    stockData: {},
+    stockData: [],
     asyncState: {
       isLoading: false,
       isLoaded: false,
@@ -85,7 +85,8 @@ export const fetchAllStocksData: any = createAsyncThunk(
   'investments-data/fetchAllStocksData',
   async (_arg, { getState }) => {
     const state = getState() as any;
-    if (state.investmentsData.asyncState.isLoaded) return state.investmentsData;
+    if (state.investmentsData.stocks.asyncState.isLoaded)
+      return state.investmentsData.stocks.stockData;
     const auth = useAuth();
     const uid = auth.currentUser?.uid;
     if (!uid) throw new Error('User not found');
@@ -110,7 +111,10 @@ export const fetchAllStocksData: any = createAsyncThunk(
             },
             {} as Record<string, Result>,
           );
-          return { data };
+          return [
+            ...Object.values(data),
+            ...state.investmentsData.stocks.stockData,
+          ];
         });
     } else {
       // Create two promises, one for the stocks with max range and another for the stocks with the highest range, then join them in a way that has the same signature as the first if block
@@ -146,7 +150,10 @@ export const fetchAllStocksData: any = createAsyncThunk(
         },
         {} as Record<string, Result>,
       );
-      return { data: { ...maxRangeData, ...highestRangeData } };
+      return [
+        ...Object.values(maxRangeData),
+        ...Object.values(highestRangeData),
+      ];
     }
   },
 );
@@ -211,7 +218,9 @@ export const investmentsDataSlice = createSlice({
       };
     },
     deleteStockData: (state, action: PayloadAction<string>) => {
-      delete state.stocks.stockData[action.payload];
+      state.stocks.stockData = state.stocks.stockData.filter(
+        stock => stock.symbol !== action.payload,
+      );
     },
     addCryptoData: (state, action: PayloadAction<HistoryCryptoUS>) => {
       state.cryptos.dataCryptos = [
@@ -232,12 +241,13 @@ export const investmentsDataSlice = createSlice({
     });
     builder.addCase(
       fetchAllStocksData.fulfilled,
-      (_state, action: PayloadAction<{ data: Record<string, Result> }>) => {
+      (_state, action: PayloadAction<Result[]>) => {
+        console.log(action.payload);
         return {
           ..._state,
           stocks: {
             ..._state.stocks,
-            stockData: action.payload.data,
+            stockData: action.payload,
             asyncState: { isLoading: false, error: null, isLoaded: true },
           },
         };
