@@ -51,7 +51,6 @@ function FixedIncomeCard(
           dates: data.dates.map(date => date.toISOString()),
           prices: data.prices,
         });
-        console.log(profit);
         break;
       default:
         break;
@@ -108,11 +107,6 @@ function FixedIncomeCard(
       <div className="card-body p-4 md:p-8">
         <div className="flex justify-between">
           <div className="flex items-center gap-x-2">
-            <img
-              className="h-8 w-8 rounded"
-              src="https://i1.wp.com/www.showmetech.com.br/wp-content/uploads/2017/04/Negao_da_picona-1.jpg?w=700&ssl=1"
-            />
-
             <h2 className="card-title">{props.name}</h2>
           </div>
 
