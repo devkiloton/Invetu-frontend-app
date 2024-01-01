@@ -144,10 +144,34 @@ export const firebaseClient = () => {
             const investments = await client.firestore.investments.get(
               data.userID,
             );
-            const fixedIncome: FixedIncome = { ...data };
+            const fixedIncome: FixedIncome = {
+              name: data.name,
+              amount: data.amount,
+              rate: data.rate,
+              index: data.index,
+              currency: data.currency,
+              startDate: data.startDate,
+              endDate: data.endDate,
+            };
             await updateDoc(doc(firestore, 'investments', `${data.userID}`), {
               investedAmount: Number(investments.investedAmount + data.amount),
               fixedIncomes: arrayUnion(fixedIncome),
+            });
+          },
+          delete: async (userID: string, name: string): Promise<void> => {
+            const investments = await client.firestore.investments.get(userID);
+            const fixedIncome = investments.fixedIncomes.find(
+              fixedIncome => fixedIncome.name === name,
+            );
+            const fixedIncomesUpdated = investments.fixedIncomes.filter(
+              fixedIncome => fixedIncome.name !== name,
+            );
+            if (!fixedIncome) return;
+            await updateDoc(doc(firestore, 'investments', `${userID}`), {
+              investedAmount: Number(
+                investments.investedAmount - fixedIncome.amount,
+              ),
+              fixedIncomes: fixedIncomesUpdated,
             });
           },
         },
