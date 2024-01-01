@@ -9,6 +9,7 @@ import { getProfitCdi } from '~/helpers/get-profit-cdi';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import InvestementCardChart from './InvestementCardChart';
 import { getProfitPre } from '~/helpers/get-profit-pre';
+import { useDeleteFixedIncome } from '~/hooks/use-delete-fixed-income';
 
 function FixedIncomeCard(
   props: FixedIncome & { investedAmount: number; currentBalance: number },
@@ -25,6 +26,7 @@ function FixedIncomeCard(
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData.fixedIncomes,
   );
+  const deleteFixedIncome = useDeleteFixedIncome();
   useEffect(() => {
     switch (props.index) {
       case FixedIncomeIndex.CDI:
@@ -98,7 +100,9 @@ function FixedIncomeCard(
     }
   }, [investmentsDataStore]);
 
-  const deleteSelectedFixedIncome = useCallback(() => {}, []);
+  const deleteSelectedFixedIncome = useCallback(() => {
+    deleteFixedIncome(props.name);
+  }, []);
   return (
     <div className="card bg-base-100 shadow-xl glassy-border z-0">
       <div className="card-body p-4 md:p-8">
