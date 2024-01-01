@@ -13,7 +13,7 @@ export default function AddFixedIncomeForm() {
     index: FixedIncomeIndex.CDI,
     rate: 0,
     startDate: '',
-    endDate: '',
+    endDate: null,
     amount: 0,
     currency: 'BRL',
   });
@@ -95,7 +95,7 @@ export default function AddFixedIncomeForm() {
       ...fixedIncomeData,
       rate: 0,
       startDate: '',
-      endDate: '',
+      endDate: null,
       amount: 0,
       currency: 'BRL',
     });
