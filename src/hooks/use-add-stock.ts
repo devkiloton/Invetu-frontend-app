@@ -7,10 +7,12 @@ import { addStock } from '~/features/investments/investments-slice';
 import getBestInterval from '~/helpers/get-best-interval';
 import getNearestDateRange from '~/helpers/get-nearest-date-range';
 import { useAuth } from '~/lib/firebase';
+import useSnackbar from './use-snackbar';
 
 function useAddStock() {
   const dispatch = useDispatch();
   const auth = useAuth();
+  const snackbar = useSnackbar();
   return useCallback(
     (stock: Stock) => {
       firebaseClient().firestore.investments.stocks.add({
@@ -28,6 +30,7 @@ function useAddStock() {
           .then(res => {
             dispatch(addStockData(res[0].results[0]));
             dispatch(addStock(stock));
+            snackbar('Ação adicionada com sucesso!');
           });
       } else {
         // Handle USD
