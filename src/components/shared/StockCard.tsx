@@ -1,4 +1,4 @@
-import { isNull } from 'lodash-es';
+import { isNil, isNull } from 'lodash-es';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import InvestementCardChart from './InvestementCardChart';
@@ -26,23 +26,30 @@ function StockCard(
   const deleteStock = useDeleteStock();
 
   useEffect(() => {
-    if (!investmentsDataStore.stocks.asyncState.isLoaded) return;
-    setStockInfo(investmentsDataStore.stocks.stockData[props.ticker]);
-  }, [investmentsDataStore.stocks]);
+    setStockInfo(
+      investmentsDataStore.stocks.stockData.find(
+        stock => stock.symbol === props.ticker,
+      ) ?? null,
+    );
+  }, [investmentsDataStore]);
 
   useEffect(() => {
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
 
-    const results = investmentsDataStore.stocks.stockData[props.ticker];
+    const results = investmentsDataStore.stocks.stockData.find(
+      stock => stock.symbol === props.ticker,
+    );
 
     // Dates that will be used in the chart X axis
-    const dates = results.historicalDataPrice
+    const dates = results?.historicalDataPrice
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
       .map(price => price.date * 1000 - 10800000)
       // filtering dates that are greater than the start date or the range is 1d
       .filter(value => value > Date.parse(props.startDate) || range === '1d')
       // converting dates to ISO string
       .map(value => new Date(value).toISOString());
+
+    if (isNil(dates) || isNil(results)) return;
     setChartData({
       range,
       dates,
