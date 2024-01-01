@@ -178,9 +178,13 @@ function FixedIncomeCard(
         )}
 
         <div className="card-actions">
-          <button disabled className="btn btn-primary w-full">
-            Mais detalhes
-          </button>
+          <div
+            className="tooltip tooltip-error w-full z-0"
+            data-tip="Ops, funcionalidade em desenvolvimento">
+            <button disabled className="btn btn-primary w-full">
+              Mais detalhes
+            </button>
+          </div>
         </div>
       </div>
     </div>
