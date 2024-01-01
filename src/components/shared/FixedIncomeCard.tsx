@@ -10,6 +10,7 @@ import { useCustomSelector } from '~/hooks/use-custom-selector';
 import InvestementCardChart from './InvestementCardChart';
 import { getProfitPre } from '~/helpers/get-profit-pre';
 import { useDeleteFixedIncome } from '~/hooks/use-delete-fixed-income';
+import { getprofitIpca } from '~/helpers/get-profit-ipca';
 
 function FixedIncomeCard(
   props: FixedIncome & { investedAmount: number; currentBalance: number },
@@ -30,9 +31,24 @@ function FixedIncomeCard(
   useEffect(() => {
     switch (props.index) {
       case FixedIncomeIndex.CDI:
+        const lastCdiElement =
+          investmentsDataStore.cdi.daily[
+            investmentsDataStore.cdi.daily.length - 1
+          ];
+        const now = new Date();
+        // If the endDate is null, it means that the investment is still active and should use the last cdi date
+        if (isNil(lastCdiElement)) return;
+        const cdiLastDate = new Date(
+          lastCdiElement.data.split('/').reverse().join('-'),
+        );
+        // If the endDate has passed away, it should use the endDate
+        const endDate =
+          !isNull(props.endDate) && new Date(props.endDate) < now
+            ? new Date(props.endDate)
+            : cdiLastDate;
         getProfitCdi(
           new Date(props.startDate),
-          isNil(props?.endDate) ? new Date() : new Date(props.endDate),
+          endDate,
           props.amount,
           props.rate,
         ).then(profit => {
@@ -40,19 +56,32 @@ function FixedIncomeCard(
         });
         break;
       case FixedIncomeIndex.PRE:
-        const data = getProfitPre(
+        const dataPre = getProfitPre(
           new Date(props.startDate),
           isNil(props?.endDate) ? new Date() : new Date(props.endDate),
           props.amount,
           props.rate,
         );
-        setProfit(data.totalProfit / props.amount);
+        setProfit(dataPre.totalProfit / props.amount);
         setChartData({
-          dates: data.dates.map(date => date.toISOString()),
-          prices: data.prices,
+          dates: dataPre.dates.map(date => date.toISOString()),
+          prices: dataPre.prices,
         });
         break;
       default:
+        const ipcaHistory = fixedIncomeData.ipca;
+        const dataIpca = getprofitIpca(
+          new Date(props.startDate),
+          isNil(props?.endDate) ? new Date() : new Date(props.endDate),
+          props.amount,
+          props.rate,
+          ipcaHistory,
+        );
+        setProfit(dataIpca.totalProfit / props.amount);
+        setChartData({
+          dates: dataIpca.dates.map(date => date.toISOString()),
+          prices: dataIpca.prices,
+        });
         break;
     }
   }, [fixedIncomeData]);
@@ -95,6 +124,7 @@ function FixedIncomeCard(
         // Already solved in the useEffect above
         break;
       default:
+        // Already solved in the useEffect above
         break;
     }
   }, [investmentsDataStore]);
