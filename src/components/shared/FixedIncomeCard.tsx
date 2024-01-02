@@ -77,6 +77,7 @@ function FixedIncomeCard(
           props.rate,
           ipcaHistory,
         );
+        if (isNull(dataIpca)) return;
         setProfit(dataIpca.totalProfit / props.amount);
         setChartData({
           dates: dataIpca.dates.map(date => date.toISOString()),
