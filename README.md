@@ -19,15 +19,13 @@
 </p>
 
 ## Overview
+
 ![Overview](https://github.com/devkiloton/react-vite-app/assets/78966160/8089f440-0a5b-48c2-8710-712c76087b52)
 
 ## Important versions
+
 <details><summary>0.0.1-alpha</summary>
   <li>After 3 weekends(and a few days in the week) of development, took the decision to create a landing page and make Invetu available for free.</li>
   <li>Some components are presenting bugs, the application make too many request and the functionalities are very limited. I am aware of these issues and I'll improve the application in the next versions</li>
   <li>The baby is born! 🔥</li>
 </details>
-
-
-
-
