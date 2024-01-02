@@ -239,7 +239,6 @@ export const investmentsDataSlice = createSlice({
     builder.addCase(
       fetchAllStocksData.fulfilled,
       (_state, action: PayloadAction<Result[]>) => {
-        console.log(action.payload);
         return {
           ..._state,
           stocks: {
