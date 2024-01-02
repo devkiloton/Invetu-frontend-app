@@ -149,6 +149,7 @@ function StockCard(
                 Variação de preço desde a compra
               </h1>
               <InvestementCardChart
+                currency={props.currency}
                 dates={chartData.dates}
                 prices={chartData.prices}
                 range={chartData.range}

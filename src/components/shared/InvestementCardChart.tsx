@@ -9,13 +9,15 @@ export default function InvestementCardChart({
   dates,
   prices,
   range,
+  currency = 'BRL',
 }: {
   dates: string[];
   prices: number[];
   range?: Range;
+  currency?: 'BRL' | 'USD';
 }) {
   const [options] = useState<ApexOptions>(
-    INVESTMENT_CARD_CHART_OPTIONS(dates, range),
+    INVESTMENT_CARD_CHART_OPTIONS(dates, range, currency),
   );
   const [series] = useState<ApexAxisChartSeries>([
     {

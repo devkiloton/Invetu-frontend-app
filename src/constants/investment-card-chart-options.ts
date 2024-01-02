@@ -4,6 +4,7 @@ import { Range } from '~/types/range';
 export const INVESTMENT_CARD_CHART_OPTIONS = (
   dates: Array<string>,
   range?: Range,
+  currency?: 'BRL' | 'USD',
 ): ApexOptions => ({
   chart: {
     height: 250,
@@ -101,7 +102,7 @@ export const INVESTMENT_CARD_CHART_OPTIONS = (
       formatter: (value: number) =>
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
-          currency: 'BRL',
+          currency,
         }).format(value),
     },
   },
