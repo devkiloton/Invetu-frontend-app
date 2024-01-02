@@ -30,7 +30,11 @@ function CryptoCard(
   const deleteCrypto = useDeleteCrypto();
 
   useEffect(() => {
-    if (!investmentsDataStore.cryptos.asyncState.isLoaded) return;
+    if (
+      !investmentsDataStore.cryptos.asyncState.isLoaded &&
+      !investmentsDataStore.fiats.asyncState.isLoaded
+    )
+      return;
     const cryptoData = investmentsDataStore.cryptos.dataCryptos.find(
       cryptoCurrency => cryptoCurrency.id === props.ticker,
     );
@@ -41,8 +45,19 @@ function CryptoCard(
     if (isNil(cryptoData)) return;
     if (isNil(status)) return;
 
+    const convertingUsdToBrl = cryptoData.results.map(result => {
+      const rate =
+        investmentsDataStore.fiats.fiatData.find(fiat => fiat.name === 'BRL')
+          ?.rate ?? 1;
+
+      return [result[0], result[1] * rate, result[2] * rate, result[3] * rate];
+    });
+    const mutatedCryptoData = {
+      ...cryptoData,
+      results: convertingUsdToBrl,
+    };
     setCryptoInfo({
-      data: cryptoData,
+      data: mutatedCryptoData,
       status,
     });
   }, [investmentsDataStore.cryptos]);
@@ -52,11 +67,9 @@ function CryptoCard(
 
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
 
-    const cryptoCurrency = investmentsDataStore.cryptos.dataCryptos.find(
-      cryptoCurrency => cryptoCurrency.id === props.ticker,
-    );
-    if (isNil(cryptoCurrency)) return;
-    const results = cryptoCurrency.results.map(result => ({
+    if (isNull(cryptoInfo)) return;
+
+    const results = cryptoInfo?.data.results.map(result => ({
       date: result[0],
       price: result[1],
     }));
