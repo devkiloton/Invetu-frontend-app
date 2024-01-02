@@ -10,8 +10,17 @@ export const getprofitIpca = (
   tax: number,
   historyIpca: HistoryIPCA,
 ) => {
-  // Get all years between start and end
-  const years = range(startDate.getFullYear(), endDate.getFullYear() + 1);
+  if (historyIpca.length === 0) return null;
+  // Get all years between start of the investment and end of the investment that has ipca data
+  const years = range(
+    startDate.getFullYear(),
+    endDate.getFullYear() + 1,
+  ).filter(
+    year =>
+      historyIpca.findIndex(
+        result => result.data.slice(6, 10) === String(year),
+      ) !== -1,
+  );
   // Create an record for each year with all the days for that year
   const days = years.reduce((acc, curr) => {
     const daysInYear = range(0, 365).map(day => {
@@ -40,8 +49,17 @@ export const getprofitIpca = (
       profit: dailyProfit,
     };
   });
+
+  // Checks if there is any NaN value in the field profit of dailyProfitWithYear array elements
+  if (dailyProfitWithYear.some(dailyProfit => isNaN(dailyProfit.profit)))
+    return null;
+
+  const now = new Date();
+  const lastDateToShow = endDate > now ? now : endDate;
   // Filter the dates between start and end of the investment
-  const dates = workDays.filter(day => day >= startDate && day <= endDate);
+  const dates = workDays.filter(
+    day => day >= startDate && day <= lastDateToShow,
+  );
 
   // Creates an array of numbers using investmentDates to reduce the dates to the actual amount of money for that day
   const prices = dates.reduce(
@@ -52,16 +70,20 @@ export const getprofitIpca = (
       )?.profit;
       if (!dailyProfit) throw new Error('Daily profit not found');
 
-      // Find the ipca for the current date
+      // Find the ipca for the current date using the previous month
       const ipca = historyIpca
         .slice(historyIpca.length - dates.length / 12, historyIpca.length)
-        .find(
-          result =>
+        .find(result => {
+          // Return false for any date that has the month higher than the result.data month
+          if (curr.getMonth() > Number(result.data.slice(3, 5))) return false;
+
+          return (
             result.data ===
             `01/${getPreviousMonthDate(
               curr.toLocaleDateString('pt-BR').split(',')[0],
-            ).slice(3, 10)}`,
-        );
+            ).slice(3, 10)}`
+          );
+        });
       if (!ipca) return [...acc];
       // Get the work days for that month
       const workDaysMonth = yearsRecord[year].filter(
@@ -77,5 +99,5 @@ export const getprofitIpca = (
     [amount],
   );
   const totalProfit = prices[prices.length - 1];
-  return { dates, prices, totalProfit };
+  return { dates: dates.slice(0, prices.length), prices, totalProfit };
 };
