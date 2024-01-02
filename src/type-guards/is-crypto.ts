@@ -1,5 +1,6 @@
+import { isNil } from 'lodash-es';
 import { Crypto } from '~/clients/firebase-client/models/Investments';
 
 export const isCrypto = (item: any): item is Crypto => {
-  return item?.name;
+  return isNil(item?.type) && isNil(item?.index);
 };
