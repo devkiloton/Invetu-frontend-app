@@ -37,8 +37,12 @@ export const getProfitPre = (
       profit: dailyProfit,
     };
   });
+  const now = new Date();
+  const lastDateToShow = endDate > now ? now : endDate;
   // Filter the dates between start and end of the investment
-  const dates = workDays.filter(day => day >= startDate && day <= endDate);
+  const dates = workDays.filter(
+    day => day >= startDate && day <= lastDateToShow,
+  );
   // Calculate the profit for every day between start and end using the daily profit for each year using the amount
   const totalProfit = dates.reduce((acc, curr) => {
     const year = curr.getFullYear();
