@@ -6,6 +6,6 @@ export const tickerLogosClient = () => ({
     )) as string;
   },
   getUrl: (ticker: string) => {
-    return `${API_URL}/${ticker}.png`;
+    return `${API_URL}/${ticker}.png?raw=true`;
   },
 });
