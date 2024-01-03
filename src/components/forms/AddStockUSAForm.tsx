@@ -3,6 +3,7 @@ import DropdownStocksInput from '../shared/DropdownStocksInput';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
 import useAddStock from '~/hooks/use-add-stock';
+import { getIsoDate } from '~/helpers/get-iso-date';
 
 export default function AddStockUSAForm() {
   const amountInput = useRef<any>();
@@ -92,7 +93,7 @@ export default function AddStockUSAForm() {
             onChange={event =>
               setStartDate(new Date(event.target.value).toISOString())
             }
-            value={new Date(startDate).toISOString().split('T')[0]}
+            value={getIsoDate(startDate)}
             type="date"
             placeholder="ex. 134"
             required
