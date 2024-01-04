@@ -103,7 +103,8 @@ function FixedIncomeCard(
               dailyFormatted.date.getTime() >
                 new Date(props.startDate).getTime() &&
               dailyFormatted.date.getTime() <=
-                new Date(props?.endDate ?? new Date()).getTime() + 86400000,
+              // Adding 24h to handle edge cases
+                new Date(props?.endDate ?? new Date()).getTime() + 60000 * 60 * 24,
           )
           .map(finalValue => ({
             date: finalValue.date.toISOString(),
