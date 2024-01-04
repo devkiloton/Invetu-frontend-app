@@ -15,17 +15,12 @@ export const initialEntitiesFactory = (userCredential: UserCredential) => {
     const firestore = useFirestore();
     // Configuring docs for the new user
     try {
-      setDoc(doc(firestore, 'users', userCredential.user.uid), {
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-      });
-
       setDoc(doc(firestore, 'investments', userCredential.user.uid), {
         investedAmount: 0,
         stocks: [],
-        crypto: [],
+        cryptos: [],
         treasuries: [],
-        companyLoans: [],
+        fixedIncomes: [],
         cash: [],
       });
     } catch (error) {

@@ -1,23 +1,38 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable no-case-declarations */
+import { useCallback, useEffect, useState } from 'react';
 import PageContainer from '../containers/PageContainer';
-import AddStocksForm from '../forms/AddStocksForm';
 import AccountStats from '../shared/AccountStats';
-import { Stock } from '~/clients/firebase-client/models/Investments';
+import {
+  Crypto,
+  FixedIncome,
+  Stock,
+} from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { Dialog } from '@headlessui/react';
 import { Head } from '../shared/Head';
-import RadialChart from '../shared/RadialChart';
 import EvolutionChart from '../shared/EvolutionChart';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import Ghost from '~/assets/illustrations/ghost.svg';
 import Add from '~/assets/illustrations/add.svg';
 import WrapperIcon from '../shared/WrapperIcon';
-import { Result } from '~/clients/firebase-client/models/history-stock-br';
-import InvestmentCard from '../shared/InvestmentCard';
-import Dividends from '../shared/Dividends';
 import { getCurrentBalanceFromManyStocks } from '~/helpers/get-current-balance-from-many-stocks';
+import AddInvestmentsForm from '../forms/AddInvestmentsForm';
+import { isStock } from '~/type-guards/is-stock';
+import { isCrypto } from '~/type-guards/is-crypto';
+import StockCard from '../shared/StockCard';
+import CryptoCard from '../shared/CryptoCard';
+import Dividends from '../shared/Dividends';
+import { Result } from '~/clients/firebase-client/models/history-stock-br';
+import { joinCryptoData } from '~/helpers/join-crypto-data';
+import FixedIncomeCard from '../shared/FixedIncomeCard';
+import RadialChart from '../shared/RadialChart';
+
+type SupportedInvestments = Stock | FixedIncome | Crypto;
+
 export default function Home() {
-  const [investmentsJoined, setInvestmentsJoined] = useState<Array<Stock>>([]);
+  const [investmentsJoined, setInvestmentsJoined] = useState<
+    Array<Stock | Crypto | FixedIncome>
+  >([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentBalance, setCurrentBalance] = useState(0);
   const [stocksHistory, setStocksHistory] = useState<Array<Result>>();
@@ -28,22 +43,74 @@ export default function Home() {
 
   useEffect(() => {
     if (investmentsStore.asyncState.isLoaded === false) return;
-    const stocks = investmentsStore.stocks;
-    const orderedDataByVolume = joinStockData(stocks).sort((a, b) => {
-      return b.amount * b.price - a.amount * a.price;
-    });
-    setInvestmentsJoined(orderedDataByVolume);
+    const joinedStocks = joinStockData(investmentsStore.stocks);
+    const joinedCryptos = joinCryptoData(investmentsStore.cryptos);
+    const fixedIncomes = investmentsStore.fixedIncomes;
+
+    const orderedInvestments = [
+      ...joinedStocks,
+      ...joinedCryptos,
+      ...fixedIncomes,
+    ].sort(investment => investment.amount);
+    setInvestmentsJoined(orderedInvestments);
   }, [investmentsDataStore]);
 
   useEffect(() => {
     if (investmentsStore.asyncState.isLoaded === false) return;
     const stocks = investmentsStore.stocks;
-    const response = Object.values(investmentsDataStore.data);
+    const response = Object.values(investmentsDataStore.stocks.stockData);
     setStocksHistory(response);
     // take the current price of each stock and multiply by the amount
     const currentBalance = getCurrentBalanceFromManyStocks(stocks, response);
     setCurrentBalance(currentBalance);
   }, [investmentsDataStore]);
+
+  useEffect(() => {
+    const fixedIncomes = investmentsStore.fixedIncomes;
+    const removingOldFixedIcomes = investmentsJoined.filter(
+      investment => isCrypto(investment) || isStock(investment),
+    ) as Array<Crypto | Stock>;
+    setInvestmentsJoined([...removingOldFixedIcomes, ...fixedIncomes]);
+  }, [investmentsStore.fixedIncomes]);
+
+  const investmentCard = useCallback(
+    (investment: SupportedInvestments) => {
+      switch (true) {
+        case isStock(investment):
+          const stock = investment as Stock;
+          return (
+            <StockCard
+              key={stock.ticker}
+              {...stock}
+              currentBalance={currentBalance}
+              investedAmount={investmentsStore.investedAmount}
+            />
+          );
+        case isCrypto(investment):
+          const crypto = investment as Crypto;
+          return (
+            <CryptoCard
+              key={crypto.ticker}
+              {...crypto}
+              currentBalance={currentBalance}
+              investedAmount={investmentsStore.investedAmount}
+            />
+          );
+        default:
+          const fixedIncome = investment as FixedIncome;
+          return (
+            <FixedIncomeCard
+              key={fixedIncome.name}
+              {...fixedIncome}
+              currentBalance={currentBalance}
+              investedAmount={investmentsStore.investedAmount}
+            />
+          );
+      }
+    },
+    [investmentsDataStore, investmentsStore, currentBalance],
+  );
+
   return (
     <>
       <Head title="Home" />
@@ -57,10 +124,10 @@ export default function Home() {
             <div className="glassy-border rounded-2xl p-4 md:p-8">
               <h1 className="font-semibold">Resultados desse mês</h1>
               <div className="flex justify-center">
-                <RadialChart
+                {/* <RadialChart
                   investments={investmentsJoined}
                   results={stocksHistory!}
-                />
+                /> */}
               </div>
             </div>
             <div
@@ -95,7 +162,7 @@ export default function Home() {
         </div>
         <div className="flex gap-x-4">
           <div className="w-full h-full sticky top-24 max-w-120 hidden min-[1024px]:block ">
-            <AddStocksForm />
+            <AddInvestmentsForm />
           </div>
           <div className="w-full flex flex-col gap-4">
             {investmentsJoined.length === 0 && (
@@ -112,16 +179,7 @@ export default function Home() {
                 </span>
               </div>
             )}
-            {investmentsJoined.map(investment => {
-              return (
-                <InvestmentCard
-                  key={investment.ticker}
-                  {...investment}
-                  currentBalance={currentBalance}
-                  investedAmount={investmentsStore.investedAmount}
-                />
-              );
-            })}
+            {investmentsJoined.map(investment => investmentCard(investment))}
           </div>
         </div>
         <button
@@ -148,7 +206,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
           <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
             <Dialog.Panel className="max-w-120 w-full overflow-scroll max-h-[90vh]">
-              <AddStocksForm />
+              <AddInvestmentsForm />
             </Dialog.Panel>
           </div>
         </Dialog>

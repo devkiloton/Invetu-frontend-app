@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import {
   CashDividend,
+  Result,
   StockDividend,
   Subscription,
 } from '~/clients/firebase-client/models/history-stock-br';
@@ -9,6 +10,7 @@ import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
+import { isStock } from '~/type-guards/is-stock';
 
 export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
@@ -20,18 +22,20 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     >
   >([]);
   const investmentsDataStore = useCustomSelector(
-    state => state.investmentsData.data,
+    state => state.investmentsData.stocks.stockData,
   );
 
   function getValidAdvices() {
     // fetching all the dividends and subscriptions
-    const advices = joinStockData(stocks).map(
-      stock => investmentsDataStore[stock.ticker],
-    );
+    const advices = joinStockData(stocks)
+      .map(stock =>
+        investmentsDataStore.find(obj => obj.symbol === stock.ticker),
+      )
+      .filter(isStock) as Array<Result>;
 
     // takes the cash dividends that will happen after today
     const cashDividendsAfterToday = advices
-      .filter(obj => Object.keys(obj.dividendsData).length > 0)
+      .filter(obj => Object.keys(obj?.dividendsData).length > 0)
       .flatMap(investment => {
         const { cashDividends } = investment.dividendsData;
         return cashDividends.map(data => ({

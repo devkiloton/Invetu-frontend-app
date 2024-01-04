@@ -1,16 +1,16 @@
+/* eslint-disable no-unused-vars */
 export type Stock = {
-  userID: string;
   ticker: string;
   price: number;
   amount: number;
   startDate: string;
-  currency: 'BRL';
+  currency: 'BRL' | 'USD';
   type: 'real-state' | 'etf' | 'stock' | null;
 };
 
 export type Crypto = {
-  userID: string;
   ticker: string;
+  name: string;
   price: number;
   amount: number;
   startDate: string;
@@ -18,8 +18,7 @@ export type Crypto = {
 };
 
 export type Treasuries = {
-  userID: string;
-  investedAmount: number;
+  amount: number;
   rate: number;
   operation: 'pre' | 'post' | 'inflation';
   currency: 'BRL';
@@ -27,19 +26,24 @@ export type Treasuries = {
   endDate: number;
 };
 
-export type CompanyLoans = {
-  userID: string;
-  investedAmount: number;
+export enum FixedIncomeIndex {
+  CDI = 'cdi',
+  IPCA = 'ipca',
+  PRE = 'pre',
+}
+
+export type FixedIncome = {
+  name: string;
+  amount: number;
   rate: number;
-  operation: 'pre' | 'post' | 'inflation';
+  index: FixedIncomeIndex;
   currency: 'BRL';
   startDate: string;
-  endDate: number;
+  endDate: string | null;
 };
 
 export type Cash = {
-  userID: string;
-  investedAmount: number;
+  amount: number;
   currency: 'BRL';
   startDate: string;
 };
@@ -48,7 +52,7 @@ export type Investments = {
   stocks: Stock[];
   cryptos: Crypto[];
   treasuries: Treasuries[];
-  companyLoans: CompanyLoans[];
+  fixedIncomes: FixedIncome[];
   cash: Cash[];
   investedAmount: number;
 };

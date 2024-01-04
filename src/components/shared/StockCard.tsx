@@ -1,8 +1,6 @@
-import { isNull } from 'lodash-es';
+import { isNil, isNull } from 'lodash-es';
 import React, { useCallback, useEffect, useState } from 'react';
-import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { useAuth } from '~/lib/firebase';
 import InvestementCardChart from './InvestementCardChart';
 import getNearestDateRange from '~/helpers/get-nearest-date-range';
 import getProfit from '~/helpers/get-profit';
@@ -12,8 +10,9 @@ import { Range } from '~/types/range';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import useDeleteStock from '~/hooks/use-delete-stock';
+import { useUsLogos } from '~/hooks/use-us-logos';
 
-function InvestmentCard(
+function StockCard(
   props: Stock & { investedAmount: number; currentBalance: number },
 ) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
@@ -22,29 +21,37 @@ function InvestmentCard(
     prices: number[];
     range: Range;
   } | null>(null);
-  const auth = useAuth();
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
   );
   const deleteStock = useDeleteStock();
+  const usLogos = useUsLogos();
 
   useEffect(() => {
-    setStockInfo(investmentsDataStore.data[props.ticker]);
-  }, []);
+    setStockInfo(
+      investmentsDataStore.stocks.stockData.find(
+        stock => stock.symbol === props.ticker,
+      ) ?? null,
+    );
+  }, [investmentsDataStore]);
 
   useEffect(() => {
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
 
-    const results = investmentsDataStore.data[props.ticker];
+    const results = investmentsDataStore.stocks.stockData.find(
+      stock => stock.symbol === props.ticker,
+    );
 
     // Dates that will be used in the chart X axis
-    const dates = results.historicalDataPrice
+    const dates = results?.historicalDataPrice
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
       .map(price => price.date * 1000 - 10800000)
       // filtering dates that are greater than the start date or the range is 1d
       .filter(value => value > Date.parse(props.startDate) || range === '1d')
       // converting dates to ISO string
       .map(value => new Date(value).toISOString());
+
+    if (isNil(dates) || isNil(results)) return;
     setChartData({
       range,
       dates,
@@ -56,12 +63,7 @@ function InvestmentCard(
 
   const deleteSelectedStock = useCallback(() => {
     deleteStock(props.ticker);
-    if (auth.currentUser?.uid !== undefined)
-      firebaseClient().firestore.investments.stocks.delete(
-        auth.currentUser?.uid,
-        props.ticker,
-      );
-  }, [props.ticker, auth.currentUser?.uid]);
+  }, [stockInfo]);
 
   return (
     <>
@@ -71,9 +73,19 @@ function InvestmentCard(
             <div className="flex items-center gap-x-2">
               {stockInfo?.logourl !==
                 'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
+                props.currency === 'BRL' &&
                 stockInfo?.logourl !== 'https://brapi.dev/favicon.svg' && (
-                  <img className="h-8 w-8 rounded" src={stockInfo?.logourl} />
+                  <img
+                    className="h-8 w-8 rounded drop-shadow"
+                    src={stockInfo?.logourl}
+                  />
                 )}
+              {props.currency === 'USD' && (
+                <img
+                  className="h-8 w-8 rounded drop-shadow"
+                  src={usLogos(props.ticker)}
+                />
+              )}
 
               <h2 className="card-title">{props.ticker}</h2>
             </div>
@@ -110,7 +122,6 @@ function InvestmentCard(
                 {props.amount}
               </span>
               <span className="text-sm  font-semibold">
-                {/* There is something pretty wrong here, the avg price isnt updating when adding a new stock */}
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
                 {props.price.toFixed(2)}
               </span>
@@ -138,6 +149,7 @@ function InvestmentCard(
                 Variação de preço desde a compra
               </h1>
               <InvestementCardChart
+                currency={props.currency}
                 dates={chartData.dates}
                 prices={chartData.prices}
                 range={chartData.range}
@@ -146,9 +158,13 @@ function InvestmentCard(
           )}
 
           <div className="card-actions">
-            <button disabled className="btn btn-primary w-full">
-              Mais detalhes
-            </button>
+            <div
+              className="tooltip tooltip-error w-full z-0"
+              data-tip="Ops, funcionalidade em desenvolvimento">
+              <button disabled className="btn btn-primary w-full">
+                Mais detalhes
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -156,4 +172,4 @@ function InvestmentCard(
   );
 }
 
-export default InvestmentCard;
+export default React.memo(StockCard);
