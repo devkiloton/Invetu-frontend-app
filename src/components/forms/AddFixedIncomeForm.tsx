@@ -171,6 +171,7 @@ export default function AddFixedIncomeForm() {
       </div>
       <div className="form-control">
         <label className="label">
+          {/* #TODO: limit the date range */}
           <span className="label-text">Data de depósito</span>
         </label>
         <label className="input-group">

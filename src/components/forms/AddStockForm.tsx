@@ -84,6 +84,7 @@ export default function AddStockForm() {
           <span>Unidades</span>
         </label>
       </div>
+      {/* #TODO: limit the date range */}
       <div className="form-control">
         <label className="label">
           <span className="label-text">Data de compra</span>
