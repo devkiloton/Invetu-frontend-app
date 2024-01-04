@@ -21,7 +21,7 @@ const RadialChart = ({
   investments,
   results,
 }: {
-  investments: Array<Stock | Crypto | FixedIncome>;
+  investments: Array<Stock>;
   results: Array<Result>;
 }) => {
   const [series, setSeries] = useState<Array<number>>([]);
