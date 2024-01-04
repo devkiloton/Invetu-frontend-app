@@ -65,6 +65,12 @@ export default function Home() {
     setCurrentBalance(currentBalance);
   }, [investmentsDataStore]);
 
+  useEffect(()=>{
+    const fixedIncomes = investmentsStore.fixedIncomes;
+    const removingOldFixedIcomes = investmentsJoined.filter(investment => isCrypto(investment) || isStock(investment)) as Array<Crypto | Stock>
+    setInvestmentsJoined([...removingOldFixedIcomes, ...fixedIncomes])
+  },[investmentsStore.fixedIncomes])
+
   const investmentCard = useCallback(
     (investment: SupportedInvestments) => {
       switch (true) {
@@ -147,9 +153,9 @@ export default function Home() {
               </div>
             )}
 
-            {/* {investmentsJoined.length > 0 && (
+            {investmentsJoined.length > 0 && (
               <Dividends stocks={investmentsStore.stocks} />
-            )} */}
+            )}
           </div>
         </div>
         <div className="flex gap-x-4">
