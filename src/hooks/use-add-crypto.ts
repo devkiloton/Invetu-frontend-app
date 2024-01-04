@@ -21,7 +21,7 @@ function useAddCrypto() {
       .then(() => {
         tooltip('Criptomoeda adicionada com sucesso!');
         firebaseClient()
-        // #TODO: Improve the algorithm to get the best period from coinstats and don't spend much time
+          // #TODO: Improve the algorithm to get the best period from coinstats and don't spend much time
           .functions.findCryptosData([investment.ticker.toLowerCase()], 'all')
           .then(res => {
             dispatch(addCrypto(investment));

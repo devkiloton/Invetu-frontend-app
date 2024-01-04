@@ -65,11 +65,13 @@ export default function Home() {
     setCurrentBalance(currentBalance);
   }, [investmentsDataStore]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fixedIncomes = investmentsStore.fixedIncomes;
-    const removingOldFixedIcomes = investmentsJoined.filter(investment => isCrypto(investment) || isStock(investment)) as Array<Crypto | Stock>
-    setInvestmentsJoined([...removingOldFixedIcomes, ...fixedIncomes])
-  },[investmentsStore.fixedIncomes])
+    const removingOldFixedIcomes = investmentsJoined.filter(
+      investment => isCrypto(investment) || isStock(investment),
+    ) as Array<Crypto | Stock>;
+    setInvestmentsJoined([...removingOldFixedIcomes, ...fixedIncomes]);
+  }, [investmentsStore.fixedIncomes]);
 
   const investmentCard = useCallback(
     (investment: SupportedInvestments) => {

@@ -27,9 +27,11 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
 
   function getValidAdvices() {
     // fetching all the dividends and subscriptions
-    const advices = joinStockData(stocks).map(stock =>
-      investmentsDataStore.find(obj => obj.symbol === stock.ticker),
-    ).filter(isStock) as Array<Result>
+    const advices = joinStockData(stocks)
+      .map(stock =>
+        investmentsDataStore.find(obj => obj.symbol === stock.ticker),
+      )
+      .filter(isStock) as Array<Result>;
 
     // takes the cash dividends that will happen after today
     const cashDividendsAfterToday = advices

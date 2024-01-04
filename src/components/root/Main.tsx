@@ -8,7 +8,7 @@ import { useFetchCriticalData } from '~/hooks/use-fetch-critical-data';
 function Main() {
   const { signIn } = useSignIn();
   const { signOut } = useSignOut();
-  const fetchCriticalData = useFetchCriticalData()
+  const fetchCriticalData = useFetchCriticalData();
   useEffect(() => {
     setupFirebase();
     const auth = getAuth();
@@ -16,7 +16,7 @@ function Main() {
     const state = onAuthStateChanged(auth, user => {
       if (user) {
         signIn(user);
-        fetchCriticalData()
+        fetchCriticalData();
       } else {
         signOut();
       }
