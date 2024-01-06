@@ -5,6 +5,7 @@ import { deleteStockData } from '~/features/investments-data/investments-data-sl
 import { deleteStock } from '~/features/investments/investments-slice';
 import { useAuth } from '~/lib/firebase';
 import useSnackbar from './use-snackbar';
+import { deleteInvestmentResult } from '~/features/investments-result-slice/investments-result-slice';
 
 function useDeleteStock() {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ function useDeleteStock() {
           .then(() => {
             dispatch(deleteStock(ticker));
             dispatch(deleteStockData(ticker));
+            dispatch(deleteInvestmentResult({ id: ticker, type: 'stocks', invested: 0, result: 0, period: 'all', currency: 'BRL'}));
             tooltip('Ação removida com sucesso!');
           });
     },
