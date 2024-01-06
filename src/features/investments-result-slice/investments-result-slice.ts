@@ -1,18 +1,20 @@
 /* eslint-disable no-case-declarations */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-type Type = 'stocks' | 'cryptos' | 'fixed-incomes' | 'treasuries';
+export type InvestmentType = 'stocks' | 'cryptos' | 'fixed-incomes' | 'treasuries';
 
-type InvestmentResult = {
+export type InvestmentResult = {
   id: string;
   // Percentage
   result: number;
+  // Percentage in the wallet
+  weight: number;
   // Period of the result
   period: 'all' | 'ytd' | 'month' | number;
   currency: 'BRL' | 'USD';
   // Side effects for stocks (dividends, bonus, etc.).
   // #TODO: Type not defined yet
-  sideEffects: any;
+  sideEffect?: any;
 };
 
 type InvestmentResults = {
@@ -20,6 +22,7 @@ type InvestmentResults = {
   stocks: Array<InvestmentResult>;
   cryptos: Array<InvestmentResult>;
   treasuries: Array<InvestmentResult>;
+  totalResult: number;
 };
 
 const initialState: InvestmentResults = {
@@ -27,15 +30,16 @@ const initialState: InvestmentResults = {
   cryptos: [],
   treasuries: [],
   fixedIncomes: [],
+  totalResult: 1,
 };
 
 export const investmentsResultSlice = createSlice({
   name: 'investments-result',
   initialState,
   reducers: {
-    addInvestment: (
+    addInvestmentResult: (
       state,
-      action: PayloadAction<InvestmentResult & { type: Type }>,
+      action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
     ) => {
       const { payload } = action;
       switch (payload.type) {
@@ -65,9 +69,9 @@ export const investmentsResultSlice = createSlice({
           break;
       }
     },
-    delteInvestment: (
+    deleteInvestmentResult: (
       state,
-      action: PayloadAction<InvestmentResult & { type: Type }>,
+      action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
     ) => {
       const { payload } = action;
       switch (payload.type) {
@@ -100,5 +104,5 @@ export const investmentsResultSlice = createSlice({
   },
 });
 
-export const { addInvestment } = investmentsResultSlice.actions;
+export const { addInvestmentResult, deleteInvestmentResult } = investmentsResultSlice.actions;
 export const investmentsResultReducer = investmentsResultSlice.reducer;
