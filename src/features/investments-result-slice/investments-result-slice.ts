@@ -22,7 +22,7 @@ type InvestmentResults = {
   stocks: Array<InvestmentResult>;
   cryptos: Array<InvestmentResult>;
   treasuries: Array<InvestmentResult>;
-  totalResult: number;
+  currentBalance: number;
 };
 
 const initialState: InvestmentResults = {
@@ -30,7 +30,7 @@ const initialState: InvestmentResults = {
   cryptos: [],
   treasuries: [],
   fixedIncomes: [],
-  totalResult: 1,
+  currentBalance: 1,
 };
 
 export const investmentsResultSlice = createSlice({
