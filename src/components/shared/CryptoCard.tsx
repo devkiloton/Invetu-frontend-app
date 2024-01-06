@@ -142,14 +142,14 @@ function CryptoCard(
               <span className="text-xs font-normal">Resultado:</span> %{' '}
               {getProfit(props.price, cryptoInfo.status.price)}
             </span>
-            <span className="text-sm  font-semibold">
+            {/*<span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Carteira:</span> %{' '}
               {getStockAllocation(
                 props.amount,
                 cryptoInfo.status.price,
                 props.currentBalance,
               )}
-            </span>
+              </span>*/}
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Balanço:</span> R${' '}
               {getBalance(cryptoInfo.status.price, props.amount)}
