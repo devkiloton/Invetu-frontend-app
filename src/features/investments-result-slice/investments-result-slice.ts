@@ -1,14 +1,12 @@
 /* eslint-disable no-case-declarations */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-export type InvestmentType = 'stocks' | 'cryptos' | 'fixed-incomes' | 'treasuries';
+export type InvestmentType = 'stocks' | 'cryptos' | 'fixedIncomes' | 'treasuries';
 
 export type InvestmentResult = {
   id: string;
-  // Percentage
+  invested: number;
   result: number;
-  // Percentage in the wallet
-  weight: number;
   // Period of the result
   period: 'all' | 'ytd' | 'month' | number;
   currency: 'BRL' | 'USD';
@@ -30,7 +28,7 @@ const initialState: InvestmentResults = {
   cryptos: [],
   treasuries: [],
   fixedIncomes: [],
-  currentBalance: 1,
+  currentBalance: 0,
 };
 
 export const investmentsResultSlice = createSlice({
@@ -42,64 +40,31 @@ export const investmentsResultSlice = createSlice({
       action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
     ) => {
       const { payload } = action;
-      switch (payload.type) {
-        case 'stocks':
-          const removeIdFromStocks = state.stocks.filter(
-            stock => stock.id !== payload.id,
-          );
-          state.stocks = [...removeIdFromStocks, payload];
-          break;
-        case 'cryptos':
-          const removeIdFromCryptos = state.stocks.filter(
-            crypto => crypto.id !== payload.id,
-          );
-          state.cryptos = [...removeIdFromCryptos, payload];
-          break;
-        case 'fixed-incomes':
-          const removeIdFromFixedIcomes = state.fixedIncomes.filter(
-            fixedIncome => fixedIncome.id !== payload.id,
-          );
-          state.fixedIncomes = [...removeIdFromFixedIcomes, payload];
-          break;
-        case 'treasuries':
-          const removeIdFromTreasuries = state.treasuries.filter(
+      const isAlreadyAdded = state[payload.type].some(
+        investmentResult => investmentResult.id === payload.id,
+      );
+      // If the investment result is already added, we need to remove the previous result
+      if (isAlreadyAdded) {
+        state.currentBalance -= payload.result;
+      }
+
+      state.currentBalance += payload.result;
+          const removeIdFromTreasuries = state[payload.type].filter(
             treasury => treasury.id !== payload.id,
           );
-          state.treasuries = [...removeIdFromTreasuries, payload];
-          break;
-      }
+          state[payload.type] = [...removeIdFromTreasuries, payload];
     },
     deleteInvestmentResult: (
       state,
       action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
     ) => {
       const { payload } = action;
-      switch (payload.type) {
-        case 'stocks':
-          const removeIdFromStocks = state.stocks.filter(
+      state.currentBalance -= payload.result;
+          const removeIdFromStocks = state[payload.type].filter(
             stock => stock.id !== payload.id,
           );
-          state.stocks = [...removeIdFromStocks];
-          break;
-        case 'cryptos':
-          const removeIdFromCryptos = state.stocks.filter(
-            crypto => crypto.id !== payload.id,
-          );
-          state.cryptos = [...removeIdFromCryptos];
-          break;
-        case 'fixed-incomes':
-          const removeIdFromFixedIcomes = state.fixedIncomes.filter(
-            fixedIncome => fixedIncome.id !== payload.id,
-          );
-          state.fixedIncomes = [...removeIdFromFixedIcomes];
-          break;
-        case 'treasuries':
-          const removeIdFromTreasuries = state.treasuries.filter(
-            treasury => treasury.id !== payload.id,
-          );
-          state.treasuries = [...removeIdFromTreasuries];
-          break;
-      }
+          state[payload.type] = [...removeIdFromStocks];
+      
     },
   },
 });
