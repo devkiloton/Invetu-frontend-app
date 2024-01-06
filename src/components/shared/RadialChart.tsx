@@ -30,9 +30,10 @@ const RadialChart = ({
   async function getSeries() {
     const cdi = bacenClient().cdi.findAccumulatedCurrentMonth();
     const ibov = getIbov();
-    const userInvestments = investments.filter(investment => isStock(investment))
-      .map(stock=> {
-        const stockTyped = stock as Stock
+    const userInvestments = investments
+      .filter(investment => isStock(investment))
+      .map(stock => {
+        const stockTyped = stock as Stock;
         const result = results.find(
           stockHistory => stockHistory.symbol === stockTyped.ticker,
         );
@@ -42,7 +43,6 @@ const RadialChart = ({
         if (
           dataStockThisMonth.firstDay.date < new Date(stock.startDate).getTime()
         ) {
-
           // if the stock was bought in this month, take variation from the first day of the month
           const variation = Number(
             getProfit(stockTyped.price, dataStockThisMonth.lastDay.close),

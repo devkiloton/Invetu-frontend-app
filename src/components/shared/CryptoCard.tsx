@@ -9,7 +9,6 @@ import { CryptoCurrency } from '~/clients/firebase-client/models/status-cryptos'
 import { HistoryCryptoUS } from '~/clients/firebase-client/models/data-cryptos';
 import useDeleteCrypto from '~/hooks/use-delete-crypto';
 import getProfit from '~/helpers/get-profit';
-import getStockAllocation from '~/helpers/get-stock-allocation';
 import getBalance from '~/helpers/get-balance';
 
 function CryptoCard(
@@ -142,14 +141,14 @@ function CryptoCard(
               <span className="text-xs font-normal">Resultado:</span> %{' '}
               {getProfit(props.price, cryptoInfo.status.price)}
             </span>
-            {/*<span className="text-sm  font-semibold">
+            {/* <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Carteira:</span> %{' '}
               {getStockAllocation(
                 props.amount,
                 cryptoInfo.status.price,
                 props.currentBalance,
               )}
-              </span>*/}
+              </span> */}
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Balanço:</span> R${' '}
               {getBalance(cryptoInfo.status.price, props.amount)}

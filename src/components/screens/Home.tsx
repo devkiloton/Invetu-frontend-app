@@ -127,7 +127,7 @@ export default function Home() {
                 <RadialChart
                   investments={investmentsJoined}
                   results={stocksHistory!}
-                /> 
+                />
               </div>
             </div>
             <div
