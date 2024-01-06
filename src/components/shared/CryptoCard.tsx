@@ -9,10 +9,10 @@ import { CryptoCurrency } from '~/clients/firebase-client/models/status-cryptos'
 import { HistoryCryptoUS } from '~/clients/firebase-client/models/data-cryptos';
 import useDeleteCrypto from '~/hooks/use-delete-crypto';
 import getProfit from '~/helpers/get-profit';
-import getBalance from '~/helpers/get-balance';
+import useAddInvestmentResult from '~/hooks/use-add-investment-result';
 
 function CryptoCard(
-  props: Crypto & { investedAmount: number; currentBalance: number },
+  props: Crypto,
 ) {
   const [cryptoInfo, setCryptoInfo] = useState<{
     status: CryptoCurrency;
@@ -26,7 +26,13 @@ function CryptoCard(
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
   );
+  const investmentsResultStore = useCustomSelector(
+    state => state.investmentsResult,
+  )
   const deleteCrypto = useDeleteCrypto();
+  const addInvestmentResult = useAddInvestmentResult()
+  const [investmentResult, setInvestmentResult] = useState(0)
+
 
   useEffect(() => {
     if (
@@ -59,7 +65,7 @@ function CryptoCard(
       data: mutatedCryptoData,
       status,
     });
-  }, [investmentsDataStore.cryptos]);
+  }, [investmentsDataStore.cryptos, investmentsDataStore.fiats]);
 
   useEffect(() => {
     if (!investmentsDataStore.cryptos.asyncState.isLoaded) return;
@@ -86,6 +92,17 @@ function CryptoCard(
       dates,
       prices: results.slice(dates.length * -1).map(result => result.price),
     });
+    const result = cryptoInfo.data.results[cryptoInfo.data.results.length - 1][1];
+    const invested = props.price * props.amount
+    setInvestmentResult(
+      result,)
+    addInvestmentResult({
+      id: props.ticker,
+      currency: 'BRL',
+      invested,
+      result,
+      period: 'all',
+    },'cryptos')
   }, [cryptoInfo]);
 
   const deleteSelectedCrypto = useCallback(() => {
@@ -134,24 +151,35 @@ function CryptoCard(
               {props.amount}
             </span>
             <span className="text-sm  font-semibold">
-              <span className="text-xs font-normal">Preço médio:</span> R${' '}
-              {props.price.toFixed(2)}
+              <span className="text-xs font-normal">Preço médio:</span> {' '}
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(
+                props.price
+              )}
             </span>
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Resultado:</span> %{' '}
-              {getProfit(props.price, cryptoInfo.status.price)}
+              {getProfit(props.price, investmentResult)}
             </span>
-            {/* <span className="text-sm  font-semibold">
-              <span className="text-xs font-normal">Carteira:</span> %{' '}
-              {getStockAllocation(
-                props.amount,
-                cryptoInfo.status.price,
-                props.currentBalance,
-              )}
-              </span> */}
+            <span className="text-sm  font-semibold">
+              <span className="text-xs font-normal">Carteira:</span> {' '}
+              {
+                new Intl.NumberFormat('pt-BR', {
+                  style: 'percent',
+                  maximumFractionDigits: 2,
+                }).format(investmentResult/
+                investmentsResultStore.currentBalance )}
+              </span>
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Balanço:</span> R${' '}
-              {getBalance(cryptoInfo.status.price, props.amount)}
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              }).format(
+                investmentResult
+              )}
             </span>
           </div>
         )}
