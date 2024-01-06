@@ -21,7 +21,7 @@ const RadialChart = ({
   investments,
   results,
 }: {
-  investments: Array<Stock>;
+  investments: Array<Stock | Crypto | FixedIncome>;
   results: Array<Result>;
 }) => {
   const [series, setSeries] = useState<Array<number>>([]);
@@ -30,10 +30,11 @@ const RadialChart = ({
   async function getSeries() {
     const cdi = bacenClient().cdi.findAccumulatedCurrentMonth();
     const ibov = getIbov();
-    const userInvestments = investments
-      .map(stock => {
+    const userInvestments = investments.filter(investment => isStock(investment))
+      .map(stock=> {
+        const stockTyped = stock as Stock
         const result = results.find(
-          stockHistory => stockHistory.symbol === stock.ticker,
+          stockHistory => stockHistory.symbol === stockTyped.ticker,
         );
         const dataStockThisMonth = getDataStocksThisMonth([
           result as Result & { date: number },
@@ -41,9 +42,10 @@ const RadialChart = ({
         if (
           dataStockThisMonth.firstDay.date < new Date(stock.startDate).getTime()
         ) {
+
           // if the stock was bought in this month, take variation from the first day of the month
           const variation = Number(
-            getProfit(stock.price, dataStockThisMonth.lastDay.close),
+            getProfit(stockTyped.price, dataStockThisMonth.lastDay.close),
           );
           const allocation = Number(
             getStockAllocation(
