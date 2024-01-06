@@ -59,7 +59,11 @@ export const investmentsResultSlice = createSlice({
       action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
     ) => {
       const { payload } = action;
-      state.currentBalance -= payload.result;
+      const investmentResult = state[payload.type].find(
+        investmentResult => investmentResult.id === payload.id,
+      );
+      if (!investmentResult) return;
+      state.currentBalance -= investmentResult.result;
           const removeIdFromStocks = state[payload.type].filter(
             stock => stock.id !== payload.id,
           );
