@@ -34,7 +34,7 @@ export default function Home() {
     Array<Stock | Crypto | FixedIncome>
   >([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [currentBalance, setCurrentBalance] = useState(0);
+  const [currentStocksBalance, setCurrentStocksBalance] = useState(0);
   const [stocksHistory, setStocksHistory] = useState<Array<Result>>();
   const investmentsStore = useCustomSelector(state => state.investments);
   const investmentsDataStore = useCustomSelector(
@@ -61,8 +61,8 @@ export default function Home() {
     const response = Object.values(investmentsDataStore.stocks.stockData);
     setStocksHistory(response);
     // take the current price of each stock and multiply by the amount
-    const currentBalance = getCurrentBalanceFromManyStocks(stocks, response);
-    setCurrentBalance(currentBalance);
+    const currentBalanceFromStocks = getCurrentBalanceFromManyStocks(stocks, response);
+    setCurrentStocksBalance(currentBalanceFromStocks);
   }, [investmentsDataStore]);
 
   useEffect(() => {
@@ -82,8 +82,6 @@ export default function Home() {
             <StockCard
               key={stock.ticker}
               {...stock}
-              currentBalance={currentBalance}
-              investedAmount={investmentsStore.investedAmount}
             />
           );
         case isCrypto(investment):
@@ -92,8 +90,6 @@ export default function Home() {
             <CryptoCard
               key={crypto.ticker}
               {...crypto}
-              currentBalance={currentBalance}
-              investedAmount={investmentsStore.investedAmount}
             />
           );
         default:
@@ -102,13 +98,11 @@ export default function Home() {
             <FixedIncomeCard
               key={fixedIncome.name}
               {...fixedIncome}
-              currentBalance={currentBalance}
-              investedAmount={investmentsStore.investedAmount}
             />
           );
       }
     },
-    [investmentsDataStore, investmentsStore, currentBalance],
+    [investmentsDataStore, investmentsStore, currentStocksBalance],
   );
 
   return (
@@ -117,17 +111,17 @@ export default function Home() {
       <PageContainer>
         <AccountStats
           investedAmount={investmentsStore.investedAmount}
-          currentBalance={currentBalance}
+          currentBalance={currentStocksBalance}
         />
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex flex-col md:flex-row w-full gap-4">
             <div className="glassy-border rounded-2xl p-4 md:p-8">
               <h1 className="font-semibold">Resultados desse mês</h1>
               <div className="flex justify-center">
-                {/* <RadialChart
+                <RadialChart
                   investments={investmentsJoined}
                   results={stocksHistory!}
-                /> */}
+                />
               </div>
             </div>
             <div

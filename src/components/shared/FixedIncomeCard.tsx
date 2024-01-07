@@ -11,9 +11,10 @@ import InvestementCardChart from './InvestementCardChart';
 import { getProfitPre } from '~/helpers/get-profit-pre';
 import { useDeleteFixedIncome } from '~/hooks/use-delete-fixed-income';
 import { getprofitIpca } from '~/helpers/get-profit-ipca';
+import useAddInvestmentResult from '~/hooks/use-add-investment-result';
 
 function FixedIncomeCard(
-  props: FixedIncome & { investedAmount: number; currentBalance: number },
+  props: FixedIncome,
 ) {
   const fixedIncomeData = useCustomSelector(
     state => state.investmentsData.fixedIncomes,
@@ -23,10 +24,14 @@ function FixedIncomeCard(
     prices: number[];
   } | null>(null);
   const [profit, setProfit] = useState(0);
+  const addInvestmentResult = useAddInvestmentResult()
 
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData.fixedIncomes,
   );
+  const investmentsResultStore = useCustomSelector(
+    state => state.investmentsResult,
+  )
   const deleteFixedIncome = useDeleteFixedIncome();
   useEffect(() => {
     switch (props.index) {
@@ -54,6 +59,13 @@ function FixedIncomeCard(
         ).then(profit => {
           setProfit(profit);
         });
+        addInvestmentResult({
+          id: props.name,
+          currency: 'BRL',
+          period: 'all',
+          invested: props.amount,
+          result: profit,
+        },'fixedIncomes')
         break;
       case FixedIncomeIndex.PRE:
         const dataPre = getProfitPre(
@@ -67,6 +79,13 @@ function FixedIncomeCard(
           dates: dataPre.dates.map(date => date.toISOString()),
           prices: dataPre.prices,
         });
+        addInvestmentResult({
+          id: props.name,
+          currency: 'BRL',
+          period: 'all',
+          invested: props.amount,
+          result: dataPre.totalProfit,
+        },'fixedIncomes')
         break;
       default:
         const ipcaHistory = fixedIncomeData.ipca;
@@ -122,6 +141,13 @@ function FixedIncomeCard(
           [props.amount],
         );
         setChartData({ dates, prices });
+        addInvestmentResult({
+          id: props.name,
+          currency: 'BRL',
+          period: 'all',
+          invested: props.amount,
+          result: prices[prices.length - 1],
+        },'fixedIncomes')
         break;
       case FixedIncomeIndex.PRE:
         // Already solved in the useEffect above
@@ -184,13 +210,13 @@ function FixedIncomeCard(
                 maximumFractionDigits: 2,
               }).format((profit / 100) * 100 - 1)}
             </span>
-            {/* <span className="text-sm  font-semibold">
+            <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Carteira:</span> %{' '}
               {new Intl.NumberFormat('pt-BR', {
                 style: 'percent',
                 maximumFractionDigits: 2,
-              }).format((props.amount * profit) / props.investedAmount)}
-            </span> */}
+              }).format((props.amount * profit) / investmentsResultStore.currentBalance)}
+            </span>
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Balanço: </span>
               {new Intl.NumberFormat('pt-BR', {

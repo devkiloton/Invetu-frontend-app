@@ -1,7 +1,10 @@
+import { useCustomSelector } from "~/hooks/use-custom-selector";
+
 export default function AccountStats(props: {
   investedAmount: number;
   currentBalance: number;
 }) {
+  const investmentsResult = useCustomSelector(state => state.investmentsResult);
   return (
     <div className="w-full">
       <div className="stats bg-primary text-primary-content w-full bordered flex flex-col md:flex-row">
@@ -21,7 +24,7 @@ export default function AccountStats(props: {
             {new Intl.NumberFormat('pt-BR', {
               style: 'currency',
               currency: 'BRL',
-            }).format(props.currentBalance)}
+            }).format(investmentsResult.currentBalance)}
           </div>
         </div>
         <div className="stat border-base-100 border-opacity-20">
@@ -30,7 +33,7 @@ export default function AccountStats(props: {
             %{' '}
             {(props.investedAmount === 0
               ? 0
-              : (props.currentBalance / props.investedAmount) * 100 - 100
+              : (investmentsResult.currentBalance / props.investedAmount) * 100 - 100
             ).toFixed(2)}
           </div>
         </div>

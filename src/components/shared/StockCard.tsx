@@ -11,9 +11,10 @@ import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import useDeleteStock from '~/hooks/use-delete-stock';
 import { useUsLogos } from '~/hooks/use-us-logos';
+import useAddInvestmentResult from '~/hooks/use-add-investment-result';
 
 function StockCard(
-  props: Stock & { investedAmount: number; currentBalance: number },
+  props: Stock,
 ) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
   const [chartData, setChartData] = useState<{
@@ -24,8 +25,12 @@ function StockCard(
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
   );
+  const investmentsResultStore = useCustomSelector(
+    state => state.investmentsResult,
+  )
   const deleteStock = useDeleteStock();
   const usLogos = useUsLogos();
+  const addInvestmentResult = useAddInvestmentResult()
 
   useEffect(() => {
     setStockInfo(
@@ -59,6 +64,13 @@ function StockCard(
         .slice(dates.length * -1)
         .map(price => price.close),
     });
+    addInvestmentResult({
+      id: props.ticker,
+      currency: 'BRL',
+      invested: props.price * props.amount,
+      result: results.regularMarketPrice * props.amount,
+      period: 'all',
+    },'stocks')
   }, [stockInfo]);
 
   const deleteSelectedStock = useCallback(() => {
@@ -134,7 +146,7 @@ function StockCard(
                 {getStockAllocation(
                   props.amount,
                   stockInfo!.regularMarketPrice,
-                  props.currentBalance,
+                  investmentsResultStore.currentBalance,
                 )}
               </span>
               <span className="text-sm  font-semibold">
