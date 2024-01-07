@@ -1,6 +1,8 @@
 import { ApexOptions } from 'apexcharts';
 
-export const EVOLUTION_CHART_OPTIONS = (datesISO: Array<string>):ApexOptions =>( {
+export const EVOLUTION_CHART_OPTIONS = (
+  datesISO: Array<string>,
+): ApexOptions => ({
   chart: {
     height: 350,
     type: 'area',
