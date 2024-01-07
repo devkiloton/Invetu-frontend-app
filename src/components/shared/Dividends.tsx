@@ -29,7 +29,6 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
         return obj.symbol === stock.ticker;
       }),
     ) as Array<Result>;
-    console.log(advices);
     // takes the cash dividends that will happen after today
     const cashDividendsAfterToday = advices
       .filter(obj => Object.keys(obj?.dividendsData).length > 0)
