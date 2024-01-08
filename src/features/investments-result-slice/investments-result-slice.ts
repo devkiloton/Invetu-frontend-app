@@ -25,6 +25,7 @@ type InvestmentResults = {
   cryptos: Array<InvestmentResult>;
   treasuries: Array<InvestmentResult>;
   currentBalance: number;
+  resultMonth: number;
 };
 
 const initialState: InvestmentResults = {
@@ -33,6 +34,7 @@ const initialState: InvestmentResults = {
   treasuries: [],
   fixedIncomes: [],
   currentBalance: 0,
+  resultMonth: 0,
 };
 
 export const investmentsResultSlice = createSlice({
@@ -58,6 +60,9 @@ export const investmentsResultSlice = createSlice({
       );
       state[payload.type] = [...removeIdFromTreasuries, payload];
     },
+    updateResultMonth: (state, action: PayloadAction<number>) => {
+      state.resultMonth = action.payload;
+    },
     deleteInvestmentResult: (
       state,
       action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
@@ -76,6 +81,6 @@ export const investmentsResultSlice = createSlice({
   },
 });
 
-export const { addInvestmentResult, deleteInvestmentResult } =
+export const { addInvestmentResult, deleteInvestmentResult, updateResultMonth } =
   investmentsResultSlice.actions;
 export const investmentsResultReducer = investmentsResultSlice.reducer;
