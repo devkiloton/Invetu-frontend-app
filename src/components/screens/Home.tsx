@@ -61,7 +61,10 @@ export default function Home() {
     const response = Object.values(investmentsDataStore.stocks.stockData);
     setStocksHistory(response);
     // take the current price of each stock and multiply by the amount
-    const currentBalanceFromStocks = getCurrentBalanceFromManyStocks(stocks, response);
+    const currentBalanceFromStocks = getCurrentBalanceFromManyStocks(
+      stocks,
+      response,
+    );
     setCurrentStocksBalance(currentBalanceFromStocks);
   }, [investmentsDataStore]);
 
@@ -78,28 +81,13 @@ export default function Home() {
       switch (true) {
         case isStock(investment):
           const stock = investment as Stock;
-          return (
-            <StockCard
-              key={stock.ticker}
-              {...stock}
-            />
-          );
+          return <StockCard key={stock.ticker} {...stock} />;
         case isCrypto(investment):
           const crypto = investment as Crypto;
-          return (
-            <CryptoCard
-              key={crypto.ticker}
-              {...crypto}
-            />
-          );
+          return <CryptoCard key={crypto.ticker} {...crypto} />;
         default:
           const fixedIncome = investment as FixedIncome;
-          return (
-            <FixedIncomeCard
-              key={fixedIncome.name}
-              {...fixedIncome}
-            />
-          );
+          return <FixedIncomeCard key={fixedIncome.name} {...fixedIncome} />;
       }
     },
     [investmentsDataStore, investmentsStore, currentStocksBalance],
@@ -178,7 +166,7 @@ export default function Home() {
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="btn btn-primary btn-circle fixed bottom-5 right-5 ">
+          className="btn btn-primary btn-circle fixed bottom-5 right-5 min-[768px]:hidden">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 rotate-45"
