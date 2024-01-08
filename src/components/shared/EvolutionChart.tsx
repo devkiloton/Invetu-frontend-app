@@ -9,6 +9,7 @@ import { getProfitCdi } from '~/helpers/get-profit-cdi';
 import { getprofitIpca } from '~/helpers/get-profit-ipca';
 import { getProfitPre } from '~/helpers/get-profit-pre';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
+import useUpdateResultMonth from '~/hooks/use-update-result-month';
 import { isCrypto } from '~/type-guards/is-crypto';
 import { isFixedIncome } from '~/type-guards/is-fixed-income';
 import { isStock } from '~/type-guards/is-stock';
@@ -21,6 +22,7 @@ export default function EvolutionChart() {
   const investmentsResultStore = useCustomSelector(
     state => state.investmentsResult,
   );
+  const updateResultMonth = useUpdateResultMonth();
   const [options, setOptions] = useState<{
     series: ApexAxisChartSeries;
     options: ApexOptions;
@@ -53,14 +55,19 @@ export default function EvolutionChart() {
       (ant, curr) =>
         new Date(ant.startDate).getTime() - new Date(curr.startDate).getTime(),
     );
+    if (allInvestments.length === 0) return;
     const now = new Date();
     const firstDate = new Date(allInvestments[0].startDate);
     const yearDiff = (now.getFullYear() - firstDate.getFullYear()) * 12;
     const totalPeriod = now.getMonth() - firstDate.getMonth() + yearDiff + 1;
-    const dates = Array.from(Array(totalPeriod).keys()).map(period => {
+    const dates = Array.from(Array(totalPeriod).keys()).map((period, index) => {
       const date = new Date(firstDate);
       date.setMonth(date.getMonth() + period);
-      return date.toISOString();
+      if (index === totalPeriod - 1) {
+        return now.toISOString();
+      }
+
+      return new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString();
     });
     const rate =
       investmentsDataStore.fiats.fiatData.find(fiat => fiat.name === 'BRL')
@@ -158,6 +165,12 @@ export default function EvolutionChart() {
     pricesProfit[pricesProfit.length - 1] =
       investmentsResultStore.currentBalance;
 
+    updateResultMonth(
+      pricesProfit[pricesProfit.length - 1] /
+        pricesProfit?.[pricesProfit.length - 2]
+        ? prices[prices.length - 1]
+        : pricesProfit[pricesProfit.length - 2],
+    );
     setOptions({
       series: [
         {
