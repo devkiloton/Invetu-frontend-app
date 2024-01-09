@@ -1,9 +1,18 @@
 import { changeTheme } from '~/helpers/change-theme';
 import logoSymbol from '~/assets/images/logoSymbol.svg';
 import { useAuthState } from '../contexts/UserContext';
+import { useAuth } from '~/lib/firebase';
+import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
 const NavBar = () => {
   const { state } = useAuthState();
+  const navigate = useNavigate();
+  const auth = useAuth();
+
+  const handleSignOut = useCallback(() => {
+    auth.signOut().then(() => navigate('/'));
+  }, []);
 
   return (
     <div className="pt-4 px-4 sticky top-0 z-[100] min-[768px]:px-8">
@@ -62,10 +71,9 @@ const NavBar = () => {
                     tabIndex={0}
                     className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                     <li>
-                      <a>Configurações</a>
-                    </li>
-                    <li>
-                      <a>Sair</a>
+                      <a onClick={handleSignOut} className="text-red-600">
+                        Sair
+                      </a>
                     </li>
                   </ul>
                 </div>
