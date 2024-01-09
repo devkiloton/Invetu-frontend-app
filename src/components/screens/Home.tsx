@@ -15,7 +15,6 @@ import Ghost from '~/assets/illustrations/ghost.svg';
 import Add from '~/assets/illustrations/add.svg';
 import WrapperIcon from '../shared/WrapperIcon';
 import { getCurrentBalanceFromManyStocks } from '~/helpers/get-current-balance-from-many-stocks';
-import AddInvestmentsForm from '../forms/AddInvestmentsForm';
 import { isStock } from '~/type-guards/is-stock';
 import { isCrypto } from '~/type-guards/is-crypto';
 import StockCard from '../shared/StockCard';
@@ -147,9 +146,6 @@ export default function Home() {
           </div>
         </div>
         <div className="flex gap-x-4">
-          <div className="w-full h-full sticky top-24 max-w-120 hidden min-[1024px]:block ">
-            <AddInvestmentsForm />
-          </div>
           <div className="w-full flex flex-col gap-4">
             {investmentsJoined.length === 0 && (
               <div className="flex h-full justify-center items-center flex-col gap-4">
