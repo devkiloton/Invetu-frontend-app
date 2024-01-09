@@ -3,15 +3,21 @@ import logoSymbol from '~/assets/images/logoSymbol.svg';
 import { useAuthState } from '../contexts/UserContext';
 import { useAuth } from '~/lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import AddInvestmentDialog from './AddInvestmentDialog';
 
 const NavBar = () => {
   const { state } = useAuthState();
   const navigate = useNavigate();
   const auth = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = useCallback(() => {
     auth.signOut().then(() => navigate('/'));
+  }, []);
+
+  const setStateDialogAddInvestment = useCallback((state: boolean) => {
+    setIsOpen(state);
   }, []);
 
   return (
@@ -77,7 +83,9 @@ const NavBar = () => {
                     </li>
                   </ul>
                 </div>
-                <button className="btn btn-primary hidden min-[768px]:block">
+                <button
+                  onClick={() => setIsOpen(true)}
+                  className="btn btn-primary hidden min-[768px]:block">
                   Adicionar ativo
                 </button>
               </>
@@ -85,6 +93,10 @@ const NavBar = () => {
           </div>
         </div>
       </div>
+      <AddInvestmentDialog
+        isOpen={isOpen}
+        setIsOpen={setStateDialogAddInvestment}
+      />
     </div>
   );
 };

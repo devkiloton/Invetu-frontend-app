@@ -8,7 +8,6 @@ import {
   Stock,
 } from '~/clients/firebase-client/models/Investments';
 import { joinStockData } from '~/helpers/join-stock-data';
-import { Dialog } from '@headlessui/react';
 import { Head } from '../shared/Head';
 import EvolutionChart from '../shared/EvolutionChart';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
@@ -26,6 +25,7 @@ import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import { joinCryptoData } from '~/helpers/join-crypto-data';
 import FixedIncomeCard from '../shared/FixedIncomeCard';
 import RadialChart from '../shared/RadialChart';
+import AddInvestmentDialog from '../shared/AddInvestmentDialog';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 
@@ -92,6 +92,10 @@ export default function Home() {
     },
     [investmentsDataStore, investmentsStore, currentStocksBalance],
   );
+
+  const setStateDialogAddInvestment = useCallback((state: boolean) => {
+    setIsOpen(state);
+  }, []);
 
   return (
     <>
@@ -181,17 +185,10 @@ export default function Home() {
             />
           </svg>
         </button>
-        <Dialog
-          open={isOpen}
-          onClose={() => setIsOpen(false)}
-          className="relative z-[100]">
-          <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-          <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-            <Dialog.Panel className="max-w-120 w-full overflow-scroll max-h-[90vh]">
-              <AddInvestmentsForm />
-            </Dialog.Panel>
-          </div>
-        </Dialog>
+        <AddInvestmentDialog
+          isOpen={isOpen}
+          setIsOpen={setStateDialogAddInvestment}
+        />
       </PageContainer>
     </>
   );
