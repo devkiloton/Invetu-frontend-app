@@ -18,8 +18,15 @@ export const getExternalitiesConstants = (data: Data) => {
     const multiply = dividendsStockSinceStartDate
 
     return {
-        sum: 0,
-        multiply: 0,
-        divide: 0,
+        stocks: {
+            sum: 0,
+            multiply: 0,
+            divide: 0,
+        },
+        cash: {
+            sum: 0,
+            multiply: 0,
+            divide: 0,
+        },
     }
 }
