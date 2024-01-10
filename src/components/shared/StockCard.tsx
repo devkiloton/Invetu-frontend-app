@@ -12,6 +12,7 @@ import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import useDeleteStock from '~/hooks/use-delete-stock';
 import { useUsLogos } from '~/hooks/use-us-logos';
 import useAddInvestmentResult from '~/hooks/use-add-investment-result';
+import { getExternalitiesConstants } from '~/helpers/get-externalities-constants';
 
 function StockCard(props: Stock) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
@@ -36,7 +37,9 @@ function StockCard(props: Stock) {
         stock => stock.symbol === props.ticker,
       ) ?? null,
     );
-  }, [investmentsDataStore]);
+    if (isNil(stockInfo) || isNil(props)) return;
+    getExternalitiesConstants({ result: stockInfo, stock: props });
+  }, [investmentsDataStore, stockInfo]);
 
   useEffect(() => {
     const range = getNearestDateRange(new Date(props.startDate).toISOString());
