@@ -1,5 +1,6 @@
 import { Stock } from "~/clients/firebase-client/models/Investments";
-import { Result } from "~/clients/firebase-client/models/history-stock-br";
+import { CashDividendLabel, Result, StockDividendLabel } from "~/clients/firebase-client/models/history-stock-br";
+import { isCashDividend } from "~/type-guards/is-cash-dividend";
 
 type Data = {
     result: Result
@@ -9,24 +10,32 @@ type Data = {
 // Function dedicated to extract constants that should multiply and divide the result of an stock in a period of time
 export const getExternalitiesConstants = (data: Data) => {
     const { result, stock } = data
-    const dividendsCashSinceStartDate = result.dividendsData?.cashDividends?.filter(dividend => new Date(dividend.lastDatePrior) >= new Date(stock.startDate)
-    )
-    const dividendsStockSinceStartDate = result.dividendsData?.stockDividends?.filter(dividend => new Date(dividend.lastDatePrior) >= new Date(stock.startDate))
+    const now = new Date()
+    const dividendsCashSinceStartDate = result.dividendsData?.cashDividends?.filter(dividend => new Date(dividend.lastDatePrior) >= new Date(stock.startDate) && new Date(dividend.paymentDate) <= now)
     
-    const sum = dividendsCashSinceStartDate
+    const dividendsStockSinceStartDate = result.dividendsData?.stockDividends?.filter(dividend => new Date(dividend.lastDatePrior) >= new Date(stock.startDate))
+    if (!dividendsCashSinceStartDate || !dividendsStockSinceStartDate) return ({
+        stocksFactor: 1,
+        cashDividends: 1,
+    })
+    const allAdvices = [...dividendsCashSinceStartDate, ...dividendsStockSinceStartDate].sort((a, b) => new Date(a.lastDatePrior).getTime() - new Date(b.lastDatePrior).getTime()).map(advice => {
+        if(isCashDividend(advice)){ 
+            return ({
+            ...advice,
+            type: CashDividendLabel
+        })
+        }else {
+            return ({
+                ...advice,
+                type: StockDividendLabel
+            })
+        }
+    })
 
-    const multiply = dividendsStockSinceStartDate
+    allAdvices.reduce((acc, advice) => {}, )
 
     return {
-        stocks: {
-            sum: 0,
-            multiply: 0,
-            divide: 0,
-        },
-        cash: {
-            sum: 0,
-            multiply: 0,
-            divide: 0,
-        },
+        stocksFactor: 1,
+        cashDividends: 1,
     }
 }
