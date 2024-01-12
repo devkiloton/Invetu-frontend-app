@@ -32,10 +32,18 @@ export const getExternalitiesConstants = (data: Data) => {
         }
     })
 
-    allAdvices.reduce((acc, advice) => {}, )
-
-    return {
+    const constants = allAdvices.reduce((acc, advice) => {
+        if (isCashDividend(advice)) {
+            acc.cashDividends += (1 + advice.rate) * stock.amount * acc.stocksFactor
+        } else {
+            acc.stocksFactor *=  advice.factor
+        }
+        return acc
+    }, {
         stocksFactor: 1,
-        cashDividends: 1,
-    }
+        cashDividends: 0,
+    })
+
+    console.log(constants)
+    return constants;
 }
