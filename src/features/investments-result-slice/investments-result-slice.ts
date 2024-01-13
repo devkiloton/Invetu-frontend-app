@@ -14,8 +14,6 @@ export type InvestmentResult = {
   // Period of the result
   period: 'all' | 'ytd' | 'month' | number;
   currency: 'BRL' | 'USD';
-  // Side effects for stocks (dividends, bonus, etc.).
-  // #TODO: Type not defined yet
   sideEffect?: {
     stocksFactor: number;
     cashDividends: number;
