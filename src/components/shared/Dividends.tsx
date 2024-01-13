@@ -39,9 +39,13 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
           ticker: investment.symbol,
         }));
       })
-      .filter(
-        advice => new Date(advice.paymentDate).getTime() > new Date().getTime(),
-      );
+      .filter(advice => {
+        return (
+          new Date(advice.paymentDate).getTime() > new Date().getTime() &&
+          new Date(advice.paymentDate).getTime() <
+            new Date().getTime() + 1000 * 60 * 60 * 24 * 30 * 12
+        );
+      });
 
     // takes the stock dividends that will happen after today
     const stockDividendsAfterToday = advices
