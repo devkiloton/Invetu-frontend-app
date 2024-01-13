@@ -44,6 +44,5 @@ export const getExternalitiesConstants = (data: Data) => {
         cashDividends: 0,
     })
 
-    console.log(constants)
     return constants;
 }
