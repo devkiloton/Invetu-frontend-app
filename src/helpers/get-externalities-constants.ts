@@ -36,7 +36,7 @@ export const getExternalitiesConstants = (data: Data) => {
         if (isCashDividend(advice)) {
             acc.cashDividends += (1 + advice.rate) * stock.amount * acc.stocksFactor
         } else {
-            acc.stocksFactor *=  advice.factor
+            acc.stocksFactor *= advice.factor >1 ? 1 + (advice.factor/100) :  advice.factor
         }
         return acc
     }, {
