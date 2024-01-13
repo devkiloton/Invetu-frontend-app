@@ -16,7 +16,10 @@ export type InvestmentResult = {
   currency: 'BRL' | 'USD';
   // Side effects for stocks (dividends, bonus, etc.).
   // #TODO: Type not defined yet
-  sideEffect?: any;
+  sideEffect?: {
+    stocksFactor: number;
+    cashDividends: number;
+  };
 };
 
 type InvestmentResults = {
