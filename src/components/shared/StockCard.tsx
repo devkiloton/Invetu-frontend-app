@@ -13,6 +13,7 @@ import useDeleteStock from '~/hooks/use-delete-stock';
 import { useUsLogos } from '~/hooks/use-us-logos';
 import useAddInvestmentResult from '~/hooks/use-add-investment-result';
 import { getExternalitiesConstants } from '~/helpers/get-externalities-constants';
+import useAddCurrentBalance from '~/hooks/use-add-current-balance';
 
 function StockCard(props: Stock) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
@@ -38,36 +39,37 @@ function StockCard(props: Stock) {
   const deleteStock = useDeleteStock();
   const usLogos = useUsLogos();
   const addInvestmentResult = useAddInvestmentResult();
+  const addCurrentBalance = useAddCurrentBalance();
 
   useEffect(() => {
-    setProperties(props);
-  }, []);
-
-  useEffect(() => {
-    if (isNull(properties)) return;
     setStockInfo(
       investmentsDataStore.stocks.stockData.find(
-        stock => stock.symbol === properties.ticker,
+        stock => stock.symbol === props.ticker,
       ) ?? null,
     );
-    if (isNil(stockInfo) || isNil(properties)) return;
-    const externalities = getExternalitiesConstants({
+    if (isNil(stockInfo) || isNil(props)) return;
+    const externalitiesEffect = getExternalitiesConstants({
       result: stockInfo,
-      stock: properties,
+      stock: props,
     });
-    setExternalities(externalities);
+    if (chartData) return;
+    setExternalities(externalitiesEffect);
+  }, [investmentsDataStore]);
+
+  useEffect(() => {
+    if (!externalities) return;
     setProperties({
-      ...properties,
+      ...props,
       amount:
-        properties.amount === externalities.stocksFactor * props.amount
-          ? properties.amount
-          : externalities.stocksFactor * properties.amount,
+        props.amount === externalities.stocksFactor * props.amount
+          ? props.amount
+          : externalities.stocksFactor * props.amount,
       price:
-        properties.price === props.price * (1 / externalities.stocksFactor)
-          ? properties.price
+        props.price === props.price * (1 / externalities.stocksFactor)
+          ? props.price
           : props.price * (1 / externalities.stocksFactor),
     });
-  }, [investmentsDataStore]);
+  }, [externalities]);
 
   useEffect(() => {
     if (isNull(properties)) return;
@@ -99,6 +101,7 @@ function StockCard(props: Stock) {
         .slice(dates.length * -1)
         .map(price => price.close),
     });
+
     addInvestmentResult(
       {
         id: properties.ticker,
@@ -112,6 +115,13 @@ function StockCard(props: Stock) {
         },
       },
       'stocks',
+    );
+    const usdToBrl = investmentsDataStore.fiats.fiatData.find(
+      fiat => fiat.name === 'BRL',
+    )?.rate;
+    addCurrentBalance(
+      externalities.cashDividends *
+        (props.currency === 'USD' ? usdToBrl ?? 1 : 1),
     );
   }, [properties]);
 
@@ -195,6 +205,10 @@ function StockCard(props: Stock) {
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Balanço:</span> R${' '}
                 {getBalance(stockInfo!.regularMarketPrice, properties.amount)}
+              </span>
+              <span className="text-sm  font-semibold">
+                <span className="text-xs font-normal">Rendimentos:</span> R${' '}
+                {externalities.cashDividends.toFixed(2)}
               </span>
             </div>
           )}
