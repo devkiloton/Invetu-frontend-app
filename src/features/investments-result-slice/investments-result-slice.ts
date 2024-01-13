@@ -63,6 +63,9 @@ export const investmentsResultSlice = createSlice({
       );
       state[payload.type] = [...removeIdFromTreasuries, payload];
     },
+    addCurrentBalance: (state, action: PayloadAction<number>) => {
+      state.currentBalance += action.payload;
+    },
     updateResultMonth: (state, action: PayloadAction<number>) => {
       state.resultMonth = action.payload;
     },
@@ -84,6 +87,6 @@ export const investmentsResultSlice = createSlice({
   },
 });
 
-export const { addInvestmentResult, deleteInvestmentResult, updateResultMonth } =
+export const { addInvestmentResult, addCurrentBalance, deleteInvestmentResult, updateResultMonth } =
   investmentsResultSlice.actions;
 export const investmentsResultReducer = investmentsResultSlice.reducer;
