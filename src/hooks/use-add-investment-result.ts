@@ -17,15 +17,21 @@ function useAddInvestmentResult() {
       dispatch(
         addInvestmentResult({ ...investmentResult, type: investmentType }),
       );
-      const investment = investments[investmentType].filter(isStock).find((obj) => obj.ticker === investmentResult.id);
-      if(!investment) return;
+      const investment = investments[investmentType]
+        .filter(isStock)
+        .find(obj => obj.ticker === investmentResult.id);
+      if (!investment) return;
       dispatch(
         updateStock({
           ticker: investment.ticker,
-          price: investment.price * 1 /(investmentResult.sideEffect?.stocksFactor ?? 1),
-          amount: investment.amount * (investmentResult.sideEffect?.stocksFactor ?? 1),
-        })
-      )
+          price:
+            (investment.price * 1) /
+            (investmentResult.sideEffect?.stocksFactor ?? 1),
+          amount:
+            investment.amount *
+            (investmentResult.sideEffect?.stocksFactor ?? 1),
+        }),
+      );
     },
     [],
   );

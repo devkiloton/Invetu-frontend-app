@@ -85,6 +85,10 @@ export const investmentsResultSlice = createSlice({
   },
 });
 
-export const { addInvestmentResult, addCurrentBalance, deleteInvestmentResult, updateResultMonth } =
-  investmentsResultSlice.actions;
+export const {
+  addInvestmentResult,
+  addCurrentBalance,
+  deleteInvestmentResult,
+  updateResultMonth,
+} = investmentsResultSlice.actions;
 export const investmentsResultReducer = investmentsResultSlice.reducer;
