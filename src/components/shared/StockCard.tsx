@@ -16,6 +16,14 @@ import { getExternalitiesConstants } from '~/helpers/get-externalities-constants
 
 function StockCard(props: Stock) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
+  const [properties, setProperties] = useState<Stock | null>(null);
+  const [externalities, setExternalities] = useState<{
+    stocksFactor: number;
+    cashDividends: number;
+  }>({
+    stocksFactor: 1,
+    cashDividends: 0,
+  });
   const [chartData, setChartData] = useState<{
     dates: string[];
     prices: number[];
@@ -32,20 +40,44 @@ function StockCard(props: Stock) {
   const addInvestmentResult = useAddInvestmentResult();
 
   useEffect(() => {
-    setStockInfo(
-      investmentsDataStore.stocks.stockData.find(
-        stock => stock.symbol === props.ticker,
-      ) ?? null,
-    );
-    if (isNil(stockInfo) || isNil(props)) return;
-    getExternalitiesConstants({ result: stockInfo, stock: props });
-  }, [investmentsDataStore, stockInfo]);
+    setProperties(props);
+  }, []);
 
   useEffect(() => {
-    const range = getNearestDateRange(new Date(props.startDate).toISOString());
+    if (isNull(properties)) return;
+    setStockInfo(
+      investmentsDataStore.stocks.stockData.find(
+        stock => stock.symbol === properties.ticker,
+      ) ?? null,
+    );
+    if (isNil(stockInfo) || isNil(properties)) return;
+    const externalities = getExternalitiesConstants({
+      result: stockInfo,
+      stock: properties,
+    });
+    setExternalities(externalities);
+    setProperties({
+      ...properties,
+      amount:
+        properties.amount === externalities.stocksFactor * props.amount
+          ? properties.amount
+          : externalities.stocksFactor * properties.amount,
+      price:
+        properties.price === props.price * (1 / externalities.stocksFactor)
+          ? properties.price
+          : props.price * (1 / externalities.stocksFactor),
+    });
+  }, [investmentsDataStore]);
+
+  useEffect(() => {
+    if (isNull(properties)) return;
+
+    const range = getNearestDateRange(
+      new Date(properties.startDate).toISOString(),
+    );
 
     const results = investmentsDataStore.stocks.stockData.find(
-      stock => stock.symbol === props.ticker,
+      stock => stock.symbol === properties.ticker,
     );
 
     // Dates that will be used in the chart X axis
@@ -53,7 +85,9 @@ function StockCard(props: Stock) {
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
       .map(price => price.date * 1000 - 10800000)
       // filtering dates that are greater than the start date or the range is 1d
-      .filter(value => value > Date.parse(props.startDate) || range === '1d')
+      .filter(
+        value => value > Date.parse(properties.startDate) || range === '1d',
+      )
       // converting dates to ISO string
       .map(value => new Date(value).toISOString());
 
@@ -67,18 +101,23 @@ function StockCard(props: Stock) {
     });
     addInvestmentResult(
       {
-        id: props.ticker,
+        id: properties.ticker,
         currency: 'BRL',
-        invested: props.price * props.amount,
-        result: results.regularMarketPrice * props.amount,
+        invested: properties.price * properties.amount,
+        result: results.regularMarketPrice * properties.amount,
         period: 'all',
+        sideEffect: {
+          stocksFactor: externalities.stocksFactor,
+          cashDividends: externalities.cashDividends,
+        },
       },
       'stocks',
     );
-  }, [stockInfo]);
+  }, [properties]);
 
   const deleteSelectedStock = useCallback(() => {
-    deleteStock(props.ticker);
+    if (isNull(properties)) return;
+    deleteStock(properties.ticker);
   }, [stockInfo]);
 
   return (
@@ -89,21 +128,21 @@ function StockCard(props: Stock) {
             <div className="flex items-center gap-x-2">
               {stockInfo?.logourl !==
                 'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
-                props.currency === 'BRL' &&
+                properties?.currency === 'BRL' &&
                 stockInfo?.logourl !== 'https://brapi.dev/favicon.svg' && (
                   <img
                     className="h-8 w-8 rounded drop-shadow"
                     src={stockInfo?.logourl}
                   />
                 )}
-              {props.currency === 'USD' && (
+              {properties?.currency === 'USD' && (
                 <img
                   className="h-8 w-8 rounded drop-shadow"
-                  src={usLogos(props.ticker)}
+                  src={usLogos(properties.ticker)}
                 />
               )}
 
-              <h2 className="card-title">{props.ticker}</h2>
+              <h2 className="card-title">{properties?.ticker}</h2>
             </div>
 
             <details className="dropdown dropdown-end">
@@ -131,41 +170,41 @@ function StockCard(props: Stock) {
               </ul>
             </details>
           </div>
-          {!isNull(stockInfo) && (
+          {!isNull(stockInfo) && !isNull(properties) && (
             <div className="flex flex-col min-[768px]:flex-row gap-x-2">
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Quantidade:</span>{' '}
-                {props.amount}
+                {properties.amount}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
-                {props.price.toFixed(2)}
+                {properties.price.toFixed(2)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Resultado:</span> %{' '}
-                {getProfit(props.price, stockInfo!.regularMarketPrice)}
+                {getProfit(properties.price, stockInfo!.regularMarketPrice)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Carteira:</span> %{' '}
                 {getStockAllocation(
-                  props.amount,
+                  properties.amount,
                   stockInfo!.regularMarketPrice,
                   investmentsResultStore.currentBalance,
                 )}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Balanço:</span> R${' '}
-                {getBalance(stockInfo!.regularMarketPrice, props.amount)}
+                {getBalance(stockInfo!.regularMarketPrice, properties.amount)}
               </span>
             </div>
           )}
-          {!isNull(chartData) && (
+          {!isNull(chartData) && !isNull(properties) && (
             <>
               <h1 className="font-semibold">
                 Variação de preço desde a compra
               </h1>
               <InvestementCardChart
-                currency={props.currency}
+                currency={properties.currency}
                 dates={chartData.dates}
                 prices={chartData.prices}
                 range={chartData.range}
