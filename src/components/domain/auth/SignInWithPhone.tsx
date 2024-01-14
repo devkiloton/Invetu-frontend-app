@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { Dialog, Transition } from '@headlessui/react';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { Fragment, useEffect, useState } from 'react';
 import { initialEntitiesFactory } from '~/helpers/initial-entities-factory';
-import { useAuth, useFirestore } from '~/lib/firebase';
+import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
 export const SignInWithPhone = () => {
