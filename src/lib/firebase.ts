@@ -2,17 +2,15 @@ import { FirebaseApp, initializeApp } from 'firebase/app';
 import {
   getAuth,
   Auth,
-  connectAuthEmulator,
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from 'firebase/auth';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
-import { connectStorageEmulator, getStorage } from 'firebase/storage';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 import { getPerformance } from 'firebase/performance';
 
 let firebaseApp: FirebaseApp;
-const useEmulator = () => import.meta.env['VITE_USE_FIREBASE_EMULATOR'];
 
 export const setupFirebase = () => {
   try {
@@ -38,31 +36,19 @@ let storage: ReturnType<typeof getStorage>;
 
 export const useAuth = () => {
   auth = getAuth(firebaseApp);
-  if (useEmulator()) {
-    connectAuthEmulator(auth, 'http://localhost:9099');
-  }
   return auth;
 };
 
 export const useFirestore = () => {
-  const emulator = useEmulator();
-
   if (!firestore) {
     firestore = getFirestore();
-    if (emulator) {
-      connectFirestoreEmulator(firestore, 'localhost', 8080);
-    }
   }
   return firestore;
 };
 
 export const useStorage = () => {
-  const emulator = useEmulator();
   if (!storage) {
     storage = getStorage();
-    if (emulator) {
-      connectStorageEmulator(storage, 'localhost', 9199);
-    }
   }
   return storage;
 };
