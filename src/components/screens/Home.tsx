@@ -13,7 +13,6 @@ import EvolutionChart from '../shared/EvolutionChart';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import Ghost from '~/assets/illustrations/ghost.svg';
 import Add from '~/assets/illustrations/add.svg';
-import WrapperIcon from '../shared/WrapperIcon';
 import { getCurrentBalanceFromManyStocks } from '~/helpers/get-current-balance-from-many-stocks';
 import { isStock } from '~/type-guards/is-stock';
 import { isCrypto } from '~/type-guards/is-crypto';
@@ -25,6 +24,7 @@ import { joinCryptoData } from '~/helpers/join-crypto-data';
 import FixedIncomeCard from '../shared/FixedIncomeCard';
 import RadialChart from '../shared/RadialChart';
 import AddInvestmentDialog from '../shared/AddInvestmentDialog';
+import WrapperIcon from '../shared/WrapperIcon';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 

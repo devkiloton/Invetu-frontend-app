@@ -50,7 +50,6 @@ const Index = () => {
             </p>
           </div>
           <div className="divider divider-horizontal" />
-
           <div>
             <h1 className="text-4xl font-bold leading-9 text-start px-4">
               Alcance o impossível <br /> com a{' '}
