@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PageContainer from '../containers/PageContainer';
 import AccountStats from '../shared/AccountStats';
 import {
@@ -28,7 +28,7 @@ import AddInvestmentDialog from '../shared/AddInvestmentDialog';
 
 type SupportedInvestments = Stock | FixedIncome | Crypto;
 
-export default function Home() {
+function Home() {
   const [investmentsJoined, setInvestmentsJoined] = useState<
     Array<Stock | Crypto | FixedIncome>
   >([]);
@@ -189,3 +189,5 @@ export default function Home() {
     </>
   );
 }
+
+export default React.memo(Home);

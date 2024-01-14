@@ -1,4 +1,4 @@
-import { range } from 'lodash-es';
+import { isNil, range } from 'lodash-es';
 import { isWorkDayBr } from './is-work-day-br';
 
 export const getProfitPre = (
@@ -30,7 +30,11 @@ export const getProfitPre = (
   );
   // Takes the daily profit for each year
   const dailyProfitWithYear = Object.keys(yearsRecord).map(year => {
-    const yearDays = yearsRecord[Number(year)].length;
+    const yearObj = yearsRecord[Number(year)];
+    if (isNil(yearObj)) {
+      throw new Error();
+    }
+    const yearDays = yearObj.length;
     const dailyProfit = Math.pow(1 + tax / 100, 1 / yearDays) - 1;
     return {
       year: Number(year),
@@ -61,7 +65,11 @@ export const getProfitPre = (
         dailyProfit => dailyProfit.year === year,
       )?.profit;
       if (!dailyProfit) throw new Error('Daily profit not found');
-      const profit = acc[acc.length - 1] * (1 + dailyProfit);
+      const lastValueAccumulator = acc[acc.length - 1];
+      if (isNil(lastValueAccumulator)) {
+        throw new Error();
+      }
+      const profit = lastValueAccumulator * (1 + dailyProfit);
       return [...acc, profit];
     },
     [amount],

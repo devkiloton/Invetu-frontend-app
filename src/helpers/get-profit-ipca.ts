@@ -1,6 +1,6 @@
 import { HistoryIPCA } from '~/clients/bacen-client/models/history-ipca';
 import { isWorkDayBr } from './is-work-day-br';
-import { range } from 'lodash-es';
+import { isNil, range } from 'lodash-es';
 import { getPreviousMonthDate } from './get-previous-month-date';
 
 export const getprofitIpca = (
@@ -42,7 +42,8 @@ export const getprofitIpca = (
   );
   // Takes the daily profit for each year
   const dailyProfitWithYear = Object.keys(yearsRecord).map(year => {
-    const yearDays = yearsRecord[Number(year)].length;
+    const yearDays = yearsRecord?.[Number(year)]?.length;
+    if (isNil(yearDays)) throw new Error();
     const dailyProfit = Math.pow(1 + tax / 100, 1 / yearDays) - 1;
     return {
       year: Number(year),
@@ -76,24 +77,27 @@ export const getprofitIpca = (
         .find(result => {
           // Return false for any date that has the month higher than the result.data month
           if (curr.getMonth() > Number(result.data.slice(3, 5))) return false;
-
+          const month = curr.toLocaleDateString('pt-BR').split(',')[0];
+          if (isNil(month)) throw new Error();
           return (
-            result.data ===
-            `01/${getPreviousMonthDate(
-              curr.toLocaleDateString('pt-BR').split(',')[0],
-            ).slice(3, 10)}`
+            result.data === `01/${getPreviousMonthDate(month).slice(3, 10)}`
           );
         });
       if (!ipca) return [...acc];
       // Get the work days for that month
-      const workDaysMonth = yearsRecord[year].filter(
+      const workDaysMonth = yearsRecord?.[year]?.filter(
         day => day.getMonth() === curr.getMonth(),
       );
+      if (isNil(workDaysMonth)) throw new Error();
       // Calculate the ipca's daily profit for that month
       const ipcaDailyProfit =
         Math.pow(1 + Number(ipca.valor) / 100, 1 / workDaysMonth.length) - 1;
 
-      const profit = acc[acc.length - 1] * (1 + dailyProfit + ipcaDailyProfit);
+      const lastProfit = acc[acc.length - 1];
+      if (isNil(lastProfit)) {
+        return acc;
+      }
+      const profit = lastProfit * (1 + dailyProfit + ipcaDailyProfit);
       return [...acc, profit];
     },
     [amount],

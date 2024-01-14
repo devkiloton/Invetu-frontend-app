@@ -5,6 +5,7 @@ import { addCryptoData } from '~/features/investments-data/investments-data-slic
 import { addCrypto } from '~/features/investments/investments-slice';
 import { useAuth } from '~/lib/firebase';
 import useSnackbar from './use-snackbar';
+import { isNil } from 'lodash-es';
 
 function useAddCrypto() {
   const dispatch = useDispatch();
@@ -24,8 +25,10 @@ function useAddCrypto() {
           // #TODO: Improve the algorithm to get the best period from coinstats and don't spend much time
           .functions.findCryptosData([investment.ticker.toLowerCase()], 'all')
           .then(res => {
+            const cryptoData = res?.[0];
+            if (isNil(cryptoData)) return;
             dispatch(addCrypto(investment));
-            dispatch(addCryptoData(res[0]));
+            dispatch(addCryptoData(cryptoData));
           });
       });
   };

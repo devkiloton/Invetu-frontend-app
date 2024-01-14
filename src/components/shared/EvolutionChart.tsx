@@ -1,7 +1,8 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-undef */
 import { ApexOptions } from 'apexcharts';
-import { useEffect, useState } from 'react';
+import { isNil } from 'lodash-es';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { FixedIncomeIndex } from '~/clients/firebase-client/models/Investments';
 import { EVOLUTION_CHART_OPTIONS } from '~/constants/evolution-chart-option';
@@ -14,7 +15,7 @@ import { isCrypto } from '~/type-guards/is-crypto';
 import { isFixedIncome } from '~/type-guards/is-fixed-income';
 import { isStock } from '~/type-guards/is-stock';
 
-export default function EvolutionChart() {
+function EvolutionChart() {
   const investmentsStore = useCustomSelector(state => state.investments);
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
@@ -57,7 +58,11 @@ export default function EvolutionChart() {
     );
     if (allInvestments.length === 0) return;
     const now = new Date();
-    const firstDate = new Date(allInvestments[0].startDate);
+    const firstInvestment = allInvestments[0];
+    if (isNil(firstInvestment)) {
+      throw new Error();
+    }
+    const firstDate = new Date(firstInvestment.startDate);
     const yearDiff = (now.getFullYear() - firstDate.getFullYear()) * 12;
     const totalPeriod = now.getMonth() - firstDate.getMonth() + yearDiff + 1;
     const dates = Array.from(Array(totalPeriod).keys()).map((period, index) => {
@@ -109,7 +114,7 @@ export default function EvolutionChart() {
             investmentsDataStore.cryptos.dataCryptos
               .findLast(crypto => crypto.id === curr.ticker)
               ?.results.findLast(result => {
-                return result[0] * 1000 <= new Date(date).getTime();
+                return result[0]! * 1000 <= new Date(date).getTime();
               })?.[1] ?? 0;
           return acc + curr.amount * currentPrice * rate ?? 0;
         }
@@ -165,11 +170,16 @@ export default function EvolutionChart() {
     pricesProfit[pricesProfit.length - 1] =
       investmentsResultStore.currentBalance;
 
+    const lastProfit = pricesProfit[pricesProfit.length - 1];
+    const beforeLastProfit = pricesProfit?.[pricesProfit.length - 2];
+    const firstPrice = prices[prices.length - 1];
+
+    if (isNil(lastProfit) || isNil(beforeLastProfit) || isNil(firstPrice)) {
+      throw new Error();
+    }
+
     updateResultMonth(
-      pricesProfit[pricesProfit.length - 1] /
-        pricesProfit?.[pricesProfit.length - 2]
-        ? prices[prices.length - 1]
-        : pricesProfit[pricesProfit.length - 2],
+      lastProfit / (beforeLastProfit ? firstPrice : beforeLastProfit),
     );
     setOptions({
       series: [
@@ -194,3 +204,5 @@ export default function EvolutionChart() {
     />
   );
 }
+
+export default React.memo(EvolutionChart);

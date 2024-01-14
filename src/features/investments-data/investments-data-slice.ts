@@ -19,6 +19,7 @@ import { Fiats } from '~/clients/firebase-client/models/fiats';
 import { HistoryIPCA } from '~/clients/bacen-client/models/history-ipca';
 import { HistoryCDI } from '~/clients/bacen-client/models/history-cdi';
 import bacenClient from '~/clients/bacen-client';
+import { isNil } from 'lodash-es';
 
 type InvestmentsData = {
   stocks: { stockData: Result[]; asyncState: AsyncStateRedux };
@@ -103,8 +104,8 @@ export const fetchAllStocksData: any = createAsyncThunk(
           '1d',
         )
         .then(res => {
-          res[0] as HistoryStockBR;
-          const data = res[0].results.reduce(
+          const response = res[0] as HistoryStockBR;
+          const data = response.results.reduce(
             (acc, result) => {
               acc[result.symbol] = result;
               return acc;
@@ -136,14 +137,18 @@ export const fetchAllStocksData: any = createAsyncThunk(
         maxRangePromise,
         highestRangePromise,
       ]);
-      const maxRangeData = maxRange[0].results.reduce(
+      const firstRange = maxRange[0];
+      if (isNil(firstRange)) return;
+      const maxRangeData = firstRange.results.reduce(
         (acc, result) => {
           acc[result.symbol] = result;
           return acc;
         },
         {} as Record<string, Result>,
       );
-      const highestRangeData = highestRange[0].results.reduce(
+      const secondRange = highestRange[0];
+      if (isNil(secondRange)) return;
+      const highestRangeData = secondRange.results.reduce(
         (acc, result) => {
           acc[result.symbol] = result;
           return acc;

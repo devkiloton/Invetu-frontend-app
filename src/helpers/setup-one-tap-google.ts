@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { useAuth } from '~/lib/firebase';
 import { initialEntitiesFactory } from './initial-entities-factory';
@@ -9,14 +10,14 @@ export const setupOneTapGoogle = () => {
   script.async = true;
   script.defer = true;
   script.onload = () => {
+    const auth = useAuth();
     // Setting up identifiers
     window.google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      login_uri: import.meta.env.VITE_GOOGLE_CLIENT_URI,
+      client_id: import.meta.env['VITE_GOOGLE_CLIENT_ID'],
+      login_uri: import.meta.env['VITE_GOOGLE_CLIENT_URI'],
       callback: (response: any) => {
         // Getting user's credentials when identified
         const token = response.credential;
-        const auth = useAuth();
         // Signing with credential
         signInWithCredential(auth, GoogleAuthProvider.credential(token)).then(
           initialEntitiesFactory,

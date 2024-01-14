@@ -17,7 +17,7 @@ type AuthState =
       state: 'UNKNOWN';
     };
 
-const AuthReducer = (state: AuthState, action: AuthActions): AuthState => {
+const AuthReducer = (_state: AuthState, action: AuthActions): AuthState => {
   switch (action.type) {
     case 'SIGN_IN':
       return {
@@ -38,7 +38,7 @@ type AuthContextProps = {
 
 export const AuthContext = createContext<AuthContextProps>({
   state: { state: 'UNKNOWN' },
-  dispatch: val => {},
+  dispatch: () => {},
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {

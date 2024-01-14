@@ -1,5 +1,6 @@
 import { ApexOptions } from 'apexcharts';
-import { useEffect, useState } from 'react';
+import { isNil } from 'lodash-es';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
@@ -40,18 +41,19 @@ const RadialChart = ({
         const dataStockThisMonth = getDataStocksThisMonth([
           result as Result & { date: number },
         ]);
+        const lastDayClose = dataStockThisMonth.lastDay.close;
+        const firstDayClose = dataStockThisMonth.firstDay.close;
+        if (isNil(lastDayClose) || isNil(firstDayClose)) return 0;
         if (
           dataStockThisMonth.firstDay.date < new Date(stock.startDate).getTime()
         ) {
           // if the stock was bought in this month, take variation from the first day of the month
-          const variation = Number(
-            getProfit(stockTyped.price, dataStockThisMonth.lastDay.close),
-          );
+          const variation = Number(getProfit(stockTyped.price, lastDayClose));
           const allocation = Number(
             getStockAllocation(
               stock.amount,
-              dataStockThisMonth.firstDay.close,
-              dataStockThisMonth.firstDay.close * stock.amount,
+              firstDayClose,
+              firstDayClose * stock.amount,
             ),
           );
           return (allocation * variation) / 100;
@@ -68,7 +70,7 @@ const RadialChart = ({
         const joinedStockData = joinStockData(investimentsBeforeThisMonth);
         // take the value of each one
         const investimentsBeforeThisMonthValue = joinedStockData
-          .map(value => dataStockThisMonth.firstDay.close * value.amount)
+          .map(value => firstDayClose * value.amount)
           .reduce((accumulator, currentValue) => {
             return accumulator + currentValue;
           }, 0);
@@ -76,24 +78,23 @@ const RadialChart = ({
         const allocation = Number(
           getStockAllocation(
             stock.amount,
-            dataStockThisMonth.firstDay.close,
+            firstDayClose,
             investimentsBeforeThisMonthValue,
           ),
         );
         // multiply by the percent variation
-        const variation = Number(
-          getProfit(
-            dataStockThisMonth.firstDay.close,
-            dataStockThisMonth.lastDay.close,
-          ),
-        );
+        const variation = Number(getProfit(firstDayClose, lastDayClose));
 
         return (allocation * variation) / 100;
       })
       .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     return await Promise.all([ibov, cdi]).then(values => {
-      return [userInvestments, Number(values[0]), Number(values[1][0].valor)];
+      return [
+        userInvestments,
+        Number(values[0]),
+        Number(values?.[1]?.[0]?.valor),
+      ];
     });
   }
 
@@ -105,9 +106,12 @@ const RadialChart = ({
     );
     // takes the percent variation between the first value of the current month and the last value
     const { firstDay, lastDay } = getDataStocksThisMonth(
-      ibov[0].results as Array<Result & { date: number }>,
+      ibov?.[0]?.results as Array<Result & { date: number }>,
     );
-    const result = getProfit(firstDay.close, lastDay.close);
+    if (isNil(firstDay?.close) || isNil(lastDay?.close)) {
+      throw new Error();
+    }
+    const result = getProfit(firstDay?.close, lastDay.close);
     return result;
   }
 
@@ -115,6 +119,9 @@ const RadialChart = ({
     // be careful case the user don't have any stock
     getSeries().then(s => {
       setSeries(valueToPercent(s));
+      if (isNil(s?.[0]) || isNil(s?.[1]) || isNil(s?.[2])) {
+        throw new Error();
+      }
       setApexOptions({
         ...options,
         labels: [
@@ -141,4 +148,4 @@ const RadialChart = ({
   );
 };
 
-export default RadialChart;
+export default React.memo(RadialChart);

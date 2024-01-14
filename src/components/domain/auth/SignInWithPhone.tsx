@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { Dialog, Transition } from '@headlessui/react';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { initialEntitiesFactory } from '~/helpers/initial-entities-factory';
-import { useAuth, useFirestore } from '~/lib/firebase';
+import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithPhone = () => {
+const SignInWithPhone = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [phoneUser, setPhoneUser] = useState('');
   const [code, setCode] = useState('');
@@ -24,9 +23,9 @@ export const SignInWithPhone = () => {
     );
 
     window.recaptchaVerifier.verify();
-  }, []);
+  }, [auth]);
 
-  const handleSubmitPhoneNumber = async () => {
+  const handleSubmitPhoneNumber = useCallback(() => {
     const onlyNumbers = phoneUser.replace(/\D/g, '');
     const phoneNumberBR = `+55${onlyNumbers}`;
     const appVerifier = window.recaptchaVerifier;
@@ -36,19 +35,19 @@ export const SignInWithPhone = () => {
       },
     );
     setStep(1);
-  };
+  }, [auth, phoneUser]);
 
-  const handleSubmitCode = async () => {
+  const handleSubmitCode = useCallback(() => {
     const confirmationResult = window.confirmationResult;
-    await confirmationResult.confirm(code).then(initialEntitiesFactory);
-  };
+    confirmationResult.confirm(code).then(initialEntitiesFactory);
+  }, [code]);
 
-  const phoneMask = (value: string) => {
+  const phoneMask = useCallback((value: string) => {
     value = value.replace(/\D/g, '');
     value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
     value = value.replace(/(\d)(\d{4})$/, '$1-$2');
     setPhoneUser(value);
-  };
+  }, []);
 
   return (
     <>
@@ -152,3 +151,5 @@ export const SignInWithPhone = () => {
     </>
   );
 };
+
+export default React.memo(SignInWithPhone);

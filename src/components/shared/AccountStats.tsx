@@ -1,6 +1,7 @@
+import React from 'react';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 
-export default function AccountStats(props: {
+function AccountStats(props: {
   investedAmount: number;
   currentBalance: number;
 }) {
@@ -43,3 +44,5 @@ export default function AccountStats(props: {
     </div>
   );
 }
+
+export default React.memo(AccountStats);

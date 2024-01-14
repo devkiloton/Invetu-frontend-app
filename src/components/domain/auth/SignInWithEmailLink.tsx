@@ -1,27 +1,26 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
-import { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithEmailLink = () => {
+const SignInWithEmailLink = () => {
+  const auth = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState('');
 
   const [step, setStep] = useState(0);
 
-  const actionCodeSettings = {
-    url: 'https://app.invetu.com/home',
-    handleCodeInApp: true,
-  };
-
-  const handleSendLink = async () => {
-    const auth = useAuth();
+  const handleSendLink = useCallback(() => {
+    const actionCodeSettings = {
+      url: 'https://app.invetu.com/home',
+      handleCodeInApp: true,
+    };
     sendSignInLinkToEmail(auth, email, actionCodeSettings).then(() => {
       window.localStorage.setItem('emailForSignIn', email);
     });
     setStep(1);
-  };
+  }, [auth, email]);
 
   return (
     <>
@@ -108,3 +107,5 @@ export const SignInWithEmailLink = () => {
     </>
   );
 };
+
+export default React.memo(SignInWithEmailLink);

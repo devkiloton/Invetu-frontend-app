@@ -1,15 +1,15 @@
-import { SignInWithGoogle } from '~/components/domain/auth/SignInWithGoogle';
 import { Head } from '~/components/shared/Head';
-import { SignInWithMicrosoft } from '~/components/domain/auth/SignInWithMicrosoft';
-import { SignInWithGitHub } from '~/components/domain/auth/SignInWithGithub';
 import CoupleTouchingSaturn from '~/assets/illustrations/couple-touching-saturn.svg';
-import { SignInWithX } from '../domain/auth/SignInWithX';
-import { SignInWithFacebook } from '../domain/auth/SignInWithFacebook';
-import { SignInWithYahoo } from '../domain/auth/SignInWithYahoo';
-import { SignInWithPhone } from '../domain/auth/SignInWithPhone';
-import { SignInWithEmailLink } from '../domain/auth/SignInWithEmailLink';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { setupOneTapGoogle } from '~/helpers/setup-one-tap-google';
+import SignInWithEmailLink from '../domain/auth/SignInWithEmailLink';
+import SignInWithPhone from '../domain/auth/SignInWithPhone';
+import SignInWithGoogle from '../domain/auth/SignInWithGoogle';
+import SignInWithMicrosoft from '../domain/auth/SignInWithMicrosoft';
+import SignInWithFacebook from '../domain/auth/SignInWithFacebook';
+import SignInWithX from '../domain/auth/SignInWithX';
+import SignInWithGithub from '../domain/auth/SignInWithGithub';
+import SignInWithYahoo from '../domain/auth/SignInWithYahoo';
 
 const Index = () => {
   useEffect(() => {
@@ -30,7 +30,7 @@ const Index = () => {
             <SignInWithMicrosoft />
             <SignInWithFacebook />
             <SignInWithX />
-            <SignInWithGitHub />
+            <SignInWithGithub />
             <SignInWithYahoo />
             <p className="text-xs text-center mt-8">
               Ao entrar, você concorda com
@@ -68,4 +68,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default React.memo(Index);

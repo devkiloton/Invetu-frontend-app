@@ -100,7 +100,7 @@ function FixedIncomeCard(props: FixedIncome) {
           props.rate,
           ipcaHistory,
         );
-        if (isNull(dataIpca)) return;
+        if (isNil(dataIpca?.totalProfit) || isNull(dataIpca)) return;
         setProfit(dataIpca.totalProfit / props.amount);
         setChartData({
           dates: dataIpca.dates.map(date => date.toISOString()),
@@ -148,19 +148,26 @@ function FixedIncomeCard(props: FixedIncome) {
       const prices = data.reduce(
         (acc, curr) => {
           const lastValue = acc[acc.length - 1];
+          if (isNil(lastValue)) {
+            return acc;
+          }
           const newValue = lastValue * (1 + curr.value / 100);
           return [...acc, newValue];
         },
         [props.amount],
       );
       setChartData({ dates, prices });
+      const lastPrice = prices[prices.length - 1];
+      if (isNil(lastPrice)) {
+        throw new Error();
+      }
       addInvestmentResult(
         {
           id: props.name,
           currency: 'BRL',
           period: 'all',
           invested: props.amount,
-          result: prices[prices.length - 1],
+          result: lastPrice,
         },
         'fixedIncomes',
       );

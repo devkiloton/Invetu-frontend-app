@@ -10,8 +10,10 @@ import { Fiats } from './models/fiats';
 import { FuzzyUS } from './models/fuzzy-us';
 import { HistoryStockUS } from './models/history-stock-us';
 
+const FIREBASE_FUNCTIONS_URL = import.meta.env['VITE_FIREBASE_FUNCTIONS_URL'];
+
 export const firebaseClient = () => {
-  const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const firestore = useFirestore();
   const client = {
     functions: {

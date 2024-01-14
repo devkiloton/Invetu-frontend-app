@@ -3,7 +3,7 @@ import { HistoryCDI } from './models/history-cdi';
 import { HistoryIPCA } from './models/history-ipca';
 
 export const bacenClient = () => {
-  const API_URL = import.meta.env.VITE_API_BACEN;
+  const API_URL = import.meta.env['VITE_API_BACEN'];
 
   const client = {
     cdi: {

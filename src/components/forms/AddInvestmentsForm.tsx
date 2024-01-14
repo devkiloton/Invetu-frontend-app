@@ -1,10 +1,10 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import AddFixedIncomeForm from './AddFixedIncomeForm';
 import AddStockForm from './AddStockForm';
 import AddCryptoForm from './AddCryptoForm';
 import AddStockUSAForm from './AddStockUSAForm';
 
-export default function AddInvestmentsForm() {
+function AddInvestmentsForm() {
   const [activeTab, setActiveTab] = useState<HTMLAnchorElement>();
   const defaultTab = useRef<HTMLAnchorElement>(null);
   const [kind, setKind] = useState<'stock' | 'fixed-income' | 'crypto' | 'usa'>(
@@ -61,3 +61,5 @@ export default function AddInvestmentsForm() {
     </div>
   );
 }
+
+export default React.memo(AddInvestmentsForm);

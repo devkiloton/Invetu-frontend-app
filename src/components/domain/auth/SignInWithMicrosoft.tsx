@@ -1,19 +1,15 @@
 import { OAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithMicrosoft = () => {
-  const navigate = useNavigate();
+const SignInWithMicrosoft = () => {
+  const auth = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(() => {
     const provider = new OAuthProvider('microsoft.com');
-    const auth = useAuth();
-
-    await signInWithPopup(auth, provider);
-
-    navigate('/home');
-  };
+    signInWithPopup(auth, provider);
+  }, [auth]);
 
   return (
     <button
@@ -34,3 +30,5 @@ export const SignInWithMicrosoft = () => {
     </button>
   );
 };
+
+export default React.memo(SignInWithMicrosoft);

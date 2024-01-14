@@ -3,7 +3,7 @@ import logoSymbol from '~/assets/images/logoSymbol.svg';
 import { useAuthState } from '../contexts/UserContext';
 import { useAuth } from '~/lib/firebase';
 import { useNavigate } from 'react-router-dom';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import AddInvestmentDialog from './AddInvestmentDialog';
 
 const NavBar = () => {
@@ -101,4 +101,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default React.memo(NavBar);

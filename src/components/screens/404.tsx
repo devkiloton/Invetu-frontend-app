@@ -1,3 +1,4 @@
+import React from 'react';
 import { Head } from '~/components/shared/Head';
 
 function Page404() {
@@ -20,4 +21,4 @@ function Page404() {
   );
 }
 
-export default Page404;
+export default React.memo(Page404);
