@@ -8,6 +8,7 @@ import getBestInterval from '~/helpers/get-best-interval';
 import getNearestDateRange from '~/helpers/get-nearest-date-range';
 import { useAuth } from '~/lib/firebase';
 import useSnackbar from './use-snackbar';
+import { isNil } from 'lodash-es';
 
 function useAddStock() {
   const dispatch = useDispatch();
@@ -28,12 +29,16 @@ function useAddStock() {
           getBestInterval(nearestRange),
         )
         .then(res => {
-          dispatch(addStockData(res[0].results[0]));
+          const itemResponse = res?.[0];
+          if (isNil(itemResponse)) return;
+          const result = itemResponse.results?.[0];
+          if (isNil(result)) return;
+          dispatch(addStockData(result));
           dispatch(addStock(stock));
           snackbar('Ação adicionada com sucesso!');
         });
     },
-    [dispatch],
+    [auth.currentUser?.uid, dispatch, snackbar],
   );
 }
 export default useAddStock;
