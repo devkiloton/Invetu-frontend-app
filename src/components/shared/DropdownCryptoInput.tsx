@@ -1,10 +1,10 @@
-import { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 import Fuse from 'fuse.js';
 
-export default function DropdownCryptoInput({
+function DropdownCryptoInput({
   setCryptoCurrency,
 }: {
   setCryptoCurrency: (id: string, name: string) => void;
@@ -122,3 +122,5 @@ export default function DropdownCryptoInput({
     </Combobox>
   );
 }
+
+export default React.memo(DropdownCryptoInput);

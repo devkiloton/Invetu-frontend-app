@@ -3,7 +3,7 @@ import { Crypto } from '~/clients/firebase-client/models/Investments';
 import DropdownCryptoInput from '../shared/DropdownCryptoInput';
 import useAddCrypto from '~/hooks/use-add-crypto';
 
-export default function AddCryptoForm() {
+function AddCryptoForm() {
   const amountInput = useRef<any>();
   const priceInput = useRef<any>();
   const addCrypto = useAddCrypto();
@@ -128,3 +128,5 @@ export default function AddCryptoForm() {
     </form>
   );
 }
+
+export default React.memo(AddCryptoForm);

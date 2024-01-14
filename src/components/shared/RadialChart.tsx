@@ -1,6 +1,6 @@
 import { ApexOptions } from 'apexcharts';
 import { isNil } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import bacenClient from '~/clients/bacen-client';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
@@ -148,4 +148,4 @@ const RadialChart = ({
   );
 };
 
-export default RadialChart;
+export default React.memo(RadialChart);

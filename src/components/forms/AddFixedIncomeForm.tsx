@@ -7,7 +7,7 @@ import {
 import ListboxIndexFixedIncome from '../shared/ListboxIndexFixedIncome';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
 
-export default function AddFixedIncomeForm() {
+function AddFixedIncomeForm() {
   const [fixedIncomeData, setFixedIncomeData] = useState<FixedIncome>({
     name: '',
     index: FixedIncomeIndex.CDI,
@@ -205,3 +205,5 @@ export default function AddFixedIncomeForm() {
     </form>
   );
 }
+
+export default React.memo(AddFixedIncomeForm);

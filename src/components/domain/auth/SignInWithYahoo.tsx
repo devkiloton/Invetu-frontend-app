@@ -1,20 +1,16 @@
 import { OAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithYahoo = () => {
-  const navigate = useNavigate();
+const SignInWithYahoo = () => {
+  const auth = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(() => {
     const provider = new OAuthProvider('yahoo.com');
 
-    const auth = useAuth();
-
-    await signInWithPopup(auth, provider);
-
-    navigate('/home');
-  };
+    signInWithPopup(auth, provider);
+  }, [auth]);
 
   return (
     <button
@@ -35,3 +31,5 @@ export const SignInWithYahoo = () => {
     </button>
   );
 };
+
+export default React.memo(SignInWithYahoo);

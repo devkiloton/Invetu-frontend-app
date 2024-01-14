@@ -1,20 +1,15 @@
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithX = () => {
-  const navigate = useNavigate();
+const SignInWithX = () => {
+  const auth = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(() => {
     const provider = new TwitterAuthProvider();
-
-    const auth = useAuth();
-
-    await signInWithPopup(auth, provider);
-
-    navigate('/home');
-  };
+    signInWithPopup(auth, provider);
+  }, [auth]);
 
   return (
     <button
@@ -39,3 +34,5 @@ export const SignInWithX = () => {
     </button>
   );
 };
+
+export default React.memo(SignInWithX);

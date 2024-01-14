@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 import { ApexOptions } from 'apexcharts';
 import { isNil } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { FixedIncomeIndex } from '~/clients/firebase-client/models/Investments';
 import { EVOLUTION_CHART_OPTIONS } from '~/constants/evolution-chart-option';
@@ -15,7 +15,7 @@ import { isCrypto } from '~/type-guards/is-crypto';
 import { isFixedIncome } from '~/type-guards/is-fixed-income';
 import { isStock } from '~/type-guards/is-stock';
 
-export default function EvolutionChart() {
+function EvolutionChart() {
   const investmentsStore = useCustomSelector(state => state.investments);
   const investmentsDataStore = useCustomSelector(
     state => state.investmentsData,
@@ -204,3 +204,5 @@ export default function EvolutionChart() {
     />
   );
 }
+
+export default React.memo(EvolutionChart);

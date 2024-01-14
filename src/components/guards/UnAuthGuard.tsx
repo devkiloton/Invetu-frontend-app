@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 import { Navigate } from 'react-router-dom';
 import { useAuthState } from '../contexts/UserContext';
+import React from 'react';
 
-export default function UnAuthGuard({
+function UnAuthGuard({
   element,
   pathToRedirect,
 }: {
@@ -17,3 +18,5 @@ export default function UnAuthGuard({
     <Navigate to={pathToRedirect} replace />
   );
 }
+
+export default React.memo(UnAuthGuard);

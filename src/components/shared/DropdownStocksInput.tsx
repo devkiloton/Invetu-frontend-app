@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Combobox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
@@ -6,7 +6,7 @@ import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import { useDebounce } from '@uidotdev/usehooks';
 import useFuzzyStocksUS from '~/hooks/use-fuzzy-stocks-us';
 
-export default function DropdownStocksInput({
+function DropdownStocksInput({
   setTicker,
   country = 'BR',
 }: {
@@ -107,3 +107,5 @@ export default function DropdownStocksInput({
     </Combobox>
   );
 }
+
+export default React.memo(DropdownStocksInput);

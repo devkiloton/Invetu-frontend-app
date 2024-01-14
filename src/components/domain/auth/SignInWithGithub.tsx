@@ -1,20 +1,15 @@
 import { GithubAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithGitHub = () => {
-  const navigate = useNavigate();
+const SignInWithGitHub = () => {
+  const auth = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(() => {
     const provider = new GithubAuthProvider();
-
-    const auth = useAuth();
-
-    await signInWithPopup(auth, provider);
-
-    navigate('/home');
-  };
+    signInWithPopup(auth, provider);
+  }, [auth]);
 
   return (
     <button
@@ -33,3 +28,5 @@ export const SignInWithGitHub = () => {
     </button>
   );
 };
+
+export default React.memo(SignInWithGitHub);

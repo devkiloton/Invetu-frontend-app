@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import {
   CashDividend,
@@ -10,7 +10,8 @@ import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
-export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
+
+function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
     Array<
       (StockDividend | CashDividend | Subscription) & {
@@ -143,3 +144,5 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     </div>
   );
 }
+
+export default React.memo(Dividends);

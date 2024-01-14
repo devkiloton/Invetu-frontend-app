@@ -1,20 +1,15 @@
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback } from 'react';
 import { useAuth } from '~/lib/firebase';
 
 // #TODO: It's not DRY. It should be refactored.
-export const SignInWithGoogle = () => {
-  const navigate = useNavigate();
+const SignInWithGoogle = () => {
+  const auth = useAuth();
 
-  const handleClick = async () => {
+  const handleClick = useCallback(() => {
     const provider = new GoogleAuthProvider();
-    const auth = useAuth();
-    // @see https://firebase.google.com/docs/auth/web/google-signin
-    auth.languageCode = 'ja';
-
-    await signInWithPopup(auth, provider);
-    navigate('/home');
-  };
+    signInWithPopup(auth, provider);
+  }, [auth]);
 
   return (
     <button
@@ -62,3 +57,5 @@ export const SignInWithGoogle = () => {
     </button>
   );
 };
+
+export default React.memo(SignInWithGoogle);

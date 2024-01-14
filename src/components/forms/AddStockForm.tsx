@@ -1,11 +1,11 @@
-import { FormEvent, useCallback, useRef, useState } from 'react';
+import React, { FormEvent, useCallback, useRef, useState } from 'react';
 import DropdownStocksInput from '../shared/DropdownStocksInput';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';
 import useAddStock from '~/hooks/use-add-stock';
 import { getIsoDate } from '~/helpers/get-iso-date';
 
-export default function AddStockForm() {
+function AddStockForm() {
   const amountInput = useRef<any>();
   const priceInput = useRef<any>();
   const [ticker, setTicker] = useState('');
@@ -40,7 +40,7 @@ export default function AddStockForm() {
         setStartDate(new Date().toISOString());
       }
     },
-    [ticker, startDate, priceInput, amountInput],
+    [ticker, auth.currentUser?.uid, startDate, addStock],
   );
 
   return (
@@ -109,3 +109,5 @@ export default function AddStockForm() {
     </form>
   );
 }
+
+export default React.memo(AddStockForm);
