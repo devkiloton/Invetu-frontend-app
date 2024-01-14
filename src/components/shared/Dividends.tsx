@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
-import { invetuClient } from '~/clients/invetu-client/invetu-client';
 import {
   CashDividend,
+  Result,
   StockDividend,
   Subscription,
-} from '~/clients/invetu-client/models/DividendsAPI';
+} from '~/clients/firebase-client/models/history-stock-br';
 import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
 
-export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
+function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
     Array<
       (StockDividend | CashDividend | Subscription) & {
@@ -19,16 +20,19 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       }
     >
   >([]);
-
-  async function getValidAdvices() {
+  const investmentsDataStore = useCustomSelector(
+    state => state.investmentsData,
+  );
+  const getValidAdvices = useCallback(() => {
     // fetching all the dividends and subscriptions
-    const advices = await invetuClient().stocks.findDividends(
-      joinStockData(stocks).map(stock => stock.ticker),
-    );
-
+    const advices = joinStockData(stocks).map(stock =>
+      investmentsDataStore.stocks.stockData.find(obj => {
+        return obj.symbol === stock.ticker;
+      }),
+    ) as Array<Result>;
     // takes the cash dividends that will happen after today
-    const cashDividendsAfterToday = advices.results
-      .filter(obj => Object.keys(obj.dividendsData).length > 0)
+    const cashDividendsAfterToday = advices
+      .filter(obj => Object.keys(obj?.dividendsData).length > 0)
       .flatMap(investment => {
         const { cashDividends } = investment.dividendsData;
         return cashDividends.map(data => ({
@@ -36,12 +40,16 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
           ticker: investment.symbol,
         }));
       })
-      .filter(
-        advice => new Date(advice.paymentDate).getTime() > new Date().getTime(),
-      );
+      .filter(advice => {
+        return (
+          new Date(advice.paymentDate).getTime() > new Date().getTime() &&
+          new Date(advice.paymentDate).getTime() <
+            new Date().getTime() + 1000 * 60 * 60 * 24 * 30 * 12
+        );
+      });
 
     // takes the stock dividends that will happen after today
-    const stockDividendsAfterToday = advices.results
+    const stockDividendsAfterToday = advices
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
         const { stockDividends } = investment.dividendsData;
@@ -56,7 +64,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       );
 
     // takes the subscriptions that will happen after today
-    const subscriptionsAfterToday = advices.results
+    const subscriptionsAfterToday = advices
       .filter(obj => Object.keys(obj.dividendsData).length > 0)
       .flatMap(investment => {
         const { subscriptions } = investment.dividendsData;
@@ -75,44 +83,45 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       ...stockDividendsAfterToday,
       ...subscriptionsAfterToday,
     ];
-  }
+  }, [investmentsDataStore, stocks]);
 
   useEffect(() => {
-    getValidAdvices().then(result => {
-      // Join the stocks with the advices
-      const presentation = stocks.flatMap(stock => {
-        const findStock = result
-          .filter(
-            advice =>
-              advice.ticker === stock.ticker &&
-              stock.startDate < advice.lastDatePrior,
-          )
-          .map(advice => ({ ...advice, amount: stock.amount }));
-        return findStock;
-      });
-
-      // Elements with the same rate will be grouped together and the amount will be summed
-      const grouped = presentation.reduce(
-        (acc, curr) => {
-          const find = acc.find(
-            obj => getSpecificProp(obj) === getSpecificProp(curr),
-          );
-          if (find) {
-            find.amount += curr.amount;
-            return acc;
-          }
-          return [...acc, curr];
-        },
-        [] as Array<
-          (StockDividend | CashDividend | Subscription) & {
-            amount: number;
-            ticker: string;
-          }
-        >,
-      );
-      setAdvices(grouped);
+    if (!investmentsDataStore.stocks.asyncState.isLoaded) return;
+    const result = getValidAdvices();
+    // Join the stocks with the advices
+    const presentation = stocks.flatMap(stock => {
+      const findStock = result
+        .filter(
+          advice =>
+            advice.ticker === stock.ticker &&
+            stock.startDate < advice.lastDatePrior,
+        )
+        .map(advice => ({ ...advice, amount: stock.amount }));
+      return findStock;
     });
-  }, [stocks]);
+
+    // Elements with the same rate will be grouped together and the amount will be summed
+    // Take care when having different rates for the same stock but with same payment date
+    const grouped = presentation.reduce(
+      (acc, curr) => {
+        const find = acc.find(
+          obj => getSpecificProp(obj) === getSpecificProp(curr),
+        );
+        if (find) {
+          find.amount += curr.amount;
+          return acc;
+        }
+        return [...acc, curr];
+      },
+      [] as Array<
+        (StockDividend | CashDividend | Subscription) & {
+          amount: number;
+          ticker: string;
+        }
+      >,
+    );
+    setAdvices(grouped);
+  }, [stocks, investmentsDataStore]);
   return (
     <div className="flex lg:flex-col gap-4 border-opacity-50 overflow-scroll">
       {advices.map(value => {
@@ -135,3 +144,5 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     </div>
   );
 }
+
+export default React.memo(Dividends);

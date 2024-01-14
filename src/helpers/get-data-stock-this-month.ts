@@ -1,5 +1,5 @@
 import { isNil } from 'lodash-es';
-import { Result } from '~/clients/invetu-client/models/HistoryAPI';
+import { Result } from '~/clients/firebase-client/models/history-stock-br';
 
 export function getDataStocksThisMonth(
   history: Array<Result & { date: number }>,
@@ -9,6 +9,9 @@ export function getDataStocksThisMonth(
   const y = date.getFullYear();
   const m = date.getMonth();
   const timestampFirstDayMonth = new Date(y, m, 1).getTime();
+  if (isNil(history?.[0])) {
+    throw new Error();
+  }
   const validData = history[0].historicalDataPrice.filter(
     h => h.date * 1000 >= timestampFirstDayMonth,
   );
@@ -19,12 +22,12 @@ export function getDataStocksThisMonth(
     date: timestampFirstDayMonth,
   };
   const dataFromLastDay = {
-    ...(isNil(validData[validData.length - 1].close)
+    ...(isNil(validData[validData.length - 1]?.close)
       ? validData[validData.length - 2]
       : validData[validData.length - 1]),
     date:
-      validData[validData.length - 1].date ??
-      validData[validData.length - 2].date,
+      validData[validData.length - 1]?.date ??
+      validData[validData.length - 2]?.date,
   };
 
   return {

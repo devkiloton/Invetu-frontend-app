@@ -1,18 +1,32 @@
-export default function AccountStats(props: {
+import React from 'react';
+import { useCustomSelector } from '~/hooks/use-custom-selector';
+
+function AccountStats(props: {
   investedAmount: number;
   currentBalance: number;
 }) {
+  const investmentsResult = useCustomSelector(state => state.investmentsResult);
   return (
     <div className="w-full">
       <div className="stats bg-primary text-primary-content w-full bordered flex flex-col md:flex-row">
         <div className="stat border-base-100 border-opacity-20">
           <div className="stat-title text-neutral">Total investido</div>
-          <div className="stat-value">R$ {props.investedAmount.toFixed(2)}</div>
+          <div className="stat-value">
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(props.investedAmount)}
+          </div>
         </div>
 
         <div className="stat border-base-100 border-opacity-20">
           <div className="stat-title text-neutral">Saldo bruto</div>
-          <div className="stat-value">R$ {props.currentBalance.toFixed(2)}</div>
+          <div className="stat-value">
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(investmentsResult.currentBalance)}
+          </div>
         </div>
         <div className="stat border-base-100 border-opacity-20">
           <div className="stat-title text-neutral">Resultado</div>
@@ -20,7 +34,9 @@ export default function AccountStats(props: {
             %{' '}
             {(props.investedAmount === 0
               ? 0
-              : (props.currentBalance / props.investedAmount) * 100 - 100
+              : (investmentsResult.currentBalance / props.investedAmount) *
+                  100 -
+                100
             ).toFixed(2)}
           </div>
         </div>
@@ -28,3 +44,5 @@ export default function AccountStats(props: {
     </div>
   );
 }
+
+export default React.memo(AccountStats);

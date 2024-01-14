@@ -1,17 +1,20 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { firebaseClient } from '~/clients/firebase-client/firebase-client';
 import {
+  Crypto,
+  FixedIncome,
   Investments,
   Stock,
 } from '~/clients/firebase-client/models/Investments';
 import { AsyncStateRedux } from '../types/async-state';
 import { useAuth } from '~/lib/firebase';
+import { isNil } from 'lodash-es';
 
 const initialState: Investments & { asyncState: AsyncStateRedux } = {
   stocks: [],
   cryptos: [],
   treasuries: [],
-  companyLoans: [],
+  fixedIncomes: [],
   cash: [],
   investedAmount: 0,
   asyncState: {
@@ -46,12 +49,57 @@ export const investmentsSlice = createSlice({
       state.investedAmount =
         state.investedAmount + action.payload.price * action.payload.amount;
     },
+    updateStock: (state, action: PayloadAction<Partial<Stock>>) => {
+      const stock = state.stocks.find(
+        stock => stock.ticker === action.payload.ticker,
+      );
+      state.stocks = state.stocks.map(stock =>
+        stock.ticker === action.payload.ticker
+          ? { ...stock, ...action.payload }
+          : stock,
+      );
+      if (!stock || !action.payload.price || !action.payload.amount) return;
+      state.investedAmount =
+        state.investedAmount -
+        stock.price * stock.amount +
+        action.payload.price * action.payload.amount;
+    },
     deleteStock: (state, action: PayloadAction<string>) => {
       const stock = state.stocks.find(stock => stock.ticker === action.payload);
       if (!stock) return;
       state.investedAmount = state.investedAmount - stock.price * stock.amount;
       state.stocks = state.stocks.filter(
         stock => stock.ticker !== action.payload,
+      );
+    },
+    addCrypto: (state, action: PayloadAction<Crypto>) => {
+      state.cryptos = [...state.cryptos, action.payload];
+      state.investedAmount =
+        state.investedAmount + action.payload.price * action.payload.amount;
+    },
+    deleteCrypto: (state, action: PayloadAction<string>) => {
+      const crypto = state.cryptos.find(
+        crypto => crypto.ticker === action.payload,
+      );
+      if (!crypto) return;
+      state.investedAmount =
+        state.investedAmount - crypto.price * crypto.amount;
+      state.cryptos = state.cryptos.filter(
+        crypto => crypto.ticker !== action.payload,
+      );
+    },
+    addFixedIncome: (state, action: PayloadAction<FixedIncome>) => {
+      state.fixedIncomes = [...state.fixedIncomes, action.payload];
+      state.investedAmount = state.investedAmount + action.payload.amount;
+    },
+    deleteFixedIncome: (state, action: PayloadAction<string>) => {
+      const fixedIncome = state.fixedIncomes.find(
+        fixedIncome => fixedIncome.name === action.payload,
+      );
+      if (!fixedIncome) return;
+      state.investedAmount = state.investedAmount - fixedIncome.amount;
+      state.fixedIncomes = state.fixedIncomes.filter(
+        fixedIncome => fixedIncome.name !== action.payload,
       );
     },
   },
@@ -61,7 +109,10 @@ export const investmentsSlice = createSlice({
     });
     builder.addCase(
       fetchInvestments.fulfilled,
-      (_state, action: PayloadAction<Investments>) => {
+      (state, action: PayloadAction<Investments>) => {
+        if (isNil(action.payload)) {
+          return state;
+        }
         return {
           ...action.payload,
           asyncState: { isLoading: false, error: null, isLoaded: true },
@@ -76,5 +127,13 @@ export const investmentsSlice = createSlice({
   },
 });
 
-export const { deleteStock, addStock } = investmentsSlice.actions;
+export const {
+  deleteStock,
+  addStock,
+  addFixedIncome,
+  updateStock,
+  deleteFixedIncome,
+  addCrypto,
+  deleteCrypto,
+} = investmentsSlice.actions;
 export const investmentsReducer = investmentsSlice.reducer;

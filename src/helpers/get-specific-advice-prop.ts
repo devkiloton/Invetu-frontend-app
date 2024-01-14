@@ -2,7 +2,7 @@ import {
   CashDividend,
   StockDividend,
   Subscription,
-} from '~/clients/invetu-client/models/DividendsAPI';
+} from '~/clients/firebase-client/models/history-stock-br';
 import { isCashDividend } from '~/type-guards/is-cash-dividend';
 import { isStockDividend } from '~/type-guards/is-stock-dividend';
 
