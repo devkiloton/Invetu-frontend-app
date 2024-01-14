@@ -12,18 +12,18 @@ import { getAnalytics } from 'firebase/analytics';
 import { getPerformance } from 'firebase/performance';
 
 let firebaseApp: FirebaseApp;
-const useEmulator = () => import.meta.env.VITE_USE_FIREBASE_EMULATOR;
+const useEmulator = () => import.meta.env['VITE_USE_FIREBASE_EMULATOR'];
 
 export const setupFirebase = () => {
   try {
     firebaseApp = initializeApp({
-      apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTHDOMAIN,
-      databaseURL: import.meta.env.VITE_FIREBASE_DATABASEURL,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECTID,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGEBUCKET,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGINGSENDERID,
-      appId: import.meta.env.VITE_FIREBASE_APPID,
+      apiKey: import.meta.env['VITE_FIREBASE_APIKEY'],
+      authDomain: import.meta.env['VITE_FIREBASE_AUTHDOMAIN'],
+      databaseURL: import.meta.env['VITE_FIREBASE_DATABASEURL'],
+      projectId: import.meta.env['VITE_FIREBASE_PROJECTID'],
+      storageBucket: import.meta.env['VITE_FIREBASE_STORAGEBUCKET'],
+      messagingSenderId: import.meta.env['VITE_FIREBASE_MESSAGINGSENDERID'],
+      appId: import.meta.env['VITE_FIREBASE_APPID'],
     });
     getAnalytics(firebaseApp);
     getPerformance(firebaseApp);
@@ -45,9 +45,11 @@ export const useAuth = () => {
 };
 
 export const useFirestore = () => {
+  const emulator = useEmulator();
+
   if (!firestore) {
     firestore = getFirestore();
-    if (useEmulator()) {
+    if (emulator) {
       connectFirestoreEmulator(firestore, 'localhost', 8080);
     }
   }
@@ -55,9 +57,10 @@ export const useFirestore = () => {
 };
 
 export const useStorage = () => {
+  const emulator = useEmulator();
   if (!storage) {
     storage = getStorage();
-    if (useEmulator()) {
+    if (emulator) {
       connectStorageEmulator(storage, 'localhost', 9199);
     }
   }
