@@ -25,6 +25,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint'],
   rules: {
+    'dot-notation': 'off',
     'react/prop-types': 'off',
     'react/jsx-curly-brace-presence': 'error',
     // React 17
