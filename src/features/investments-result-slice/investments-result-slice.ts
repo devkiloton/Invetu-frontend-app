@@ -14,9 +14,10 @@ export type InvestmentResult = {
   // Period of the result
   period: 'all' | 'ytd' | 'month' | number;
   currency: 'BRL' | 'USD';
-  // Side effects for stocks (dividends, bonus, etc.).
-  // #TODO: Type not defined yet
-  sideEffect?: any;
+  sideEffect?: {
+    stocksFactor: number;
+    cashDividends: number;
+  };
 };
 
 type InvestmentResults = {
@@ -25,6 +26,7 @@ type InvestmentResults = {
   cryptos: Array<InvestmentResult>;
   treasuries: Array<InvestmentResult>;
   currentBalance: number;
+  resultMonth: number;
 };
 
 const initialState: InvestmentResults = {
@@ -33,6 +35,7 @@ const initialState: InvestmentResults = {
   treasuries: [],
   fixedIncomes: [],
   currentBalance: 0,
+  resultMonth: 0,
 };
 
 export const investmentsResultSlice = createSlice({
@@ -58,6 +61,12 @@ export const investmentsResultSlice = createSlice({
       );
       state[payload.type] = [...removeIdFromTreasuries, payload];
     },
+    addCurrentBalance: (state, action: PayloadAction<number>) => {
+      state.currentBalance += action.payload;
+    },
+    updateResultMonth: (state, action: PayloadAction<number>) => {
+      state.resultMonth = action.payload;
+    },
     deleteInvestmentResult: (
       state,
       action: PayloadAction<InvestmentResult & { type: InvestmentType }>,
@@ -76,6 +85,10 @@ export const investmentsResultSlice = createSlice({
   },
 });
 
-export const { addInvestmentResult, deleteInvestmentResult } =
-  investmentsResultSlice.actions;
+export const {
+  addInvestmentResult,
+  addCurrentBalance,
+  deleteInvestmentResult,
+  updateResultMonth,
+} = investmentsResultSlice.actions;
 export const investmentsResultReducer = investmentsResultSlice.reducer;

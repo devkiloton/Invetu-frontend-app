@@ -8,7 +8,6 @@ import { useCustomSelector } from '~/hooks/use-custom-selector';
 import { CryptoCurrency } from '~/clients/firebase-client/models/status-cryptos';
 import { HistoryCryptoUS } from '~/clients/firebase-client/models/data-cryptos';
 import useDeleteCrypto from '~/hooks/use-delete-crypto';
-import getProfit from '~/helpers/get-profit';
 import useAddInvestmentResult from '~/hooks/use-add-investment-result';
 
 function CryptoCard(props: Crypto) {
@@ -90,7 +89,8 @@ function CryptoCard(props: Crypto) {
       prices: results.slice(dates.length * -1).map(result => result.price),
     });
     const result =
-      cryptoInfo.data.results[cryptoInfo.data.results.length - 1][1];
+      cryptoInfo.data.results[cryptoInfo.data.results.length - 1][1] *
+      props.amount;
     const invested = props.price * props.amount;
     setInvestmentResult(result);
     addInvestmentResult(
@@ -158,8 +158,11 @@ function CryptoCard(props: Crypto) {
               }).format(props.price)}
             </span>
             <span className="text-sm  font-semibold">
-              <span className="text-xs font-normal">Resultado:</span> %{' '}
-              {getProfit(props.price, investmentResult)}
+              <span className="text-xs font-normal">Resultado:</span>{' '}
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'percent',
+                maximumFractionDigits: 2,
+              }).format(investmentResult / (props.price * props.amount) - 1)}
             </span>
             <span className="text-sm  font-semibold">
               <span className="text-xs font-normal">Carteira:</span>{' '}
@@ -193,7 +196,7 @@ function CryptoCard(props: Crypto) {
         <div className="card-actions">
           <div
             className="tooltip tooltip-error w-full z-0"
-            data-tip="Ops, funcionalidade em desenvolvimento">
+            data-tip="Essa funcionalidade ainda será desenvolvida">
             <button disabled className="btn btn-primary w-full">
               Mais detalhes
             </button>

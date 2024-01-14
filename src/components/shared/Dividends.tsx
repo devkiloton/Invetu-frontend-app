@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import {
   CashDividend,
@@ -10,8 +10,6 @@ import { getSpecificProp } from '~/helpers/get-specific-advice-prop';
 import { handlePresentation } from '~/helpers/handle-presentation';
 import { joinStockData } from '~/helpers/join-stock-data';
 import { useCustomSelector } from '~/hooks/use-custom-selector';
-import { isStock } from '~/type-guards/is-stock';
-
 export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
   const [advices, setAdvices] = useState<
     Array<
@@ -22,17 +20,15 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
     >
   >([]);
   const investmentsDataStore = useCustomSelector(
-    state => state.investmentsData.stocks.stockData,
+    state => state.investmentsData,
   );
-
-  function getValidAdvices() {
+  const getValidAdvices = useCallback(() => {
     // fetching all the dividends and subscriptions
-    const advices = joinStockData(stocks)
-      .map(stock =>
-        investmentsDataStore.find(obj => obj.symbol === stock.ticker),
-      )
-      .filter(isStock) as Array<Result>;
-
+    const advices = joinStockData(stocks).map(stock =>
+      investmentsDataStore.stocks.stockData.find(obj => {
+        return obj.symbol === stock.ticker;
+      }),
+    ) as Array<Result>;
     // takes the cash dividends that will happen after today
     const cashDividendsAfterToday = advices
       .filter(obj => Object.keys(obj?.dividendsData).length > 0)
@@ -43,9 +39,13 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
           ticker: investment.symbol,
         }));
       })
-      .filter(
-        advice => new Date(advice.paymentDate).getTime() > new Date().getTime(),
-      );
+      .filter(advice => {
+        return (
+          new Date(advice.paymentDate).getTime() > new Date().getTime() &&
+          new Date(advice.paymentDate).getTime() <
+            new Date().getTime() + 1000 * 60 * 60 * 24 * 30 * 12
+        );
+      });
 
     // takes the stock dividends that will happen after today
     const stockDividendsAfterToday = advices
@@ -82,9 +82,10 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       ...stockDividendsAfterToday,
       ...subscriptionsAfterToday,
     ];
-  }
+  }, [investmentsDataStore, stocks]);
 
   useEffect(() => {
+    if (!investmentsDataStore.stocks.asyncState.isLoaded) return;
     const result = getValidAdvices();
     // Join the stocks with the advices
     const presentation = stocks.flatMap(stock => {
@@ -119,7 +120,7 @@ export default function Dividends({ stocks }: { stocks: Array<Stock> }) {
       >,
     );
     setAdvices(grouped);
-  }, [stocks]);
+  }, [stocks, investmentsDataStore]);
   return (
     <div className="flex lg:flex-col gap-4 border-opacity-50 overflow-scroll">
       {advices.map(value => {

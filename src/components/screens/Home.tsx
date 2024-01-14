@@ -116,8 +116,8 @@ export default function Home() {
               </div>
             </div>
             <div
-              className="tooltip tooltip-error w-full z-0"
-              data-tip="Ops, funcionalidade em desenvolvimento">
+              className="tooltip tooltip-warning w-full z-0"
+              data-tip="Estamos desenvolvendo essa funcionalidade nesse exato momento">
               <div className="glassy-border rounded-2xl w-full p-4 md:p-8">
                 <h1 className="font-semibold mb-3 text-start">
                   Evolução patrimonial

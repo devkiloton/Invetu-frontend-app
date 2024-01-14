@@ -49,6 +49,21 @@ export const investmentsSlice = createSlice({
       state.investedAmount =
         state.investedAmount + action.payload.price * action.payload.amount;
     },
+    updateStock: (state, action: PayloadAction<Partial<Stock>>) => {
+      const stock = state.stocks.find(
+        stock => stock.ticker === action.payload.ticker,
+      );
+      state.stocks = state.stocks.map(stock =>
+        stock.ticker === action.payload.ticker
+          ? { ...stock, ...action.payload }
+          : stock,
+      );
+      if (!stock || !action.payload.price || !action.payload.amount) return;
+      state.investedAmount =
+        state.investedAmount -
+        stock.price * stock.amount +
+        action.payload.price * action.payload.amount;
+    },
     deleteStock: (state, action: PayloadAction<string>) => {
       const stock = state.stocks.find(stock => stock.ticker === action.payload);
       if (!stock) return;
@@ -116,6 +131,7 @@ export const {
   deleteStock,
   addStock,
   addFixedIncome,
+  updateStock,
   deleteFixedIncome,
   addCrypto,
   deleteCrypto,
