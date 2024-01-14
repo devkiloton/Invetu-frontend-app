@@ -51,6 +51,14 @@ function CryptoCard(props: Crypto) {
         investmentsDataStore.fiats.fiatData.find(fiat => fiat.name === 'BRL')
           ?.rate ?? 1;
 
+      if (
+        isNil(result[0]) ||
+        isNil(result[1]) ||
+        isNil(result[2]) ||
+        isNil(result[3])
+      ) {
+        throw new Error();
+      }
       return [result[0], result[1] * rate, result[2] * rate, result[3] * rate];
     });
     const mutatedCryptoData = {
@@ -78,7 +86,13 @@ function CryptoCard(props: Crypto) {
     // Dates that will be used in the chart X axis
     const dates = results
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
-      .map(result => result.date * 1000 - 10800000)
+      .map(result => {
+        const resultDate = result?.date;
+        if (isNil(resultDate)) {
+          throw new Error();
+        }
+        return resultDate * 1000 - 10800000;
+      })
       // filtering dates that are greater than the start date or the range is 1d
       .filter(value => value > Date.parse(props.startDate) || range === '1d')
       // converting dates to ISO string
@@ -86,11 +100,19 @@ function CryptoCard(props: Crypto) {
     setChartData({
       range,
       dates,
-      prices: results.slice(dates.length * -1).map(result => result.price),
+      prices: results.slice(dates.length * -1).map(result => {
+        if (isNil(result?.price)) {
+          throw new Error();
+        }
+        return result.price;
+      }),
     });
-    const result =
-      cryptoInfo.data.results[cryptoInfo.data.results.length - 1][1] *
-      props.amount;
+    const price =
+      cryptoInfo?.data?.results?.[cryptoInfo.data.results.length - 1]?.[1];
+    if (isNil(price)) {
+      throw new Error();
+    }
+    const result = price * props.amount;
     const invested = props.price * props.amount;
     setInvestmentResult(result);
     addInvestmentResult(

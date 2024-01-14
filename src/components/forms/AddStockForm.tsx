@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import { FormEvent, useCallback, useRef, useState } from 'react';
 import DropdownStocksInput from '../shared/DropdownStocksInput';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 import { useAuth } from '~/lib/firebase';

@@ -1,3 +1,4 @@
+import { isNil } from 'lodash-es';
 import { Stock } from '~/clients/firebase-client/models/Investments';
 
 /**
@@ -23,26 +24,29 @@ export const joinStockData = (stocks: Array<Stock>): Array<Stock> => {
       };
     } else {
       // calculate the new average price considering the new amount
+      const stock = stockMap[stockKey];
+      if (isNil(stock)) return;
       const newAveragePrice =
-        (stockMap[stockKey].price * stockMap[stockKey].amount +
-          price * amount) /
-        (stockMap[stockKey].amount + amount);
-      stockMap[stockKey].price = newAveragePrice;
+        (stock.price * stock.amount + price * amount) / (stock.amount + amount);
+      stock.price = newAveragePrice;
 
-      stockMap[stockKey].amount += amount;
-      stockMap[stockKey].startDate = new Date(
+      stock.amount += amount;
+      stock.startDate = new Date(
         Math.min(
-          new Date(stockMap[stockKey].startDate).getTime(),
+          new Date(stock.startDate).getTime(),
           new Date(startDate).getTime(),
         ),
       ).toISOString();
     }
   });
 
-  const stockAnalysis = [];
+  const stockAnalysis: Array<Stock> = [];
 
   for (const key in stockMap) {
-    stockAnalysis.push(stockMap[key]);
+    const stock = stockMap[key];
+    if (!isNil(stock)) {
+      stockAnalysis.push(stock);
+    }
   }
 
   return stockAnalysis;

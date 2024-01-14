@@ -1,3 +1,4 @@
+import { isNil } from 'lodash-es';
 import { Crypto } from '~/clients/firebase-client/models/Investments';
 
 export const joinCryptoData = (cryptos: Array<Crypto>): Array<Crypto> => {
@@ -17,27 +18,32 @@ export const joinCryptoData = (cryptos: Array<Crypto>): Array<Crypto> => {
         name,
       };
     } else {
+      const cryptoCurrency = cryptoMap[cryptoKey];
+      if (isNil(cryptoCurrency)) return;
       // calculate the new average price considering the new amount
       const newAveragePrice =
-        (cryptoMap[cryptoKey].price * cryptoMap[cryptoKey].amount +
-          price * amount) /
-        (cryptoMap[cryptoKey].amount + amount);
-      cryptoMap[cryptoKey].price = newAveragePrice;
+        (cryptoCurrency.price * cryptoCurrency.amount + price * amount) /
+        (cryptoCurrency.amount + amount);
+      cryptoCurrency.price = newAveragePrice;
 
-      cryptoMap[cryptoKey].amount += amount;
-      cryptoMap[cryptoKey].startDate = new Date(
+      cryptoCurrency.amount += amount;
+      cryptoCurrency.startDate = new Date(
         Math.min(
-          new Date(cryptoMap[cryptoKey].startDate).getTime(),
+          new Date(cryptoCurrency.startDate).getTime(),
           new Date(startDate).getTime(),
         ),
       ).toISOString();
     }
   });
 
-  const cryptoAnalysis = [];
+  const cryptoAnalysis: Array<Crypto> = [];
 
   for (const key in cryptoMap) {
-    cryptoAnalysis.push(cryptoMap[key]);
+    const cryptoObj = cryptoMap[key];
+    if (isNil(cryptoObj)) {
+      throw new Error();
+    }
+    cryptoAnalysis.push(cryptoObj);
   }
 
   return cryptoAnalysis;
