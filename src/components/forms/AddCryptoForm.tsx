@@ -116,6 +116,7 @@ function AddCryptoForm() {
             onChange={handleDateDeposit}
             type="date"
             placeholder="ex. 134"
+            max={new Date().toISOString().split('T')[0]}
             required
             className="input input-bordered w-full"
           />

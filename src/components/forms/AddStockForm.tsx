@@ -98,6 +98,7 @@ function AddStockForm() {
             type="date"
             placeholder="ex. 134"
             required
+            max={new Date().toISOString().split('T')[0]}
             className="input input-bordered w-full"
           />
           <span>Data</span>
