@@ -12,11 +12,19 @@ import { Result } from '~/clients/firebase-client/models/history-stock-br';
 import useDeleteStock from '~/hooks/use-delete-stock';
 import { useUsLogos } from '~/hooks/use-us-logos';
 import useAddInvestmentResult from '~/hooks/use-add-investment-result';
+import { getExternalitiesConstants } from '~/helpers/get-externalities-constants';
+import useAddCurrentBalance from '~/hooks/use-add-current-balance';
 
-function StockCard(
-  props: Stock,
-) {
+function StockCard(props: Stock) {
   const [stockInfo, setStockInfo] = useState<Result | null>(null);
+  const [properties, setProperties] = useState<Stock | null>(null);
+  const [externalities, setExternalities] = useState<{
+    stocksFactor: number;
+    cashDividends: number;
+  }>({
+    stocksFactor: 1,
+    cashDividends: 0,
+  });
   const [chartData, setChartData] = useState<{
     dates: string[];
     prices: number[];
@@ -27,10 +35,11 @@ function StockCard(
   );
   const investmentsResultStore = useCustomSelector(
     state => state.investmentsResult,
-  )
+  );
   const deleteStock = useDeleteStock();
   const usLogos = useUsLogos();
-  const addInvestmentResult = useAddInvestmentResult()
+  const addInvestmentResult = useAddInvestmentResult();
+  const addCurrentBalance = useAddCurrentBalance();
 
   useEffect(() => {
     setStockInfo(
@@ -38,13 +47,39 @@ function StockCard(
         stock => stock.symbol === props.ticker,
       ) ?? null,
     );
+    if (isNil(stockInfo) || isNil(props)) return;
+    const externalitiesEffect = getExternalitiesConstants({
+      result: stockInfo,
+      stock: props,
+    });
+    if (chartData) return;
+    setExternalities(externalitiesEffect);
   }, [investmentsDataStore]);
 
   useEffect(() => {
-    const range = getNearestDateRange(new Date(props.startDate).toISOString());
+    if (!externalities) return;
+    setProperties({
+      ...props,
+      amount:
+        props.amount === externalities.stocksFactor * props.amount
+          ? props.amount
+          : externalities.stocksFactor * props.amount,
+      price:
+        props.price === props.price * (1 / externalities.stocksFactor)
+          ? props.price
+          : props.price * (1 / externalities.stocksFactor),
+    });
+  }, [externalities]);
+
+  useEffect(() => {
+    if (isNull(properties)) return;
+
+    const range = getNearestDateRange(
+      new Date(properties.startDate).toISOString(),
+    );
 
     const results = investmentsDataStore.stocks.stockData.find(
-      stock => stock.symbol === props.ticker,
+      stock => stock.symbol === properties.ticker,
     );
 
     // Dates that will be used in the chart X axis
@@ -52,7 +87,9 @@ function StockCard(
       // removing 10800000 ms (3 hours) to adjust to the brazilian timezone
       .map(price => price.date * 1000 - 10800000)
       // filtering dates that are greater than the start date or the range is 1d
-      .filter(value => value > Date.parse(props.startDate) || range === '1d')
+      .filter(
+        value => value > Date.parse(properties.startDate) || range === '1d',
+      )
       // converting dates to ISO string
       .map(value => new Date(value).toISOString());
 
@@ -64,17 +101,33 @@ function StockCard(
         .slice(dates.length * -1)
         .map(price => price.close),
     });
-    addInvestmentResult({
-      id: props.ticker,
-      currency: 'BRL',
-      invested: props.price * props.amount,
-      result: results.regularMarketPrice * props.amount,
-      period: 'all',
-    },'stocks')
-  }, [stockInfo]);
+
+    addInvestmentResult(
+      {
+        id: properties.ticker,
+        currency: 'BRL',
+        invested: properties.price * properties.amount,
+        result: results.regularMarketPrice * properties.amount,
+        period: 'all',
+        sideEffect: {
+          stocksFactor: externalities.stocksFactor,
+          cashDividends: externalities.cashDividends,
+        },
+      },
+      'stocks',
+    );
+    const usdToBrl = investmentsDataStore.fiats.fiatData.find(
+      fiat => fiat.name === 'BRL',
+    )?.rate;
+    addCurrentBalance(
+      externalities.cashDividends *
+        (props.currency === 'USD' ? usdToBrl ?? 1 : 1),
+    );
+  }, [properties]);
 
   const deleteSelectedStock = useCallback(() => {
-    deleteStock(props.ticker);
+    if (isNull(properties)) return;
+    deleteStock(properties.ticker);
   }, [stockInfo]);
 
   return (
@@ -85,21 +138,21 @@ function StockCard(
             <div className="flex items-center gap-x-2">
               {stockInfo?.logourl !==
                 'https://s3-symbol-logo.tradingview.com/fii--big.svg' &&
-                props.currency === 'BRL' &&
+                properties?.currency === 'BRL' &&
                 stockInfo?.logourl !== 'https://brapi.dev/favicon.svg' && (
                   <img
                     className="h-8 w-8 rounded drop-shadow"
                     src={stockInfo?.logourl}
                   />
                 )}
-              {props.currency === 'USD' && (
+              {properties?.currency === 'USD' && (
                 <img
                   className="h-8 w-8 rounded drop-shadow"
-                  src={usLogos(props.ticker)}
+                  src={usLogos(properties.ticker)}
                 />
               )}
 
-              <h2 className="card-title">{props.ticker}</h2>
+              <h2 className="card-title">{properties?.ticker}</h2>
             </div>
 
             <details className="dropdown dropdown-end">
@@ -127,41 +180,45 @@ function StockCard(
               </ul>
             </details>
           </div>
-          {!isNull(stockInfo) && (
+          {!isNull(stockInfo) && !isNull(properties) && (
             <div className="flex flex-col min-[768px]:flex-row gap-x-2">
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Quantidade:</span>{' '}
-                {props.amount}
+                {properties.amount}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Preço médio:</span> R${' '}
-                {props.price.toFixed(2)}
+                {properties.price.toFixed(2)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Resultado:</span> %{' '}
-                {getProfit(props.price, stockInfo!.regularMarketPrice)}
+                {getProfit(properties.price, stockInfo!.regularMarketPrice)}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Carteira:</span> %{' '}
                 {getStockAllocation(
-                  props.amount,
+                  properties.amount,
                   stockInfo!.regularMarketPrice,
                   investmentsResultStore.currentBalance,
                 )}
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Balanço:</span> R${' '}
-                {getBalance(stockInfo!.regularMarketPrice, props.amount)}
+                {getBalance(stockInfo!.regularMarketPrice, properties.amount)}
+              </span>
+              <span className="text-sm  font-semibold">
+                <span className="text-xs font-normal">Rendimentos:</span> R${' '}
+                {externalities.cashDividends.toFixed(2)}
               </span>
             </div>
           )}
-          {!isNull(chartData) && (
+          {!isNull(chartData) && !isNull(properties) && (
             <>
               <h1 className="font-semibold">
                 Variação de preço desde a compra
               </h1>
               <InvestementCardChart
-                currency={props.currency}
+                currency={properties.currency}
                 dates={chartData.dates}
                 prices={chartData.prices}
                 range={chartData.range}
@@ -172,7 +229,7 @@ function StockCard(
           <div className="card-actions">
             <div
               className="tooltip tooltip-error w-full z-0"
-              data-tip="Ops, funcionalidade em desenvolvimento">
+              data-tip="Essa funcionalidade ainda será desenvolvida">
               <button disabled className="btn btn-primary w-full">
                 Mais detalhes
               </button>
