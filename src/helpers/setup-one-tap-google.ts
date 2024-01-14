@@ -11,8 +11,8 @@ export const setupOneTapGoogle = () => {
   script.onload = () => {
     // Setting up identifiers
     window.google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      login_uri: import.meta.env.VITE_GOOGLE_CLIENT_URI,
+      client_id: import.meta.env['VITE_GOOGLE_CLIENT_ID'],
+      login_uri: import.meta.env['VITE_GOOGLE_CLIENT_URI'],
       callback: (response: any) => {
         // Getting user's credentials when identified
         const token = response.credential;

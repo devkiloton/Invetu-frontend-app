@@ -11,7 +11,7 @@ import { FuzzyUS } from './models/fuzzy-us';
 import { HistoryStockUS } from './models/history-stock-us';
 
 export const firebaseClient = () => {
-  const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
+  const FIREBASE_FUNCTIONS_URL = import.meta.env['VITE_FIREBASE_FUNCTIONS_URL'];
   const firestore = useFirestore();
   const client = {
     functions: {
