@@ -21,10 +21,7 @@ function StockCard(props: Stock) {
   const [externalities, setExternalities] = useState<{
     stocksFactor: number;
     cashDividends: number;
-  }>({
-    stocksFactor: 1,
-    cashDividends: 0,
-  });
+  }>();
   const [chartData, setChartData] = useState<{
     dates: string[];
     prices: number[];
@@ -52,12 +49,14 @@ function StockCard(props: Stock) {
       result: stockInfo,
       stock: props,
     });
+    console.log('CHART DATA', chartData);
     if (chartData) return;
     setExternalities(externalitiesEffect);
   }, [investmentsDataStore]);
 
   useEffect(() => {
     if (!externalities) return;
+    console.log('EXTERNALITIES');
     setProperties({
       ...props,
       amount:
@@ -94,6 +93,7 @@ function StockCard(props: Stock) {
       .map(value => new Date(value).toISOString());
 
     if (isNil(dates) || isNil(results)) return;
+    console.log('setting');
     setChartData({
       range,
       dates,
@@ -110,8 +110,8 @@ function StockCard(props: Stock) {
         result: results.regularMarketPrice * properties.amount,
         period: 'all',
         sideEffect: {
-          stocksFactor: externalities.stocksFactor,
-          cashDividends: externalities.cashDividends,
+          stocksFactor: externalities!.stocksFactor,
+          cashDividends: externalities!.cashDividends,
         },
       },
       'stocks',
@@ -120,7 +120,7 @@ function StockCard(props: Stock) {
       fiat => fiat.name === 'BRL',
     )?.rate;
     addCurrentBalance(
-      externalities.cashDividends *
+      externalities!.cashDividends *
         (props.currency === 'USD' ? usdToBrl ?? 1 : 1),
     );
   }, [properties]);
@@ -208,7 +208,7 @@ function StockCard(props: Stock) {
               </span>
               <span className="text-sm  font-semibold">
                 <span className="text-xs font-normal">Rendimentos:</span> R${' '}
-                {externalities.cashDividends.toFixed(2)}
+                {externalities!.cashDividends.toFixed(2)}
               </span>
             </div>
           )}
